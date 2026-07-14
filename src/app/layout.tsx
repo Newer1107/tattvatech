@@ -1,25 +1,22 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import MouseGlow from "@/components/effects/MouseGlow";
+import { Inter, Sora } from "next/font/google";
 import "./globals.css";
+import { SmoothScroll } from "@/components/animations/SmoothScroll";
+import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Tattva Tech | Technology That Transforms",
-  description:
-    "A technology, innovation, and digital transformation company. We build the future through AI, Industry 4.0, Robotics, IoT, and Digital Transformation.",
-  keywords: [
-    "Tattva Tech",
-    "technology",
-    "innovation",
-    "digital transformation",
-    "AI",
-    "Industry 4.0",
-    "Robotics",
-    "IoT",
-    "Software Development",
-  ],
-};
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+export const metadata: Metadata = buildMetadata();
 
 export default function RootLayout({
   children,
@@ -27,12 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen antialiased font-sans">
-        <MouseGlow />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="en" className={`${sora.variable} ${inter.variable}`}>
+      <body>
+        <SmoothScroll />
+        {children}
       </body>
     </html>
   );

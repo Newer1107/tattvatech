@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TattvaTech Website
 
-## Getting Started
+Official parent-brand website for TattvaTech, built as a production-ready Next.js application. The site presents TattvaTech as the parent technology company while prioritizing TattvaTech Services as the currently active business vertical.
 
-First, run the development server:
+## Company Overview
+
+TattvaTech is a founder-led technology company operated by Loukik Salvi, Rishit Singh, and Raunak. The brand is structured as a parent company with four business verticals:
+
+- TattvaTech Services
+- TattvaTech Products
+- TattvaTech Drones
+- TattvaTech Training
+
+The current homepage emphasizes technical credibility, long-term ambition, clarity, and disciplined execution without fabricating scale or achievements.
+
+## Technology Stack
+
+- Next.js App Router
+- React
+- TypeScript in strict mode
+- Tailwind CSS
+- Motion
+- GSAP
+- Lenis
+- Lucide React
+
+## Local Setup
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+## Development Commands
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run typecheck
+npm run build
+npm run check:assets
+npm run validate:content
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Production Build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Asset Locations
 
-## Learn More
+- Brand assets: `public/brand`
+  - Full logo PNG: `public/brand/tattvatech-logo.png`
+  - Isolated symbol PNG: `public/brand/tattvatech-symbol.png`
+- Section imagery: `public/images`
+- Temporary fallbacks: `public/placeholders`
 
-To learn more about Next.js, take a look at the following resources:
+## Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy values from `.env.example` as needed.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_CONTACT_EMAIL`
 
-## Deploy on Vercel
+## Docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Build and run the production container:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker build -t tattvatech .
+docker run -p 3000:3000 --env-file .env tattvatech
+```
+
+The Docker image uses Next.js standalone output and runs as a non-root user.
+
+## Project Structure
+
+```text
+.github/              CI workflows
+docs/                 Design, content, and animation documentation
+public/               Brand assets, placeholders, and public imagery
+scripts/              Validation and asset checks
+src/
+  app/                App Router entrypoints and metadata routes
+  components/         UI, layout, cards, sections, animations
+  constants/          Approved content and navigation data
+  hooks/              Lightweight browser hooks
+  lib/                Metadata, animation helpers, utilities
+  styles/             Design tokens and shared animation styles
+  types/              Shared TypeScript types
+```
+
+## Notes
+
+- Keep all application code inside `src/`.
+- Do not add fabricated business claims, testimonials, or achievements.
+- Later homepage sections are intentionally scaffolded for future approved content drops.

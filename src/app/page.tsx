@@ -1,29 +1,26 @@
-import Hero from "@/components/home/Hero";
-import FounderVision from "@/components/home/FounderVision";
-import TechnologyShowcase from "@/components/home/TechnologyShowcase";
-import BusinessEcosystem from "@/components/home/BusinessEcosystem";
-import WhyWeExist from "@/components/home/WhyWeExist";
-import ValueCreation from "@/components/home/ValueCreation";
-import StrategicPillars from "@/components/home/StrategicPillars";
-import BusinessVerticals from "@/components/home/BusinessVerticals";
-import ImpactPreview from "@/components/home/ImpactPreview";
-import RoadmapPreview from "@/components/home/RoadmapPreview";
-import VisionPreview from "@/components/home/VisionPreview";
+import { Footer } from "@/components/layout/Footer";
+import { Achievements } from "@/components/sections/Achievements";
+import { Contact } from "@/components/sections/Contact";
+import { IntroHeroExperience } from "@/components/sections/IntroHeroExperience";
+import { Reviews } from "@/components/sections/Reviews";
+import { Services } from "@/components/sections/Services";
+import { Summary } from "@/components/sections/Summary";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <FounderVision />
-      <TechnologyShowcase />
-      <BusinessEcosystem />
-      <WhyWeExist />
-      <ValueCreation />
-      <StrategicPillars />
-      <BusinessVerticals />
-      <ImpactPreview />
-      <RoadmapPreview />
-      <VisionPreview />
+      <main>
+        <IntroHeroExperience />
+        <PageContainer>
+          <Summary />
+          <Services />
+          <Reviews />
+          <Achievements />
+          <Contact />
+        </PageContainer>
+      </main>
+      <Footer />
     </>
   );
 }

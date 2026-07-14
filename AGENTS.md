@@ -1,5 +1,11 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# TattvaTech Agent Notes
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- Preserve the `src/`-first structure.
+- Do not redesign approved homepage sections without explicit direction.
+- Do not add dependencies without a clear implementation need.
+- Reuse the existing color tokens before introducing new values.
+- Prefer shared components over section-specific one-offs.
+- Maintain responsive behavior across mobile, tablet, and desktop.
+- Never fabricate company content, metrics, testimonials, or achievements.
+- Keep animations accessible and respect reduced-motion preferences.
+- Follow supplied references carefully before expanding scope.

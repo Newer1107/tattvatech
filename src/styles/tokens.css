@@ -1,0 +1,40 @@
+:root {
+  --background: #ffffff;
+  --background-warm: #fcfbf9;
+  --background-dark: #101828;
+
+  --text-primary: #101828;
+  --text-secondary: #475467;
+  --text-muted: #98a2b3;
+  --text-inverse: #ffffff;
+
+  --border-default: #eaecf0;
+  --border-strong: #d0d5dd;
+
+  --orange-primary: #f55a0a;
+  --orange-accent: #ff7a00;
+  --orange-dark: #d9470d;
+
+  --amber-primary: #ffa800;
+  --amber-soft: #ffc56b;
+
+  --brand-gradient: linear-gradient(
+    135deg,
+    #ffa800 0%,
+    #ff7a00 40%,
+    #f55a0a 75%,
+    #d9470d 100%
+  );
+
+  --orange-shadow: rgba(245, 90, 10, 0.18);
+  --amber-shadow: rgba(255, 168, 0, 0.12);
+
+  --shadow-soft: 0 16px 48px rgba(16, 24, 40, 0.08);
+  --shadow-card: 0 12px 32px rgba(16, 24, 40, 0.06);
+
+  --radius-card: 24px;
+  --radius-pill: 999px;
+
+  --container-max: 1440px;
+  --content-max: 1280px;
+}

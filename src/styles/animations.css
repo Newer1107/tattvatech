@@ -1,0 +1,25 @@
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.glass-panel {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.brand-grid {
+  background-image:
+    linear-gradient(rgba(16, 24, 40, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 24, 40, 0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
