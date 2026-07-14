@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState, type MutableRefObject } from "react";
-import { businessVerticals } from "@/constants/businesses";
 import { introAssets } from "@/constants/intro-animation";
-import { navigationItems } from "@/constants/navigation";
+import { navigationActions, navigationGroups } from "@/constants/navigation";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/Button";
@@ -37,6 +36,14 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
     navbarContentRef,
   } = refs;
 
+  const markerClassMap = {
+    circle: "rounded-full bg-orange-primary",
+    triangle:
+      "h-0 w-0 border-r-[5px] border-b-[9px] border-l-[5px] border-r-transparent border-b-orange-accent border-l-transparent bg-transparent",
+    square: "bg-amber-primary",
+    diamond: "rotate-45 bg-orange-accent",
+  } as const;
+
   return (
     <header
       ref={navbarRootRef}
@@ -48,108 +55,137 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
         direction === "down" ? "translate-y-0" : "translate-y-0",
       )}
     >
-      <PageContainer className="relative py-4">
+      <PageContainer className="relative px-5 py-0 md:px-8 xl:px-12">
         <div
           ref={navbarRevealRef}
           className={cn(
-            "relative flex items-center justify-between px-1 py-3 md:px-0",
+            "relative border-b px-0 py-5 md:py-6",
             isScrolled
-              ? "rounded-2xl border border-white/55 bg-white/78 text-text-primary shadow-[var(--shadow-soft)] backdrop-blur-xl"
-              : "border-b border-border-default/70 bg-transparent text-text-primary",
+              ? "border-[rgba(16,24,40,0.08)] bg-[rgba(255,255,255,0.96)] backdrop-blur-xl"
+              : "border-[rgba(16,24,40,0.06)] bg-background",
           )}
         >
-          <Link
-            href="#home"
-            className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
-          >
-            <div className="relative h-9 w-9">
-              <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
-              <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
-                <Image
-                  src={introAssets.logo}
-                  alt="TattvaTech logo"
-                  width={36}
-                  height={36}
-                  priority
-                  fetchPriority="high"
-                  className="h-auto w-full object-contain object-center"
-                />
+          <div className="flex items-center justify-between gap-6 md:hidden">
+            <Link
+              href="#home"
+              className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+            >
+              <div className="relative h-11 w-11">
+                <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
+                <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
+                  <Image
+                    src={introAssets.logo}
+                    alt="TattvaTech logo"
+                    width={44}
+                    height={44}
+                    priority
+                    fetchPriority="high"
+                    className="h-auto w-full object-contain object-center"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="leading-tight">
-              <p
-                className={cn(
-                  "font-heading text-base tracking-[-0.04em]",
-                  isScrolled ? "text-text-primary" : "text-text-primary",
-                )}
-              >
-                TattvaTech
-              </p>
-              <p
-                className={cn(
-                  "text-xs uppercase tracking-[0.18em]",
-                  isScrolled ? "text-text-muted" : "text-text-muted",
-                )}
-              >
-                Technology Brand
-              </p>
-            </div>
-          </Link>
+              <div className="leading-tight">
+                <p className="font-heading text-base tracking-[-0.04em] text-text-primary">
+                  TattvaTech
+                </p>
+                <p className="text-[0.68rem] uppercase tracking-[0.18em] text-text-muted">
+                  Technology Brand
+                </p>
+              </div>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen((value) => !value)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-none border-b border-[rgba(16,24,40,0.12)] text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
 
           <div
             ref={navbarContentRef}
-            className="flex items-center gap-4 md:gap-7"
+            className="hidden md:grid md:grid-cols-[220px_repeat(4,minmax(140px,1fr))_minmax(170px,auto)] md:items-start md:gap-8 lg:gap-10"
           >
-            <nav className="hidden items-center gap-7 md:flex">
-              {navigationItems.map((item) => (
-                item.href ? (
+            <Link
+              href="#home"
+              className="flex items-start gap-4 rounded-md pt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+            >
+              <div className="relative h-14 w-14 shrink-0">
+                <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
+                <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
+                  <Image
+                    src={introAssets.logo}
+                    alt="TattvaTech logo"
+                    width={56}
+                    height={56}
+                    priority
+                    fetchPriority="high"
+                    className="h-auto w-full object-contain object-center"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="font-heading text-[1.1rem] tracking-[-0.04em] text-text-primary">
+                  TattvaTech
+                </p>
+                <p className="max-w-[9rem] text-[0.72rem] uppercase tracking-[0.18em] text-text-muted">
+                  Technology Brand
+                </p>
+              </div>
+            </Link>
+
+            {navigationGroups.map((group) => (
+              <div key={group.title} className="flex flex-col gap-4">
+                <p className="flex items-center gap-2 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-text-primary">
+                  <span
+                    aria-hidden="true"
+                    className={cn("inline-block h-2.5 w-2.5", markerClassMap[group.marker])}
+                  />
+                  {group.title}
+                </p>
+
+                <div className="flex flex-col items-start gap-2.5">
+                  {group.links.map((item) => (
+                    item.href ? (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="inline-block border-b border-[rgba(16,24,40,0.35)] pb-1 text-[clamp(0.95rem,1.05vw,1.08rem)] leading-tight text-text-secondary transition-colors hover:border-orange-primary hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <span
+                        key={item.label}
+                        aria-disabled="true"
+                        className="inline-block border-b border-[rgba(16,24,40,0.12)] pb-1 text-[clamp(0.95rem,1.05vw,1.08rem)] leading-tight text-text-muted"
+                      >
+                        {item.label}
+                      </span>
+                    )
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex flex-col items-start gap-4 justify-self-end">
+              <div className="flex flex-col items-start gap-3">
+                {navigationActions.map((item) => (
                   <Link
                     key={item.label}
-                    href={item.href}
-                    className={cn(
-                      "rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary",
-                      isScrolled
-                        ? "text-text-secondary hover:text-text-primary"
-                        : "text-text-secondary hover:text-text-primary",
-                    )}
+                    href={item.href ?? "#contact"}
+                    className="inline-block border-b border-[rgba(16,24,40,0.35)] pb-1 text-[0.98rem] font-medium text-text-primary transition-colors hover:border-orange-primary hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
                   >
                     {item.label}
                   </Link>
-                ) : (
-                  <span
-                    key={item.label}
-                    aria-disabled="true"
-                    className={cn(
-                      "cursor-not-allowed text-sm font-medium",
-                      isScrolled ? "text-text-muted" : "text-text-muted",
-                    )}
-                    title={businessVerticals.map((item) => item.name).join(", ")}
-                  >
-                    {item.label}
-                  </span>
-                )
-              ))}
-            </nav>
-
-            <div className="hidden md:block">
+                ))}
+              </div>
               <ButtonLink href="#contact">Start a Project</ButtonLink>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setMenuOpen((value) => !value)}
-            className={cn(
-              "inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary md:hidden",
-              isScrolled
-                ? "border border-border-default bg-white text-text-primary"
-                : "border border-border-default bg-white/72 text-text-primary",
-            )}
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
 
           <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
         </div>

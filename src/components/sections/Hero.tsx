@@ -42,7 +42,7 @@ export function Hero({ refs }: HeroProps) {
         <HeroVisualFrame />
       </div>
 
-      <div className="relative z-[10] mx-auto flex min-h-[100svh] w-full max-w-[var(--content-max)] items-center justify-center px-6 pt-28 pb-14 text-center md:px-10 lg:px-16 lg:pt-32">
+      <div className="relative z-[10] mx-auto flex min-h-[100svh] w-full max-w-[var(--content-max)] items-center justify-center px-6 pt-[calc(var(--navbar-height)+1.5rem)] pb-14 text-center md:px-10 lg:px-16">
         <div className="max-w-[720px]">
           <div ref={heroLabelRef}>
             <HeroLabel>Parent technology brand</HeroLabel>

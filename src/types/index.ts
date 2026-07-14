@@ -4,6 +4,12 @@ export type NavItem = {
   disabled?: boolean;
 };
 
+export type NavGroup = {
+  title: string;
+  marker: "circle" | "triangle" | "square" | "diamond";
+  links: NavItem[];
+};
+
 export type Vertical = {
   name: string;
   description: string;
