@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDownRight, Ellipsis } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Ellipsis } from "lucide-react";
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import {
   gsap,
@@ -46,6 +46,7 @@ const heroVerticals = [
     id: "services",
     number: "01",
     label: "Services",
+    labelShort: "SERVICES",
     href: "#tattvatech-services",
     phrase: "Systems built for delivery.",
   },
@@ -53,6 +54,7 @@ const heroVerticals = [
     id: "products",
     number: "02",
     label: "Products",
+    labelShort: "PRODUCTS",
     href: "#tattvatech-products",
     phrase: "Reusable software at scale.",
   },
@@ -60,6 +62,7 @@ const heroVerticals = [
     id: "drones",
     number: "03",
     label: "Drones",
+    labelShort: "DRONES",
     href: "#tattvatech-drones",
     phrase: "Technology applied in the field.",
   },
@@ -67,13 +70,14 @@ const heroVerticals = [
     id: "training",
     number: "04",
     label: "Training",
+    labelShort: "TRAINING",
     href: "#tattvatech-training",
     phrase: "Capability built through practice.",
   },
 ] as const;
 
 const controlBaseClasses =
-  "inline-flex h-[52px] items-center justify-center rounded-full transition-[transform,background-color,color,opacity] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F6F1]";
+  "inline-flex h-[52px] items-center justify-center rounded-full transition-[transform,background-color,color,opacity] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F5EF]";
 
 export function Hero({ refs, introHidden = false }: HeroProps) {
   const {
@@ -90,21 +94,38 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
   } = refs;
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeVertical, setActiveVertical] = useState(0);
+  const [selectedVertical, setSelectedVertical] = useState<number | null>(null);
+  const [hoveredVertical, setHoveredVertical] = useState<number | null>(null);
+  const activeVertical = hoveredVertical ?? selectedVertical;
 
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
   const menuItemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const orbButtonRef = useRef<HTMLAnchorElement | null>(null);
   const orbWrapRef = useRef<HTMLSpanElement | null>(null);
-  const orbPathRef = useRef<SVGPathElement | null>(null);
+  const orbSegmentRefs = useRef<Array<SVGPathElement | null>>([]);
+  const orbPulseWrapRef = useRef<SVGGElement | null>(null);
+  const orbPulseDotRef = useRef<SVGCircleElement | null>(null);
+  const ctaRef = useRef<HTMLAnchorElement | null>(null);
+  const ctaFillRef = useRef<HTMLSpanElement | null>(null);
+  const ctaLabelRef = useRef<HTMLSpanElement | null>(null);
+  const ctaIconRef = useRef<HTMLSpanElement | null>(null);
   const systemGroupRef = useRef<SVGGElement | null>(null);
-  const connectorRef = useRef<SVGPathElement | null>(null);
+  const systemGlowRef = useRef<HTMLDivElement | null>(null);
+  const connectorRefs = useRef<Array<SVGPathElement | null>>([]);
   const railRefs = useRef<Array<SVGPathElement | null>>([]);
   const nodeRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const labelRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const selectorRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const selectorLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const selectorNumberRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const selectorCopyRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const titleSegmentRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const signalRef = useRef<HTMLSpanElement | null>(null);
   const markerRef = useRef<HTMLDivElement | null>(null);
+  const markerValueRef = useRef<HTMLParagraphElement | null>(null);
+  const markerLabelRef = useRef<HTMLParagraphElement | null>(null);
   const arrowRef = useRef<HTMLSpanElement | null>(null);
   const nodeTweensRef = useRef<Array<gsap.core.Tween | null>>([]);
+  const signalTweenRef = useRef<gsap.core.Tween | null>(null);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -125,23 +146,36 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
       const content = heroContentPanelRef.current;
       const heading = heroHeadingRef.current;
       const body = heroBodyRef.current;
-      const visual = heroVisualRef.current;
       const actions = heroActionsRef.current;
+      const visual = heroVisualRef.current;
+      const glow = systemGlowRef.current;
       const orbButton = orbButtonRef.current;
       const orbWrap = orbWrapRef.current;
-      const orbPath = orbPathRef.current;
-      const connector = connectorRef.current;
-      const marker = markerRef.current;
-      const arrow = arrowRef.current;
+      const orbSegments = orbSegmentRefs.current.filter(
+        (segment): segment is SVGPathElement => segment instanceof SVGPathElement,
+      );
+      const orbPulseWrap = orbPulseWrapRef.current;
+      const orbPulseDot = orbPulseDotRef.current;
+      const cta = ctaRef.current;
+      const ctaFill = ctaFillRef.current;
+      const ctaLabel = ctaLabelRef.current;
+      const ctaIcon = ctaIconRef.current;
+      const systemGroup = systemGroupRef.current;
+      const connectors = connectorRefs.current.filter(
+        (path): path is SVGPathElement => path instanceof SVGPathElement,
+      );
       const rails = railRefs.current.filter(
-        (rail): rail is SVGPathElement => rail instanceof SVGPathElement,
+        (path): path is SVGPathElement => path instanceof SVGPathElement,
       );
       const nodes = nodeRefs.current.filter(
         (node): node is HTMLSpanElement => node instanceof HTMLSpanElement,
       );
-      const labels = labelRefs.current.filter(
-        (label): label is HTMLAnchorElement => label instanceof HTMLAnchorElement,
+      const selectors = selectorRefs.current.filter(
+        (selector): selector is HTMLAnchorElement => selector instanceof HTMLAnchorElement,
       );
+      const signal = signalRef.current;
+      const marker = markerRef.current;
+      const arrow = arrowRef.current;
 
       if (
         !root ||
@@ -150,16 +184,26 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
         !content ||
         !heading ||
         !body ||
-        !visual ||
         !actions ||
+        !visual ||
+        !glow ||
         !orbButton ||
         !orbWrap ||
-        !orbPath ||
-        !connector ||
-        !marker ||
-        !arrow ||
+        !orbSegments.length ||
+        !orbPulseWrap ||
+        !orbPulseDot ||
+        !cta ||
+        !ctaFill ||
+        !ctaLabel ||
+        !ctaIcon ||
+        !systemGroup ||
+        !connectors.length ||
         !rails.length ||
-        !nodes.length
+        !nodes.length ||
+        !selectors.length ||
+        !signal ||
+        !marker ||
+        !arrow
       ) {
         return;
       }
@@ -182,10 +226,11 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
           const cleanups: Array<() => void> = [];
 
           if (reduceMotion) {
-            gsap.set([chrome, controls, heading, body, visual, actions], {
-              clearProps: "all",
-            });
-            gsap.set([connector, ...rails], {
+            gsap.set(
+              [chrome, controls, heading, body, actions, visual, glow, systemGroup, signal],
+              { clearProps: "all" },
+            );
+            gsap.set([...connectors, ...rails], {
               clearProps: "all",
               strokeDashoffset: 0,
             });
@@ -193,13 +238,13 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             return;
           }
 
-          const connectorLength = connector.getTotalLength();
-          const railLengths = rails.map((rail) => rail.getTotalLength());
+          const connectorLengths = connectors.map((path) => path.getTotalLength());
+          const railLengths = rails.map((path) => path.getTotalLength());
 
           if (introHidden) {
-            gsap.set(connector, {
-              strokeDasharray: connectorLength,
-              strokeDashoffset: connectorLength,
+            gsap.set(connectors, {
+              strokeDasharray: (index: number) => connectorLengths[index] ?? 0,
+              strokeDashoffset: (index: number) => connectorLengths[index] ?? 0,
             });
             gsap.set(rails, {
               strokeDasharray: (index: number) => railLengths[index] ?? 0,
@@ -207,18 +252,17 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             });
             gsap.set(nodes, {
               autoAlpha: 0,
-              scale: 0.82,
+              scale: 0.8,
             });
-            gsap.set(labels, {
+            gsap.set([signal, ...selectors], {
               autoAlpha: 0,
-              y: 14,
             });
             return;
           }
 
-          gsap.set(connector, {
-            strokeDasharray: connectorLength,
-            strokeDashoffset: connectorLength,
+          gsap.set(connectors, {
+            strokeDasharray: (index: number) => connectorLengths[index] ?? 0,
+            strokeDashoffset: (index: number) => connectorLengths[index] ?? 0,
           });
           gsap.set(rails, {
             strokeDasharray: (index: number) => railLengths[index] ?? 0,
@@ -226,21 +270,30 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
           });
           gsap.set(nodes, {
             autoAlpha: 0,
+            scale: 0.8,
+          });
+          gsap.set(signal, {
+            autoAlpha: 0,
             scale: 0.82,
           });
-          gsap.set(labels, {
+          gsap.set(selectors, {
             autoAlpha: 0,
             y: 14,
           });
 
-          const introTimeline = gsap.timeline({ defaults: { ease: "power2.out" } });
+          const introTimeline = gsap.timeline({
+            defaults: {
+              ease: "power2.out",
+            },
+          });
 
           introTimeline
             .to(
-              connector,
+              connectors,
               {
                 strokeDashoffset: 0,
-                duration: 0.42,
+                duration: 0.4,
+                stagger: 0.04,
               },
               0,
             )
@@ -248,8 +301,8 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               rails,
               {
                 strokeDashoffset: 0,
-                duration: 0.54,
-                stagger: 0.07,
+                duration: 0.6,
+                stagger: 0.06,
               },
               0.08,
             )
@@ -258,27 +311,36 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               {
                 autoAlpha: 1,
                 scale: 1,
-                duration: 0.24,
-                stagger: 0.06,
+                duration: 0.22,
+                stagger: 0.05,
               },
-              0.34,
+              0.28,
             )
             .to(
-              labels,
+              signal,
+              {
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.22,
+              },
+              0.36,
+            )
+            .to(
+              selectors,
               {
                 autoAlpha: 1,
                 y: 0,
                 duration: 0.28,
                 stagger: 0.05,
               },
-              0.42,
+              0.44,
             );
 
           const scrollTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: root,
               start: "top top",
-              end: desktop ? "bottom top+=10%" : "bottom top+=6%",
+              end: desktop ? "bottom top+=28%" : "bottom top+=18%",
               scrub: motionScroll.scrub,
             },
           });
@@ -287,16 +349,8 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             .to(
               chrome,
               {
-                autoAlpha: 0.26,
+                autoAlpha: 0.3,
                 y: -8,
-                ease: "none",
-              },
-              0,
-            )
-            .to(
-              content,
-              {
-                y: desktop ? -16 : -8,
                 ease: "none",
               },
               0,
@@ -304,8 +358,15 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             .to(
               heading,
               {
-                y: desktop ? -18 : -8,
-                scale: desktop ? 0.982 : 0.99,
+                y: desktop ? -16 : -8,
+                ease: "none",
+              },
+              0,
+            )
+            .to(
+              body,
+              {
+                y: desktop ? -18 : -10,
                 ease: "none",
               },
               0,
@@ -313,7 +374,16 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             .to(
               visual,
               {
-                y: desktop ? -22 : -10,
+                y: desktop ? -18 : -8,
+                ease: "none",
+              },
+              0,
+            )
+            .to(
+              glow,
+              {
+                scale: desktop ? 1.08 : 1.03,
+                y: desktop ? 20 : 10,
                 ease: "none",
               },
               0,
@@ -321,8 +391,8 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             .to(
               actions,
               {
-                autoAlpha: 0.42,
-                y: desktop ? -18 : -8,
+                autoAlpha: 0.46,
+                y: desktop ? -16 : -8,
                 ease: "none",
               },
               0,
@@ -330,88 +400,183 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             .to(
               arrow,
               {
-                x: desktop ? 14 : 8,
-                y: desktop ? 22 : 12,
+                x: desktop ? 12 : 7,
+                y: desktop ? 18 : 10,
+                ease: "none",
+              },
+              0,
+            )
+            .to(
+              signal,
+              {
+                y: desktop ? 36 : 18,
                 ease: "none",
               },
               0,
             );
 
-          const dashTween = gsap.to(orbPath, {
-            strokeDashoffset: -92,
-            duration: 2.6,
-            ease: "none",
-            repeat: -1,
-          });
+          const orbSegmentTweens = orbSegments.map((segment, index) =>
+            gsap.to(segment, {
+              strokeDashoffset: -24,
+              duration: 4.4 + index * 0.4,
+              ease: "none",
+              repeat: -1,
+            }),
+          );
 
-          const rotateTween = gsap.to(orbWrap, {
+          const orbPulseTween = gsap.to(orbPulseWrap, {
             rotate: 360,
-            duration: 12,
+            duration: 6.2,
             ease: "none",
             repeat: -1,
             transformOrigin: "50% 50%",
           });
 
-          gsap.to(arrow, {
-            x: 8,
-            y: 8,
-            duration: 1.9,
+          const orbPulseDotTween = gsap.to(orbPulseDot, {
+            scale: 1.18,
+            opacity: 1,
+            duration: 0.8,
             ease: "sine.inOut",
-            yoyo: true,
             repeat: -1,
+            yoyo: true,
+            transformOrigin: "50% 50%",
           });
 
-          nodeTweensRef.current = nodes.map((node, index) => {
-            const offsets = [
+          const arrowTween = gsap.to(arrow, {
+            x: 7,
+            y: 7,
+            duration: 1.9,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+          });
+
+          const ctaHoverTimeline = gsap.timeline({ paused: true });
+          ctaHoverTimeline
+            .to(
+              ctaFill,
               {
-                x: [0, 32, 32, 0],
-                y: [0, 0, 162, 312],
-                duration: 7.6,
+                scaleX: 1,
+                transformOrigin: "left center",
+                duration: 0.45,
+                ease: "power3.out",
+              },
+              0,
+            )
+            .to(
+              ctaLabel,
+              {
+                x: -2,
+                duration: 0.32,
+                ease: "power3.out",
+              },
+              0,
+            )
+            .to(
+              ctaIcon,
+              {
+                x: 3,
+                y: -3,
+                rotate: 8,
+                duration: 0.35,
+                ease: "power3.out",
+              },
+              0,
+            );
+
+          const onCtaEnter = () => ctaHoverTimeline.play();
+          const onCtaLeave = () => ctaHoverTimeline.reverse();
+
+          cta.addEventListener("mouseenter", onCtaEnter);
+          cta.addEventListener("mouseleave", onCtaLeave);
+          cta.addEventListener("focus", onCtaEnter);
+          cta.addEventListener("blur", onCtaLeave);
+
+          nodeTweensRef.current = nodes.map((node, index) => {
+            const desktopOffsets = [
+              {
+                x: [0, 0, 12, 12, 0],
+                y: [0, 70, 160, 256, 334],
+                duration: 8.2,
               },
               {
-                x: [0, 28, 28, 0],
-                y: [0, 0, 118, 264],
+                x: [0, 0, 10, 10, 0],
+                y: [0, 54, 142, 222, 306],
+                duration: 8.7,
+              },
+              {
+                x: [0, 0, 9, 9, 0],
+                y: [0, 46, 136, 228, 320],
                 duration: 8.4,
               },
               {
-                x: [0, 18, 18, 0],
-                y: [0, -30, 96, 236],
-                duration: 7.9,
-              },
-              {
-                x: [0, 10, 10, 0],
-                y: [0, -14, 124, 286],
-                duration: 8.9,
+                x: [0, 0, 8, 8, 0],
+                y: [0, 60, 154, 246, 332],
+                duration: 9,
               },
             ][index];
 
             return gsap.to(node, {
               keyframes: [
-                { x: offsets.x[0], y: offsets.y[0], duration: offsets.duration * 0.12 },
-                { x: offsets.x[1], y: offsets.y[1], duration: offsets.duration * 0.18 },
-                { x: offsets.x[2], y: offsets.y[2], duration: offsets.duration * 0.34 },
-                { x: offsets.x[3], y: offsets.y[3], duration: offsets.duration * 0.36 },
+                {
+                  x: desktopOffsets.x[0],
+                  y: desktopOffsets.y[0],
+                  duration: desktopOffsets.duration * 0.1,
+                },
+                {
+                  x: desktopOffsets.x[1],
+                  y: desktopOffsets.y[1],
+                  duration: desktopOffsets.duration * 0.22,
+                },
+                {
+                  x: desktopOffsets.x[2],
+                  y: desktopOffsets.y[2],
+                  duration: desktopOffsets.duration * 0.22,
+                },
+                {
+                  x: desktopOffsets.x[3],
+                  y: desktopOffsets.y[3],
+                  duration: desktopOffsets.duration * 0.23,
+                },
+                {
+                  x: desktopOffsets.x[4],
+                  y: desktopOffsets.y[4],
+                  duration: desktopOffsets.duration * 0.23,
+                },
               ],
               ease: "none",
               repeat: -1,
             });
           });
 
+          signalTweenRef.current = gsap.to(signal, {
+            keyframes: [
+              { x: 0, y: 0, duration: 0.8 },
+              { x: 160, y: 18, duration: 1.5 },
+              { x: 330, y: 48, duration: 1.7 },
+              { x: 498, y: 96, duration: 1.7 },
+              { x: 664, y: 138, duration: 1.6 },
+              { x: 352, y: 8, duration: 1.2 },
+            ],
+            ease: "none",
+            repeat: -1,
+          });
+
           if (finePointer) {
-            const quickHeadingX = gsap.quickTo(heading, "x", {
-              duration: 0.48,
-              ease: "power3.out",
-            });
-            const quickSystemX = gsap.quickTo(visual, "x", {
+            const quickRailsX = gsap.quickTo(systemGroup, "x", {
               duration: 0.8,
               ease: "power3.out",
             });
-            const quickSystemY = gsap.quickTo(visual, "y", {
+            const quickRailsY = gsap.quickTo(systemGroup, "y", {
               duration: 0.8,
               ease: "power3.out",
             });
-            const quickMarkerX = gsap.quickTo(marker, "x", {
-              duration: 0.48,
+            const quickGlowX = gsap.quickTo(glow, "x", {
+              duration: 0.8,
+              ease: "power3.out",
+            });
+            const quickGlowY = gsap.quickTo(glow, "y", {
+              duration: 0.8,
               ease: "power3.out",
             });
 
@@ -420,17 +585,17 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               const progressX = (event.clientX - bounds.left) / bounds.width - 0.5;
               const progressY = (event.clientY - bounds.top) / bounds.height - 0.5;
 
-              quickHeadingX(progressX * 10);
-              quickSystemX(progressX * 16);
-              quickSystemY(progressY * 12);
-              quickMarkerX(progressX * 8);
+              quickRailsX(progressX * 8);
+              quickRailsY(progressY * 4);
+              quickGlowX(progressX * 12);
+              quickGlowY(progressY * 8);
             };
 
             const onPointerLeave = () => {
-              quickHeadingX(0);
-              quickSystemX(0);
-              quickSystemY(0);
-              quickMarkerX(0);
+              quickRailsX(0);
+              quickRailsY(0);
+              quickGlowX(0);
+              quickGlowY(0);
             };
 
             const orbHoverTimeline = gsap.timeline({ paused: true });
@@ -439,16 +604,25 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
                 orbButton,
                 {
                   scale: 1.08,
-                  backgroundColor: "#F55A0A",
+                  backgroundColor: "#101828",
                   duration: 0.24,
                   ease: "power2.out",
                 },
                 0,
               )
               .to(
-                orbPath,
+                orbSegments,
                 {
                   stroke: "#ffffff",
+                  duration: 0.24,
+                  ease: "power2.out",
+                },
+                0,
+              )
+              .to(
+                orbPulseDot,
+                {
+                  fill: "#FF7A00",
                   duration: 0.24,
                   ease: "power2.out",
                 },
@@ -456,14 +630,14 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               );
 
             const onOrbEnter = () => {
-              dashTween.timeScale(1.7);
-              rotateTween.timeScale(1.12);
+              orbSegmentTweens.forEach((tween) => tween.timeScale(1.55));
+              orbPulseTween.timeScale(1.35);
               orbHoverTimeline.play();
             };
 
             const onOrbLeave = () => {
-              dashTween.timeScale(1);
-              rotateTween.timeScale(1);
+              orbSegmentTweens.forEach((tween) => tween.timeScale(1));
+              orbPulseTween.timeScale(1);
               orbHoverTimeline.reverse();
             };
 
@@ -485,8 +659,17 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
           }
 
           cleanups.push(() => {
-            dashTween.kill();
-            rotateTween.kill();
+            cta.removeEventListener("mouseenter", onCtaEnter);
+            cta.removeEventListener("mouseleave", onCtaLeave);
+            cta.removeEventListener("focus", onCtaEnter);
+            cta.removeEventListener("blur", onCtaLeave);
+            ctaHoverTimeline.kill();
+            orbSegmentTweens.forEach((tween) => tween.kill());
+            orbPulseTween.kill();
+            orbPulseDotTween.kill();
+            arrowTween.kill();
+            signalTweenRef.current?.kill();
+            signalTweenRef.current = null;
             nodeTweensRef.current.forEach((tween) => tween?.kill());
             nodeTweensRef.current = [];
           });
@@ -504,48 +687,136 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
 
   useGSAP(
     () => {
-      const system = systemGroupRef.current;
+      const systemGroup = systemGroupRef.current;
+      const markerValue = markerValueRef.current;
+      const markerLabel = markerLabelRef.current;
       const rails = railRefs.current.filter(
-        (rail): rail is SVGPathElement => rail instanceof SVGPathElement,
+        (path): path is SVGPathElement => path instanceof SVGPathElement,
       );
-      const labels = labelRefs.current.filter(
-        (label): label is HTMLAnchorElement => label instanceof HTMLAnchorElement,
+      const connectors = connectorRefs.current.filter(
+        (path): path is SVGPathElement => path instanceof SVGPathElement,
+      );
+      const nodes = nodeRefs.current.filter(
+        (node): node is HTMLSpanElement => node instanceof HTMLSpanElement,
+      );
+      const selectorLines = selectorLineRefs.current.filter(
+        (line): line is HTMLSpanElement => line instanceof HTMLSpanElement,
+      );
+      const selectorNumbers = selectorNumberRefs.current.filter(
+        (number): number is HTMLSpanElement => number instanceof HTMLSpanElement,
+      );
+      const selectorCopy = selectorCopyRefs.current.filter(
+        (copy): copy is HTMLSpanElement => copy instanceof HTMLSpanElement,
+      );
+      const titleSegments = titleSegmentRefs.current.filter(
+        (segment): segment is HTMLSpanElement => segment instanceof HTMLSpanElement,
       );
 
-      if (!system || !rails.length || !labels.length) {
+      if (
+        !systemGroup ||
+        !markerValue ||
+        !markerLabel ||
+        !rails.length ||
+        !connectors.length ||
+        !selectorLines.length ||
+        !selectorNumbers.length ||
+        !selectorCopy.length ||
+        !titleSegments.length
+      ) {
         return;
       }
 
-      const offsets = [-16, -4, 8, 18];
+      const offsets = [-8, -2, 4, 10];
+
+      if (activeVertical === null) {
+        markerValue.textContent = "04";
+        markerLabel.textContent = "CONNECTED VERTICALS";
+      } else {
+        markerValue.textContent = heroVerticals[activeVertical].number;
+        markerLabel.textContent = heroVerticals[activeVertical].labelShort;
+      }
 
       rails.forEach((rail, index) => {
         gsap.to(rail, {
-          stroke: index === activeVertical ? "#F55A0A" : "rgba(16,24,40,0.2)",
-          opacity: index === activeVertical ? 1 : 0.5,
-          strokeWidth: index === activeVertical ? 3.2 : 2.2,
+          stroke:
+            activeVertical === index ? "#F55A0A" : "rgba(16,24,40,0.18)",
+          opacity: activeVertical === null ? 0.76 : activeVertical === index ? 1 : 0.42,
+          strokeWidth: activeVertical === index ? 3 : 2.1,
           duration: 0.28,
           ease: "power2.out",
         });
       });
 
-      labels.forEach((label, index) => {
-        gsap.to(label, {
-          opacity: index === activeVertical ? 1 : 0.62,
-          y: index === activeVertical ? -2 : 0,
+      connectors.forEach((connector, index) => {
+        gsap.to(connector, {
+          stroke:
+            activeVertical === null
+              ? "rgba(16,24,40,0.12)"
+              : index <= activeVertical
+                ? "rgba(245,90,10,0.42)"
+                : "rgba(16,24,40,0.12)",
+          opacity: activeVertical === null ? 1 : index <= activeVertical ? 1 : 0.56,
+          duration: 0.28,
+          ease: "power2.out",
+        });
+      });
+
+      selectorLines.forEach((line, index) => {
+        gsap.to(line, {
+          scaleX: activeVertical === index ? 1 : 0,
+          transformOrigin: "left center",
+          duration: 0.32,
+          ease: "power3.out",
+        });
+      });
+
+      selectorNumbers.forEach((number, index) => {
+        gsap.to(number, {
+          y: activeVertical === index ? -4 : 0,
+          color: activeVertical === index ? "#F55A0A" : "rgba(71,84,103,1)",
           duration: 0.24,
           ease: "power2.out",
         });
       });
 
-      gsap.to(system, {
-        x: offsets[activeVertical] ?? 0,
-        duration: 0.52,
+      selectorCopy.forEach((copy, index) => {
+        gsap.to(copy, {
+          autoAlpha: activeVertical === null ? 0.74 : activeVertical === index ? 1 : 0.52,
+          duration: 0.24,
+          ease: "power2.out",
+        });
+      });
+
+      titleSegments.forEach((segment, index) => {
+        gsap.to(segment, {
+          x: activeVertical === index ? 2 : 0,
+          y: activeVertical === index ? -3 : 0,
+          opacity: activeVertical === null ? 1 : activeVertical === index ? 1 : 0.84,
+          duration: 0.32,
+          ease: "power2.out",
+        });
+      });
+
+      nodes.forEach((node, index) => {
+        gsap.to(node, {
+          scale: activeVertical === index ? 1.22 : 1,
+          opacity: activeVertical === null ? 1 : activeVertical === index ? 1 : 0.6,
+          duration: 0.28,
+          ease: "power2.out",
+        });
+      });
+
+      gsap.to(systemGroup, {
+        x: activeVertical === null ? 0 : offsets[activeVertical] ?? 0,
+        duration: 0.48,
         ease: "power3.out",
       });
 
       nodeTweensRef.current.forEach((tween, index) => {
-        tween?.timeScale(index === activeVertical ? 1.35 : 1);
+        tween?.timeScale(activeVertical === index ? 1.35 : 1);
       });
+
+      signalTweenRef.current?.timeScale(activeVertical === null ? 1 : 1.26);
     },
     { dependencies: [activeVertical], scope: heroRootRef },
   );
@@ -635,51 +906,62 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
       id="home"
       ref={heroRootRef}
       className={cn(
-        "hero-root relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-[#F7F6F1] px-0 py-0 text-text-primary [isolation:isolate]",
+        "hero-root relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-[#F7F5EF] text-text-primary [isolation:isolate]",
         "max-md:h-auto max-md:min-h-[100dvh]",
         introHidden && "invisible pointer-events-none opacity-0",
       )}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#fcfbf9_0%,#f7f6f1_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_14%,rgba(255,168,0,0.12),transparent_24%),radial-gradient(circle_at_78%_18%,rgba(245,90,10,0.1),transparent_18%),radial-gradient(circle_at_48%_68%,rgba(16,24,40,0.04),transparent_24%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#fcfbf9_0%,#f7f5ef_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_14%,rgba(255,168,0,0.1),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(245,90,10,0.08),transparent_20%)]" />
+      <div
+        ref={systemGlowRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[14%] top-[20%] z-[1] h-[340px] w-[340px] rounded-full bg-[radial-gradient(circle,rgba(245,90,10,0.08)_0%,rgba(245,90,10,0)_68%)] blur-[8px]"
+      />
 
       <div
         ref={heroVisualRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+        className="pointer-events-none absolute inset-0 z-[2] overflow-hidden"
       >
-        <div className="absolute inset-y-[8%] left-[6%] right-[8%] hidden lg:block">
-          <svg viewBox="0 0 1200 820" className="h-full w-full overflow-visible">
+        <div className="absolute inset-y-[9%] left-[5%] right-[6%] hidden lg:block">
+          <svg viewBox="0 0 1320 820" className="h-full w-full overflow-visible">
             <g ref={systemGroupRef}>
-              <path
-                ref={connectorRef}
-                d="M120 180H1020"
-                fill="none"
-                stroke="rgba(16,24,40,0.12)"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              />
-              {[280, 470, 670, 870].map((x, index) => (
+              {[250, 468, 686, 904].map((x, index) => (
                 <path
-                  key={x}
+                  key={`connector-${x}`}
                   ref={(node) => {
-                    railRefs.current[index] = node;
+                    connectorRefs.current[index] = node;
                   }}
-                  d={`M${x} 180C${x} 220 ${x + 18} 248 ${x + 18} 308V700`}
+                  d={`M${x} 118C${x} 170 ${x} 194 ${x + 2} 230H608`}
                   fill="none"
-                  stroke="rgba(16,24,40,0.2)"
-                  strokeWidth="2.2"
+                  stroke="rgba(16,24,40,0.12)"
+                  strokeWidth="2"
                   strokeLinecap="round"
                 />
               ))}
 
-              {[280, 470, 670, 870].map((x, index) => (
+              {[250, 468, 686, 904].map((x, index) => (
+                <path
+                  key={`rail-${x}`}
+                  ref={(node) => {
+                    railRefs.current[index] = node;
+                  }}
+                  d={`M${x} 118V300C${x} 356 ${x + 16} 392 ${x + 16} 454V710`}
+                  fill="none"
+                  stroke="rgba(16,24,40,0.18)"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                />
+              ))}
+
+              {[250, 468, 686, 904].map((x, index) => (
                 <text
                   key={`marker-${x}`}
-                  x={x - 22}
-                  y={130}
-                  fill="rgba(16,24,40,0.2)"
-                  fontSize="26"
+                  x={x - 24}
+                  y={88}
+                  fill="rgba(16,24,40,0.22)"
+                  fontSize="23"
                   letterSpacing="4"
                 >
                   {`0${index + 1}`}
@@ -687,17 +969,17 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               ))}
 
               <path
-                d="M214 94L686 94"
+                d="M342 236H866"
                 fill="none"
-                stroke="rgba(245,90,10,0.08)"
-                strokeWidth="120"
+                stroke="rgba(245,90,10,0.06)"
+                strokeWidth="104"
                 strokeLinecap="square"
               />
               <path
-                d="M520 94V430"
+                d="M610 236V444"
                 fill="none"
-                stroke="rgba(245,90,10,0.07)"
-                strokeWidth="120"
+                stroke="rgba(245,90,10,0.055)"
+                strokeWidth="104"
                 strokeLinecap="square"
               />
             </g>
@@ -706,32 +988,54 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
 
         <div className="absolute inset-0 lg:hidden">
           <svg viewBox="0 0 420 720" className="h-full w-full">
-            <path d="M54 190H360" fill="none" stroke="rgba(16,24,40,0.12)" strokeWidth="2" />
-            {[88, 168, 248, 328].map((x, index) => (
+            {[86, 164, 242, 320].map((x, index) => (
               <path
-                key={x}
-                d={`M${x} 190C${x} 220 ${x + 10} 248 ${x + 10} 286V596`}
+                key={`m-connector-${x}`}
+                d={`M${x} 144V198H206`}
                 fill="none"
-                stroke={index === activeVertical ? "#F55A0A" : "rgba(16,24,40,0.18)"}
-                strokeWidth={index === activeVertical ? 2.6 : 2}
+                stroke={
+                  activeVertical === null
+                    ? "rgba(16,24,40,0.12)"
+                    : index <= activeVertical
+                      ? "rgba(245,90,10,0.38)"
+                      : "rgba(16,24,40,0.12)"
+                }
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            ))}
+            {[86, 164, 242, 320].map((x, index) => (
+              <path
+                key={`m-rail-${x}`}
+                d={`M${x} 144V260C${x} 298 ${x + 8} 332 ${x + 8} 372V610`}
+                fill="none"
+                stroke={
+                  activeVertical === index ? "#F55A0A" : "rgba(16,24,40,0.18)"
+                }
+                strokeWidth={activeVertical === index ? 2.8 : 2}
                 strokeLinecap="round"
               />
             ))}
             <path
-              d="M72 108H244"
+              d="M100 198H300"
               fill="none"
-              stroke="rgba(245,90,10,0.06)"
-              strokeWidth="64"
+              stroke="rgba(245,90,10,0.05)"
+              strokeWidth="60"
             />
-            <path d="M160 108V268" fill="none" stroke="rgba(245,90,10,0.05)" strokeWidth="64" />
+            <path
+              d="M198 198V318"
+              fill="none"
+              stroke="rgba(245,90,10,0.04)"
+              strokeWidth="60"
+            />
           </svg>
         </div>
 
         {[
-          "left-[26%] top-[22%]",
-          "left-[42%] top-[19%]",
-          "left-[58%] top-[16%]",
-          "left-[74%] top-[21%]",
+          "left-[17%] top-[14%]",
+          "left-[34.5%] top-[15.2%]",
+          "left-[52%] top-[16.8%]",
+          "left-[69.5%] top-[18.2%]",
         ].map((position, index) => (
           <span
             key={`node-${index}`}
@@ -744,9 +1048,14 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
             )}
           />
         ))}
+
+        <span
+          ref={signalRef}
+          className="absolute left-[17%] top-[14%] hidden h-3.5 w-3.5 rounded-full bg-[#FF7A00] shadow-[0_0_0_10px_rgba(255,122,0,0.12)] lg:block"
+        />
       </div>
 
-      <div className="relative z-[3] flex h-full flex-col px-[clamp(28px,5vw,80px)] pt-[clamp(28px,4vw,56px)] pb-[clamp(28px,4vw,48px)] max-md:min-h-[100dvh] max-md:px-6 max-md:pt-6 max-md:pb-8">
+      <div className="relative z-[4] flex h-full flex-col px-[clamp(28px,5vw,80px)] pt-[clamp(28px,4vw,56px)] pb-[clamp(24px,4vw,44px)] max-md:min-h-[100dvh] max-md:px-6 max-md:pt-6 max-md:pb-8">
         <div
           ref={heroChromeRef}
           className="relative z-[20] flex items-start justify-between gap-4"
@@ -754,7 +1063,7 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
           <Link
             ref={heroLogoRef}
             href="#home"
-            className="inline-flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F6F1]"
+            className="inline-flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F5EF]"
           >
             <Image
               src="/brand/tattvatech-logo.png"
@@ -780,35 +1089,72 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
               )}
             >
               <span ref={orbWrapRef} aria-hidden="true" className="inline-flex">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle
-                    cx="11"
-                    cy="11"
-                    r="9.1"
-                    stroke="rgba(245,90,10,0.24)"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="rgba(16,24,40,0.12)"
                     strokeWidth="1"
                   />
-                  <path
-                    ref={orbPathRef}
-                    d="M2 11C4.2 11 4.6 6.5 6.9 6.5C9.3 6.5 9.4 15.5 11.4 15.5C13.6 15.5 14.1 8.2 16.2 8.2C17.8 8.2 18.4 11 20 11"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeDasharray="18 10"
-                  />
+                  {[
+                    "M6.4 9.2C7.4 8.4 8.6 8.1 9.8 8.1",
+                    "M9.8 8.1H14.2",
+                    "M12 8.1V15.6",
+                    "M9.4 15.6C10.2 16.2 11.1 16.5 12 16.5",
+                  ].map((path, index) => (
+                    <path
+                      key={path}
+                      ref={(node) => {
+                        orbSegmentRefs.current[index] = node;
+                      }}
+                      d={path}
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeDasharray="12 12"
+                    />
+                  ))}
+                  <g ref={orbPulseWrapRef}>
+                    <circle
+                      ref={orbPulseDotRef}
+                      cx="17.6"
+                      cy="6.6"
+                      r="1.5"
+                      fill="#F55A0A"
+                    />
+                  </g>
                 </svg>
               </span>
             </Link>
 
             <Link
+              ref={ctaRef}
               href="#contact"
               className={cn(
+                "hero-cta relative hidden min-w-[164px] items-center justify-between gap-[18px] overflow-hidden rounded-full bg-[#101828] px-[24px] pr-[18px] text-white shadow-[0_18px_40px_rgba(16,24,40,0.14)] sm:inline-flex",
                 controlBaseClasses,
-                "hidden shrink-0 bg-[#101828] px-7 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(16,24,40,0.14)] hover:bg-orange-primary sm:inline-flex",
               )}
             >
-              Start a Project
+              <span
+                ref={ctaFillRef}
+                aria-hidden="true"
+                className="absolute inset-0 z-[0] scale-x-0 bg-orange-primary"
+              />
+              <span
+                ref={ctaLabelRef}
+                className="hero-cta__label relative z-[1] whitespace-nowrap text-sm font-semibold text-white opacity-100"
+              >
+                Start a Project
+              </span>
+              <span
+                ref={ctaIconRef}
+                aria-hidden="true"
+                className="hero-cta__icon relative z-[1] inline-flex text-white"
+              >
+                <ArrowUpRight className="size-4 stroke-[2]" />
+              </span>
             </Link>
 
             <button
@@ -861,99 +1207,123 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
 
         <div
           ref={heroContentPanelRef}
-          className="relative z-[10] grid h-full flex-1 grid-rows-[auto_auto_1fr_auto] pt-8 max-md:grid-rows-[auto_auto_auto_1fr_auto] lg:grid-cols-[minmax(0,1fr)_220px] lg:grid-rows-[auto_1fr_auto] lg:items-end lg:pt-12"
+          className="relative z-[10] flex flex-1 flex-col justify-between pt-8 max-md:pt-10 lg:pt-12"
         >
-          <div className="lg:col-span-2">
+          <div className="flex flex-col gap-5">
             <div ref={heroLabelRef}>
               <p className="text-[0.76rem] font-semibold uppercase tracking-[0.24em] text-orange-primary">
-                Technology • Products • Drones • Training
+                Technology / Products / Drones / Training
               </p>
             </div>
-          </div>
 
-          <div className="relative mt-4 overflow-visible lg:row-start-2 lg:self-center">
-            <div className="overflow-hidden">
-              <h1
-                ref={heroHeadingRef}
-                className="font-heading text-[clamp(6rem,16vw,17rem)] leading-[0.78] tracking-[-0.075em] text-text-primary max-md:text-[clamp(4.8rem,23vw,7.1rem)]"
-              >
-                <span className="block sm:hidden">TATTVA</span>
-                <span className="block sm:hidden">TECH</span>
-                <span className="hidden sm:block">TATTVATECH</span>
-              </h1>
-            </div>
-
-            <div
-              ref={heroBodyRef}
-              className="mt-6 grid gap-7 lg:mt-5 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-end"
-            >
-              <div className="max-w-[36ch]">
-                <p className="text-[clamp(1rem,1.22vw,1.12rem)] leading-7 text-text-secondary">
-                  Four connected verticals built around practical systems, applied technology, and long-term capability.
-                </p>
-              </div>
-
-              <div
-                ref={markerRef}
-                className="flex items-end justify-between gap-5 lg:flex-col lg:items-start lg:justify-start"
-              >
-                <div>
-                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-text-muted">
-                    Connected verticals
-                  </p>
-                  <p className="mt-2 font-heading text-[clamp(2rem,4vw,4.5rem)] leading-none tracking-[-0.05em] text-text-primary">
-                    04
-                  </p>
-                </div>
-
-                <Link
-                  href="#summary"
-                  aria-label="Scroll to summary"
-                  className="inline-flex rounded-full p-1 text-text-primary transition-colors hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+            <div className="hero__heading-row w-full overflow-visible pr-[clamp(16px,2vw,36px)]">
+              <div className="hero__title-mask overflow-hidden">
+                <h1
+                  ref={heroHeadingRef}
+                  className="hero__title flex w-full whitespace-nowrap font-heading text-[min(14.2vw,15.5rem)] leading-[0.78] tracking-[-0.072em] text-text-primary max-md:text-[clamp(4.6rem,20vw,7rem)]"
                 >
-                  <span ref={arrowRef} aria-hidden="true" className="inline-flex">
-                    <ArrowDownRight className="size-12 stroke-[1.6] lg:size-16" />
-                  </span>
-                </Link>
+                  {["TAT", "TVA", "TEC", "H"].map((segment, index) => (
+                    <span
+                      key={segment}
+                      ref={(node) => {
+                        titleSegmentRefs.current[index] = node;
+                      }}
+                      className="inline-block"
+                    >
+                      {segment}
+                    </span>
+                  ))}
+                </h1>
               </div>
             </div>
           </div>
 
-          <div className="hidden lg:block" />
+          <div
+            ref={heroBodyRef}
+            className="grid gap-10 pt-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(340px,1fr)_190px] lg:items-end"
+          >
+            <div className="max-w-[36ch]">
+              <p className="text-[clamp(1rem,1.18vw,1.08rem)] leading-7 text-text-secondary">
+                Four connected verticals built around practical systems, applied technology, and long-term capability.
+              </p>
+            </div>
 
-          <div className="lg:col-span-2 lg:self-end">
             <div
               ref={heroActionsRef}
-              className="grid grid-cols-2 gap-3 pt-10 md:max-w-[620px] lg:max-w-[760px] lg:grid-cols-4 lg:gap-4 lg:pt-0"
+              className="grid grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-4 lg:gap-x-6"
             >
               {heroVerticals.map((item, index) => (
                 <Link
                   key={item.id}
                   ref={(node) => {
-                    labelRefs.current[index] = node;
+                    selectorRefs.current[index] = node;
                   }}
                   href={item.href}
-                  data-vertical-label
-                  onMouseEnter={() => setActiveVertical(index)}
-                  onFocus={() => setActiveVertical(index)}
-                  className={cn(
-                    "group rounded-[18px] border border-[rgba(16,24,40,0.08)] bg-white/58 px-4 py-3 text-left backdrop-blur-[10px] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary",
-                    activeVertical === index
-                      ? "border-orange-primary/30 bg-white/78"
-                      : "hover:bg-white/72",
-                  )}
+                  onMouseEnter={() => setHoveredVertical(index)}
+                  onMouseLeave={() => setHoveredVertical(null)}
+                  onFocus={() => setHoveredVertical(index)}
+                  onBlur={() => setHoveredVertical(null)}
+                  onClick={() => setSelectedVertical(index)}
+                  className="group relative border-t border-[rgba(16,24,40,0.14)] pt-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
                 >
-                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                  <span
+                    ref={(node) => {
+                      selectorLineRefs.current[index] = node;
+                    }}
+                    aria-hidden="true"
+                    className="absolute left-0 top-[-1px] h-px w-full origin-left scale-x-0 bg-orange-primary"
+                  />
+                  <span
+                    ref={(node) => {
+                      selectorNumberRefs.current[index] = node;
+                    }}
+                    className="block text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-text-secondary"
+                  >
                     {item.number}
-                  </p>
-                  <p className="mt-2 font-heading text-[1.02rem] tracking-[-0.03em] text-text-primary">
+                  </span>
+                  <span className="mt-2 block font-heading text-[1rem] tracking-[-0.03em] text-text-primary">
                     {item.label}
-                  </p>
-                  <p className="mt-1.5 text-[0.8rem] leading-5 text-text-secondary">
+                  </span>
+                  <span
+                    ref={(node) => {
+                      selectorCopyRefs.current[index] = node;
+                    }}
+                    className="mt-1.5 block text-[0.82rem] leading-5 text-text-secondary"
+                  >
                     {item.phrase}
-                  </p>
+                  </span>
                 </Link>
               ))}
+            </div>
+
+            <div
+              ref={markerRef}
+              className="flex items-end justify-between gap-5 lg:flex-col lg:items-start lg:justify-start"
+            >
+              <div>
+                <p
+                  ref={markerLabelRef}
+                  className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-text-muted"
+                >
+                  CONNECTED VERTICALS
+                </p>
+                <p
+                  ref={markerValueRef}
+                  className="mt-2 font-heading text-[clamp(2rem,4vw,4.5rem)] leading-none tracking-[-0.05em] text-text-primary"
+                >
+                  04
+                </p>
+              </div>
+
+              <Link
+                href="#summary"
+                aria-label="Scroll to summary"
+                className="inline-flex rounded-full p-1 text-text-primary transition-colors hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+              >
+                <span ref={arrowRef} aria-hidden="true" className="inline-flex">
+                  <ArrowDownRight className="size-12 stroke-[1.6] lg:size-16" />
+                </span>
+              </Link>
             </div>
           </div>
         </div>
