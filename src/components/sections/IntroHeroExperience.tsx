@@ -82,10 +82,7 @@ export function IntroHeroExperience() {
   useEffect(() => {
     let cancelled = false;
 
-    void Promise.all([
-      loadImage(introAssets.logo),
-      loadImage(introAssets.hero),
-    ]).then(() => {
+    void Promise.all([loadImage(introAssets.logo)]).then(() => {
       if (!cancelled) {
         setAssetsReady(true);
       }
