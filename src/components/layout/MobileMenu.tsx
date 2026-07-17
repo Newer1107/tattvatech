@@ -33,7 +33,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.24 }}
-          className="absolute inset-x-0 top-full border-b border-[rgba(16,24,40,0.06)] bg-background px-6 py-6 md:hidden"
+          className="absolute inset-x-0 top-full bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_100%)] px-6 py-6 shadow-[0_18px_40px_rgba(16,24,40,0.08)] md:hidden"
         >
           <div className="flex flex-col gap-6">
             {navigationGroups.map((group) => (

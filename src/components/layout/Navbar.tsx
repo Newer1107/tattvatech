@@ -4,9 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState, type MutableRefObject } from "react";
-import { introAssets } from "@/constants/intro-animation";
 import { navigationActions, navigationGroups } from "@/constants/navigation";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
@@ -27,7 +25,6 @@ type NavbarProps = {
 
 export function Navbar({ navbarReady, refs }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { direction, isScrolled } = useScrollDirection();
   const {
     navbarRootRef,
     navbarRevealRef,
@@ -48,22 +45,16 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
     <header
       ref={navbarRootRef}
       className={cn(
-        "navbar-root fixed inset-x-0 top-0 z-[10020]",
+        "navbar-root absolute inset-x-0 top-0 z-[50]",
         navbarReady
           ? "visible opacity-100 pointer-events-auto"
           : "invisible opacity-0 pointer-events-none",
-        direction === "down" ? "translate-y-0" : "translate-y-0",
       )}
     >
       <PageContainer className="relative px-5 py-0 md:px-8 xl:px-12">
         <div
           ref={navbarRevealRef}
-          className={cn(
-            "relative border-b px-0 py-5 md:py-6",
-            isScrolled
-              ? "border-[rgba(16,24,40,0.08)] bg-[rgba(255,255,255,0.96)] backdrop-blur-xl"
-              : "border-[rgba(16,24,40,0.06)] bg-background",
-          )}
+          className="relative px-0 pt-6 pb-4 md:pt-6 md:pb-4"
         >
           <div className="flex items-center justify-between gap-6 md:hidden">
             <Link
@@ -74,7 +65,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
                 <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
                 <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
                   <Image
-                    src={introAssets.logo}
+                    src="/brand/tattvatech-symbol.png"
                     alt="TattvaTech logo"
                     width={44}
                     height={44}
@@ -97,7 +88,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
             <button
               type="button"
               onClick={() => setMenuOpen((value) => !value)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-none border-b border-[rgba(16,24,40,0.12)] text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+              className="inline-flex h-11 w-11 items-center justify-center text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
@@ -107,7 +98,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
 
           <div
             ref={navbarContentRef}
-            className="hidden md:grid md:grid-cols-[220px_repeat(4,minmax(140px,1fr))_minmax(170px,auto)] md:items-start md:gap-8 lg:gap-10"
+            className="hidden md:grid md:grid-cols-[220px_repeat(4,minmax(120px,1fr))_minmax(170px,auto)] md:items-start md:gap-6 lg:gap-8"
           >
             <Link
               href="#home"
@@ -117,7 +108,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
                 <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
                 <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
                   <Image
-                    src={introAssets.logo}
+                    src="/brand/tattvatech-symbol.png"
                     alt="TattvaTech logo"
                     width={56}
                     height={56}
@@ -138,7 +129,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
             </Link>
 
             {navigationGroups.map((group) => (
-              <div key={group.title} className="flex flex-col gap-4">
+              <div key={group.title} className="flex flex-col gap-3">
                 <p className="flex items-center gap-2 text-[0.78rem] font-semibold uppercase tracking-[0.14em] text-text-primary">
                   <span
                     aria-hidden="true"
@@ -147,7 +138,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
                   {group.title}
                 </p>
 
-                <div className="flex flex-col items-start gap-2.5">
+                <div className="flex flex-col items-start gap-2">
                   {group.links.map((item) => (
                     item.href ? (
                       <Link
@@ -171,8 +162,8 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
               </div>
             ))}
 
-            <div className="flex flex-col items-start gap-4 justify-self-end">
-              <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-col items-start gap-3 justify-self-end">
+              <div className="flex flex-col items-start gap-2">
                 {navigationActions.map((item) => (
                   <Link
                     key={item.label}

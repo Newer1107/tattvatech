@@ -23,16 +23,6 @@
   --shadow-card: var(--shadow-card);
 }
 
-:root {
-  --navbar-height: 110px;
-}
-
-@media (min-width: 768px) {
-  :root {
-    --navbar-height: 180px;
-  }
-}
-
 * {
   box-sizing: border-box;
 }
