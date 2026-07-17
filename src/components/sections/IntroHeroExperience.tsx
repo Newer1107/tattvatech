@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import gsap from "gsap";
-import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import {
   introAssets,
@@ -15,18 +14,16 @@ import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useReducedMotionPreference } from "@/hooks/useReducedMotion";
 
 type IntroRefs = {
-  navbarRootRef: MutableRefObject<HTMLElement | null>;
   heroRootRef: MutableRefObject<HTMLElement | null>;
   heroVisualRef: MutableRefObject<HTMLDivElement | null>;
   heroContentPanelRef: MutableRefObject<HTMLDivElement | null>;
   heroLabelRef: MutableRefObject<HTMLDivElement | null>;
   heroHeadingRef: MutableRefObject<HTMLHeadingElement | null>;
-  heroBodyRef: MutableRefObject<HTMLParagraphElement | null>;
+  heroBodyRef: MutableRefObject<HTMLDivElement | null>;
   heroActionsRef: MutableRefObject<HTMLDivElement | null>;
-  navbarRevealRef: MutableRefObject<HTMLDivElement | null>;
-  navbarLogoTargetRef: MutableRefObject<HTMLDivElement | null>;
-  navbarSymbolRef: MutableRefObject<HTMLDivElement | null>;
-  navbarContentRef: MutableRefObject<HTMLDivElement | null>;
+  heroChromeRef: MutableRefObject<HTMLDivElement | null>;
+  heroLogoRef: MutableRefObject<HTMLAnchorElement | null>;
+  heroControlsRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 function loadImage(src: string) {
@@ -59,24 +56,20 @@ function clampValue(value: number, min: number, max: number) {
 
 export function IntroHeroExperience() {
   const [introPhase, setIntroPhase] = useState<IntroPhase>("intro");
-  const [navbarReady, setNavbarReady] = useState(false);
   const [assetsReady, setAssetsReady] = useState(false);
   const prefersReducedMotion = useReducedMotionPreference();
   const effectiveIntroPhase: IntroPhase = prefersReducedMotion ? "complete" : introPhase;
-  const effectiveNavbarReady = prefersReducedMotion || navbarReady;
 
-  const navbarRootRef = useRef<HTMLElement | null>(null);
   const heroRootRef = useRef<HTMLElement | null>(null);
   const heroVisualRef = useRef<HTMLDivElement | null>(null);
   const heroContentPanelRef = useRef<HTMLDivElement | null>(null);
   const heroLabelRef = useRef<HTMLDivElement | null>(null);
   const heroHeadingRef = useRef<HTMLHeadingElement | null>(null);
-  const heroBodyRef = useRef<HTMLParagraphElement | null>(null);
+  const heroBodyRef = useRef<HTMLDivElement | null>(null);
   const heroActionsRef = useRef<HTMLDivElement | null>(null);
-  const navbarRevealRef = useRef<HTMLDivElement | null>(null);
-  const navbarLogoTargetRef = useRef<HTMLDivElement | null>(null);
-  const navbarSymbolRef = useRef<HTMLDivElement | null>(null);
-  const navbarContentRef = useRef<HTMLDivElement | null>(null);
+  const heroChromeRef = useRef<HTMLDivElement | null>(null);
+  const heroLogoRef = useRef<HTMLAnchorElement | null>(null);
+  const heroControlsRef = useRef<HTMLDivElement | null>(null);
 
   const introOverlayRef = useRef<HTMLDivElement | null>(null);
   const introBackdropRef = useRef<HTMLDivElement | null>(null);
@@ -108,7 +101,6 @@ export function IntroHeroExperience() {
       return;
     }
 
-    const navbarRoot = navbarRootRef.current;
     const introOverlay = introOverlayRef.current;
     const introBackdrop = introBackdropRef.current;
     const lockup = lockupRef.current;
@@ -122,16 +114,14 @@ export function IntroHeroExperience() {
     const heroHeading = heroHeadingRef.current;
     const heroBody = heroBodyRef.current;
     const heroActions = heroActionsRef.current;
-    const navbarReveal = navbarRevealRef.current;
-    const navbarLogoTarget = navbarLogoTargetRef.current;
-    const navbarSymbol = navbarSymbolRef.current;
-    const navbarContent = navbarContentRef.current;
+    const heroChrome = heroChromeRef.current;
+    const heroLogo = heroLogoRef.current;
+    const heroControls = heroControlsRef.current;
 
     if (
       !introOverlay ||
       !introBackdrop ||
       !lockup ||
-      !navbarRoot ||
       !leftT ||
       !centerLogo ||
       !rightT ||
@@ -142,10 +132,9 @@ export function IntroHeroExperience() {
       !heroHeading ||
       !heroBody ||
       !heroActions ||
-      !navbarReveal ||
-      !navbarLogoTarget ||
-      !navbarSymbol ||
-      !navbarContent
+      !heroChrome ||
+      !heroLogo ||
+      !heroControls
     ) {
       return;
     }
@@ -178,13 +167,13 @@ export function IntroHeroExperience() {
 
       gsap.set(lockup, { x: 0, y: 0 });
       gsap.set([leftT, centerLogo, rightT], { autoAlpha: 0, y: 28, visibility: "hidden" });
-      gsap.set(navbarRoot, { autoAlpha: 0, visibility: "hidden", pointerEvents: "none" });
-      gsap.set(navbarReveal, { autoAlpha: 0, y: -10 });
-      gsap.set(navbarContent, { autoAlpha: 0, y: -8, visibility: "hidden", pointerEvents: "none" });
-      gsap.set(navbarSymbol, {
+      gsap.set(heroChrome, { autoAlpha: 0, visibility: "hidden", pointerEvents: "none" });
+      gsap.set(heroLogo, { autoAlpha: 0, x: -18, visibility: "hidden" });
+      gsap.set(heroControls, {
         autoAlpha: 0,
+        y: -12,
         visibility: "hidden",
-        transformOrigin: "center center",
+        pointerEvents: "none",
       });
       gsap.set(heroRoot, {
         autoAlpha: 0,
@@ -202,7 +191,10 @@ export function IntroHeroExperience() {
       gsap.set(heroVisual, {
         autoAlpha: 1,
       });
-      gsap.set([heroLabel, heroHeading, heroBody, heroActions], { autoAlpha: 0, y: 24 });
+      gsap.set(heroLabel, { autoAlpha: 0, y: 14 });
+      gsap.set(heroHeading, { autoAlpha: 1, y: 0, clipPath: "inset(0 100% 0 0)" });
+      gsap.set(heroBody, { autoAlpha: 0, y: 18 });
+      gsap.set(heroActions, { autoAlpha: 0, y: 28 });
 
       timeline = gsap.timeline({
         defaults: { ease: introEase.reveal },
@@ -298,44 +290,36 @@ export function IntroHeroExperience() {
           },
           "heroExpand+=0.68",
         )
-        .to(
-          navbarRoot,
+        .set(
+          heroChrome,
           {
             autoAlpha: 1,
             visibility: "visible",
-            duration: 0.01,
           },
           "heroExpand+=0.86",
         )
         .to(
-          navbarReveal,
+          heroLogo,
+          {
+            autoAlpha: 1,
+            x: 0,
+            visibility: "visible",
+            duration: introTimings.navbarReveal * 0.82,
+            ease: "power2.out",
+          },
+          "heroExpand+=0.88",
+        )
+        .to(
+          heroControls,
           {
             autoAlpha: 1,
             y: 0,
+            visibility: "visible",
             duration: introTimings.navbarReveal,
-          },
-          "heroExpand+=0.86",
-        )
-        .to(
-          navbarContent,
-          {
-            autoAlpha: 1,
-            visibility: "visible",
-            y: 0,
-            duration: 0.42,
             pointerEvents: "auto",
+            ease: "power2.out",
           },
-          "heroExpand+=0.92",
-        )
-        .to(
-          navbarSymbol,
-          {
-            autoAlpha: 1,
-            visibility: "visible",
-            duration: 0.24,
-            ease: "power1.out",
-          },
-          "heroExpand+=0.92",
+          "heroExpand+=0.94",
         )
         .to(
           heroLabel,
@@ -349,19 +333,19 @@ export function IntroHeroExperience() {
         .to(
           heroHeading,
           {
-            autoAlpha: 1,
-            y: 0,
+            clipPath: "inset(0 0 0 0)",
             duration: 0.32,
+            ease: "power3.out",
           },
-          "heroExpand+=1.1",
+          "heroExpand+=1.08",
         )
-        .set(navbarRoot, {
+        .set(heroChrome, {
           autoAlpha: 1,
           visibility: "visible",
           pointerEvents: "auto",
           clearProps: "transform",
         })
-        .set([navbarReveal, navbarSymbol, navbarContent], {
+        .set([heroLogo, heroControls], {
           autoAlpha: 1,
           visibility: "visible",
           clearProps: "transform",
@@ -406,7 +390,6 @@ export function IntroHeroExperience() {
           clearProps: "top,left,width,height,minHeight,overflow,zIndex,pointerEvents,position",
         })
         .call(() => {
-          setNavbarReady(true);
           setIntroPhase("complete");
         });
     }, introOverlay);
@@ -418,7 +401,6 @@ export function IntroHeroExperience() {
   }, [assetsReady, prefersReducedMotion]);
 
   const sharedRefs: IntroRefs = {
-    navbarRootRef,
     heroRootRef,
     heroVisualRef,
     heroContentPanelRef,
@@ -426,19 +408,14 @@ export function IntroHeroExperience() {
     heroHeadingRef,
     heroBodyRef,
     heroActionsRef,
-    navbarRevealRef,
-    navbarLogoTargetRef,
-    navbarSymbolRef,
-    navbarContentRef,
+    heroChromeRef,
+    heroLogoRef,
+    heroControlsRef,
   };
 
   return (
     <div className="relative">
-      <Hero
-        refs={sharedRefs}
-        introHidden={effectiveIntroPhase !== "complete"}
-        navbar={<Navbar navbarReady={effectiveNavbarReady} refs={sharedRefs} />}
-      />
+      <Hero refs={sharedRefs} introHidden={effectiveIntroPhase !== "complete"} />
 
       {effectiveIntroPhase !== "complete" ? (
         <>
