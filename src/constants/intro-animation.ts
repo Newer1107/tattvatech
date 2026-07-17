@@ -1,13 +1,13 @@
 export type IntroPhase = "intro" | "transitioning" | "complete";
 
 export const introTimings = {
-  whiteScreenHold: 0.4,
-  compositionEnter: 0.82,
-  compositionHold: 1.4,
+  whiteScreenHold: 0.2,
+  compositionEnter: 0.75,
+  compositionHold: 0.5,
+  descend: 0.76,
   split: 0.78,
   previewReveal: 0.42,
-  previewExpand: 1.24,
-  logoToNavbar: 0.94,
+  previewExpand: 1.28,
   navbarReveal: 0.46,
   heroStagger: 0.1,
   overlayFade: 0.14,

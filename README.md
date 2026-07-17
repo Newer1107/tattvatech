@@ -55,7 +55,7 @@ npm run start
 
 - Brand assets: `public/brand`
   - Full logo PNG: `public/brand/tattvatech-logo.png`
-  - Isolated symbol PNG: `public/brand/tattvatech-symbol.png`
+  - Isolated symbol PNG: `public/brand/tattvatech-logo.png`
 - Section imagery: `public/images`
 - Temporary fallbacks: `public/placeholders`
 

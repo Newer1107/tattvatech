@@ -65,7 +65,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
                 <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
                 <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
                   <Image
-                    src="/brand/tattvatech-symbol.png"
+                    src="/brand/tattvatech-logo.png"
                     alt="TattvaTech logo"
                     width={44}
                     height={44}
@@ -108,7 +108,7 @@ export function Navbar({ navbarReady, refs }: NavbarProps) {
                 <div ref={navbarLogoTargetRef} data-navbar-logo-anchor className="absolute inset-0" />
                 <div ref={navbarSymbolRef} className="absolute inset-0 bg-transparent">
                   <Image
-                    src="/brand/tattvatech-symbol.png"
+                    src="/brand/tattvatech-logo.png"
                     alt="TattvaTech logo"
                     width={56}
                     height={56}

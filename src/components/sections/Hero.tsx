@@ -20,9 +20,10 @@ type HeroRefs = {
 type HeroProps = {
   refs: HeroRefs;
   navbar?: ReactNode;
+  introHidden?: boolean;
 };
 
-export function Hero({ refs, navbar }: HeroProps) {
+export function Hero({ refs, navbar, introHidden = false }: HeroProps) {
   const {
     heroRootRef,
     heroVisualRef,
@@ -37,13 +38,16 @@ export function Hero({ refs, navbar }: HeroProps) {
     <section
       id="home"
       ref={heroRootRef}
-      className="hero-root relative w-full min-h-[100svh] overflow-hidden bg-background px-0 py-0"
+      className={[
+        "hero-root relative w-full min-h-[100svh] overflow-hidden bg-[#d9d9d9] px-0 py-0",
+        introHidden ? "invisible opacity-0 pointer-events-none" : "",
+      ].join(" ")}
     >
       <div className="hero-grid relative grid min-h-[100svh] grid-rows-[minmax(45svh,52svh)_minmax(0,1fr)] md:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.85fr)] md:grid-rows-1">
-        <div className="relative min-h-[45svh] bg-[#0d1117] md:min-h-[100svh]">
+        <div className="relative min-h-[45svh] bg-[#d9d9d9] md:min-h-[100svh]">
           <div
             ref={heroVisualRef}
-            className="absolute inset-0 z-[1] overflow-hidden bg-[#0d1117]"
+            className="absolute inset-0 z-[1] overflow-hidden bg-[#d9d9d9]"
           >
             <HeroVisualFrame />
           </div>
@@ -51,11 +55,11 @@ export function Hero({ refs, navbar }: HeroProps) {
 
         <div
           ref={heroContentPanelRef}
-          className="relative z-[3] flex min-h-[48svh] bg-[linear-gradient(180deg,#ffffff_0%,#fcfbf9_100%)] md:min-h-[100svh]"
+          className="relative z-[3] flex min-h-[48svh] bg-[#d9d9d9] md:min-h-[100svh]"
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-[220px] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.75)_55%,rgba(255,255,255,0)_100%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[220px] bg-[linear-gradient(180deg,rgba(217,217,217,0.98)_0%,rgba(217,217,217,0.78)_55%,rgba(217,217,217,0)_100%)]"
           />
 
           <div className="hero-content-wrapper relative z-[10] flex min-h-full w-full items-center px-6 pt-[clamp(120px,16vh,220px)] pb-[clamp(48px,8vh,96px)] md:px-10 lg:px-14">
