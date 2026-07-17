@@ -96,9 +96,3 @@ export const businessVerticals: BusinessVertical[] = [
     theme: "amber",
   },
 ];
-
-export const businessVerticalsClosing = {
-  heading: "Technology made useful.",
-  description:
-    "Across services, products, drones, and training, we focus on practical outcomes and lasting value.",
-} as const;

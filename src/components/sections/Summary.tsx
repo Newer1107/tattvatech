@@ -159,29 +159,21 @@ export function Summary() {
               </div>
 
               <div className="mt-10 overflow-hidden rounded-[28px] border border-[rgba(16,24,40,0.08)] bg-background-dark">
-                <div className="grid gap-0 md:grid-cols-[minmax(0,0.76fr)_minmax(240px,0.9fr)]">
-                  <div className="relative min-h-[260px]">
-                    <Image
-                      src="/placeholders/summary-placeholder.jpg"
-                      alt="TattvaTech summary visual placeholder"
-                      fill
-                      sizes="(max-width: 767px) 100vw, 38vw"
-                      className="object-cover opacity-72"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.04)_0%,rgba(16,24,40,0.7)_100%)]" />
-                  </div>
-
-                  <div className="relative flex flex-col justify-between p-6 text-white md:p-8">
-                    <div>
-                      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-amber-primary">
-                        Why the structure matters
-                      </p>
-                      <p className="mt-4 max-w-[28ch] font-heading text-[clamp(1.6rem,2.8vw,2.3rem)] leading-[1.02] tracking-[-0.04em]">
-                        Each vertical is designed to support the next stage of practical technology work.
-                      </p>
-                    </div>
-                    <p className="mt-8 max-w-[32ch] text-sm leading-7 text-white/72">
-                      The parent brand keeps delivery, reusable systems, field application, and skill-building inside one disciplined operating story.
+                <div className="relative min-h-[260px]">
+                  <Image
+                    src="/placeholders/summary-placeholder.jpg"
+                    alt="TattvaTech summary visual placeholder"
+                    fill
+                    sizes="(max-width: 767px) 100vw, 38vw"
+                    className="object-cover opacity-72"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.04)_0%,rgba(16,24,40,0.7)_100%)]" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
+                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-amber-primary">
+                      Parent brand overview
+                    </p>
+                    <p className="mt-3 max-w-[28ch] font-heading text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.04] tracking-[-0.04em]">
+                      One structure connecting delivery, products, field applications, and technical learning.
                     </p>
                   </div>
                 </div>

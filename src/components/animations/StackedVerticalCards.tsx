@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef } from "react";
 import type { BusinessVertical } from "@/types";
 import { BusinessVerticalCard } from "@/components/cards/BusinessVerticalCard";
 import {
@@ -14,17 +14,14 @@ import {
 type StackedVerticalCardsProps = {
   verticals: BusinessVertical[];
   enableStackedMotion: boolean;
-  principlesPanel?: ReactNode;
 };
 
 export function StackedVerticalCards({
   verticals,
   enableStackedMotion,
-  principlesPanel,
 }: StackedVerticalCardsProps) {
-  const stackRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const principlesRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
 
   useGSAP(
@@ -33,17 +30,16 @@ export function StackedVerticalCards({
         return;
       }
 
+      const section = sectionRef.current;
       const stage = stageRef.current;
-      const principles = principlesRef.current;
       const cards = cardRefs.current.filter(
         (card): card is HTMLElement => card instanceof HTMLElement,
       );
 
-      if (!stage || !principles || !cards.length) {
+      if (!section || !stage || !cards.length) {
         return;
       }
 
-      const sheets = [principles, ...cards];
       const mm = gsap.matchMedia();
 
       mm.add(
@@ -58,105 +54,100 @@ export function StackedVerticalCards({
           };
 
           if (!desktop || reduceMotion) {
-            gsap.set(sheets, { clearProps: "all" });
+            gsap.set(cards, { clearProps: "all" });
             return;
           }
 
+          const transitionCount = cards.length - 1;
+          const transitionDistance = window.innerHeight * transitionCount;
+          const finalHoldDistance = window.innerHeight * 0.45;
+          const totalDistance = transitionDistance + finalHoldDistance;
+
+          gsap.set(section, { position: "relative" });
           gsap.set(stage, {
             overflow: "hidden",
-            transformPerspective: 1600,
-            transformStyle: "preserve-3d",
-          });
-          gsap.set(principles, {
-            yPercent: 0,
-            scale: 1,
-            y: 0,
-            rotateX: 0,
-            rotateZ: 0,
-            filter: "brightness(1)",
-            transformOrigin: "center top",
+            isolation: "isolate",
           });
           gsap.set(cards, {
-            yPercent: 100,
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            backfaceVisibility: "hidden",
+            willChange: "transform",
             scale: 1,
             y: 0,
-            rotateX: 0,
-            rotateZ: 0,
             filter: "brightness(1)",
+            autoAlpha: 1,
             transformOrigin: "center top",
-          });
-
-          sheets.forEach((sheet, index) => {
-            gsap.set(sheet, { zIndex: index + 1 });
-          });
-
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: stage,
-              start: "top top",
-              end: () => `+=${window.innerHeight * (cards.length + 1.05)}`,
-              pin: true,
-              scrub: motionScroll.scrub,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
+            pointerEvents: "none",
           });
 
           cards.forEach((card, index) => {
-            const previousSheet = sheets[index];
-            const label = `card-${index + 1}`;
-
-            timeline.addLabel(label);
-            timeline.to(
-              card,
-              {
-                yPercent: 0,
-                duration: motionScroll.sectionDistance,
-                ease: "none",
-              },
-              label,
-            );
-            timeline.to(
-              previousSheet,
-              {
-                scale: 0.955,
-                y: -24,
-                filter: "brightness(0.8)",
-                duration: motionScroll.sectionDistance,
-                ease: "none",
-              },
-              label,
-            );
+            gsap.set(card, {
+              yPercent: index === 0 ? 0 : 100,
+              zIndex: (index + 1) * 10,
+            });
           });
 
-          const finalCard = cards[cards.length - 1];
-          timeline.addLabel("final-exit");
-          timeline.to(
-            finalCard,
-            {
-              scale: 0.82,
-              y: () => window.innerHeight * -0.08,
-              rotateX: 6,
-              rotateZ: -0.75,
-              filter: "brightness(0.75)",
-              duration: 1.05,
-              ease: "none",
-            },
-            "final-exit",
-          );
+          gsap.set(cards[0], { pointerEvents: "auto" });
 
-          requestAnimationFrame(() => ScrollTrigger.refresh());
+          const timeline = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: () => `+=${totalDistance}`,
+              pin: stage,
+              pinSpacing: true,
+              scrub: motionScroll.scrub,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              markers: false,
+            },
+          });
+
+          cards.slice(1).forEach((incomingCard, index) => {
+            const outgoingCard = cards[index];
+            const label = `card-transition-${index}`;
+
+            timeline.addLabel(label);
+            timeline.set(incomingCard, { pointerEvents: "auto" }, label);
+            timeline.to(
+              incomingCard,
+              {
+                yPercent: 0,
+                duration: 1,
+              },
+              label,
+            );
+            timeline.to(
+              outgoingCard,
+              {
+                scale: 0.95,
+                y: -16,
+                filter: "brightness(0.8)",
+                duration: 1,
+              },
+              label,
+            );
+            timeline.set(outgoingCard, { pointerEvents: "none" }, `${label}+=1`);
+          });
+
+          timeline.to({}, { duration: 0.45 });
+
+          void document.fonts.ready.then(() => ScrollTrigger.refresh());
         },
       );
 
       return () => mm.revert();
     },
-    { dependencies: [enableStackedMotion], scope: stackRef },
+    { dependencies: [enableStackedMotion], scope: sectionRef },
   );
 
   if (!enableStackedMotion) {
     return (
-      <div ref={stackRef} className="relative z-[2]">
+      <section ref={sectionRef} className="relative z-[2]">
         {verticals.map((vertical, index) => (
           <div key={vertical.id} className="pt-4 first:pt-0">
             <BusinessVerticalCard
@@ -166,17 +157,16 @@ export function StackedVerticalCards({
             />
           </div>
         ))}
-      </div>
+      </section>
     );
   }
 
   return (
-    <div ref={stackRef} className="relative z-[2]">
-      <div ref={stageRef} className="relative h-[100svh] w-full overflow-hidden [perspective:1600px]">
-        <div ref={principlesRef} className="absolute inset-0">
-          {principlesPanel}
-        </div>
-
+    <section ref={sectionRef} className="relative z-[2]">
+      <div
+        ref={stageRef}
+        className="relative h-[100svh] w-full overflow-hidden [isolation:isolate]"
+      >
         {verticals.map((vertical, index) => (
           <div
             key={vertical.id}
@@ -189,12 +179,12 @@ export function StackedVerticalCards({
               vertical={vertical}
               index={index}
               priority={index === 0}
-              className="h-[100svh] w-full"
+              stacked
+              className="h-full w-full"
             />
           </div>
         ))}
       </div>
-      <div className="pointer-events-none h-px w-full" />
-    </div>
+    </section>
   );
 }

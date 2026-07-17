@@ -33,12 +33,12 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.24 }}
-          className="absolute inset-x-0 top-full bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_100%)] px-6 py-6 shadow-[0_18px_40px_rgba(16,24,40,0.08)] md:hidden"
+          className="absolute inset-x-0 top-[calc(100%+0.75rem)] overflow-hidden rounded-[24px] border border-white/8 bg-[rgba(16,24,40,0.92)] px-5 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur-[18px] md:hidden"
         >
           <div className="flex flex-col gap-6">
             {navigationGroups.map((group) => (
               <div key={group.title} className="flex flex-col gap-3">
-                <p className="flex items-center gap-2 text-[0.8rem] font-semibold uppercase tracking-[0.16em] text-text-primary">
+                <p className="flex items-center gap-2 text-[0.74rem] font-semibold uppercase tracking-[0.18em] text-white/88">
                   <span
                     aria-hidden="true"
                     className={cn(
@@ -59,7 +59,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                         key={item.label}
                         href={item.href}
                         onClick={onClose}
-                        className="inline-block w-fit border-b border-[rgba(16,24,40,0.2)] pb-1 text-base text-text-secondary transition-colors hover:border-orange-primary hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+                        className="inline-block w-fit border-b border-white/14 pb-1 text-[0.95rem] text-white/70 transition-colors hover:border-orange-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
                       >
                         {item.label}
                       </Link>
@@ -67,7 +67,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                       <span
                         key={item.label}
                         aria-disabled="true"
-                        className="inline-block w-fit border-b border-[rgba(16,24,40,0.1)] pb-1 text-base text-text-muted"
+                        className="inline-block w-fit border-b border-white/10 pb-1 text-[0.95rem] text-white/34"
                       >
                         {item.label}
                       </span>
@@ -77,13 +77,13 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               </div>
             ))}
 
-            <div className="flex flex-col gap-3 border-t border-border-default/70 pt-4">
+            <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
               {navigationActions.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href ?? "#contact"}
                   onClick={onClose}
-                  className="inline-block w-fit border-b border-[rgba(16,24,40,0.35)] pb-1 text-base font-medium text-text-primary transition-colors hover:border-orange-primary hover:text-orange-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
+                  className="inline-block w-fit border-b border-white/16 pb-1 text-[0.95rem] font-medium text-white/82 transition-colors hover:border-orange-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-primary"
                 >
                   {item.label}
                 </Link>

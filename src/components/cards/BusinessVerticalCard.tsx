@@ -63,6 +63,7 @@ type BusinessVerticalCardProps = {
   vertical: BusinessVertical;
   index: number;
   priority?: boolean;
+  stacked?: boolean;
   className?: HTMLAttributes<HTMLElement>["className"];
 };
 
@@ -70,6 +71,7 @@ export function BusinessVerticalCard({
   vertical,
   index,
   priority = false,
+  stacked = false,
   className,
 }: BusinessVerticalCardProps) {
   const theme = themeMap[vertical.theme];
@@ -80,14 +82,21 @@ export function BusinessVerticalCard({
       id={vertical.id}
       data-stack-card
       className={cn(
-        "group scroll-mt-24 overflow-hidden border-t rounded-t-[32px] lg:scroll-mt-28 lg:rounded-t-[40px]",
+        stacked
+          ? "group absolute inset-0 overflow-hidden"
+          : "group scroll-mt-24 overflow-hidden border-t rounded-t-[32px] lg:scroll-mt-28 lg:rounded-t-[40px]",
         theme.surface,
-        theme.border,
+        stacked ? "" : theme.border,
         className,
       )}
-      style={{ zIndex: index + 2 }}
+      style={{ zIndex: (index + 2) * 10 }}
     >
-      <div className="mx-auto flex min-h-[92svh] w-full max-w-[1440px] flex-col px-6 py-12 md:px-10 md:py-14 xl:px-16 xl:py-20">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-[1440px] flex-col px-6 py-12 md:px-10 md:py-14 xl:px-16 xl:py-20",
+          stacked ? "h-full min-h-full" : "min-h-[92svh]",
+        )}
+      >
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
           <h3 className="max-w-[8ch] font-heading text-[clamp(3.5rem,8vw,8.5rem)] leading-[0.9] tracking-[-0.05em]">
             <span className="block">{vertical.titleTop}</span>
