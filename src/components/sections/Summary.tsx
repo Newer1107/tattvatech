@@ -167,15 +167,7 @@ export function Summary() {
                     sizes="(max-width: 767px) 100vw, 38vw"
                     className="object-cover opacity-72"
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.04)_0%,rgba(16,24,40,0.7)_100%)]" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
-                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-amber-primary">
-                      Parent brand overview
-                    </p>
-                    <p className="mt-3 max-w-[28ch] font-heading text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.04] tracking-[-0.04em]">
-                      One structure connecting delivery, products, field applications, and technical learning.
-                    </p>
-                  </div>
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,40,0.06)_0%,rgba(16,24,40,0.72)_100%)]" />
                 </div>
               </div>
             </div>

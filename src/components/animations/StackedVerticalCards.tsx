@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import type { BusinessVertical } from "@/types";
 import { BusinessVerticalCard } from "@/components/cards/BusinessVerticalCard";
 import {
@@ -12,16 +12,19 @@ import {
 } from "@/animations/config";
 
 type StackedVerticalCardsProps = {
+  principlesPanel: ReactNode;
   verticals: BusinessVertical[];
   enableStackedMotion: boolean;
 };
 
 export function StackedVerticalCards({
+  principlesPanel,
   verticals,
   enableStackedMotion,
 }: StackedVerticalCardsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const principlesRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
 
   useGSAP(
@@ -32,13 +35,22 @@ export function StackedVerticalCards({
 
       const section = sectionRef.current;
       const stage = stageRef.current;
+      const principles = principlesRef.current;
       const cards = cardRefs.current.filter(
         (card): card is HTMLElement => card instanceof HTMLElement,
       );
 
-      if (!section || !stage || !cards.length) {
+      if (!section || !stage || !principles || !cards.length) {
         return;
       }
+
+      const layers = [principles, ...cards];
+      const principlesMask = principles.querySelector<HTMLElement>("[data-principles-mask]");
+      const principlesLetter = principles.querySelector<HTMLElement>("[data-principles-letter]");
+      const principlesHeading = principles.querySelector<HTMLElement>("[data-principles-heading]");
+      const principlesDivider = principles.querySelector<HTMLElement>("[data-principles-divider]");
+      const principlesSupport = principles.querySelector<HTMLElement>("[data-principles-support]");
+      const principleItems = gsap.utils.toArray<HTMLElement>("[data-principles-item]", principles);
 
       const mm = gsap.matchMedia();
 
@@ -54,13 +66,13 @@ export function StackedVerticalCards({
           };
 
           if (!desktop || reduceMotion) {
-            gsap.set(cards, { clearProps: "all" });
+            gsap.set(layers, { clearProps: "all" });
             return;
           }
 
-          const transitionCount = cards.length - 1;
+          const transitionCount = layers.length - 1;
           const transitionDistance = window.innerHeight * transitionCount;
-          const finalHoldDistance = window.innerHeight * 0.45;
+          const finalHoldDistance = window.innerHeight * 0.4;
           const totalDistance = transitionDistance + finalHoldDistance;
 
           gsap.set(section, { position: "relative" });
@@ -68,7 +80,7 @@ export function StackedVerticalCards({
             overflow: "hidden",
             isolation: "isolate",
           });
-          gsap.set(cards, {
+          gsap.set(layers, {
             position: "absolute",
             inset: 0,
             width: "100%",
@@ -83,14 +95,33 @@ export function StackedVerticalCards({
             pointerEvents: "none",
           });
 
+          gsap.set(principles, {
+            yPercent: 0,
+            zIndex: 10,
+            pointerEvents: "auto",
+          });
+
           cards.forEach((card, index) => {
             gsap.set(card, {
-              yPercent: index === 0 ? 0 : 100,
+              yPercent: 100,
               zIndex: (index + 1) * 10,
             });
           });
 
-          gsap.set(cards[0], { pointerEvents: "auto" });
+          if (
+            principlesMask &&
+            principlesLetter &&
+            principlesHeading &&
+            principlesDivider &&
+            principlesSupport
+          ) {
+            gsap.set(principlesMask, { clipPath: "inset(0 0 100% 0)" });
+            gsap.set(principlesLetter, { y: 36, autoAlpha: 0.11 });
+            gsap.set(principlesHeading, { y: 22, autoAlpha: 0 });
+            gsap.set(principlesSupport, { y: 18, autoAlpha: 0 });
+            gsap.set(principleItems, { y: 12, autoAlpha: 0 });
+            gsap.set(principlesDivider, { scaleX: 0, transformOrigin: "left center" });
+          }
 
           const timeline = gsap.timeline({
             defaults: { ease: "none" },
@@ -107,14 +138,82 @@ export function StackedVerticalCards({
             },
           });
 
-          cards.slice(1).forEach((incomingCard, index) => {
-            const outgoingCard = cards[index];
+          if (
+            principlesMask &&
+            principlesLetter &&
+            principlesHeading &&
+            principlesDivider &&
+            principlesSupport
+          ) {
+            timeline
+              .to(
+                principlesMask,
+                {
+                  clipPath: "inset(0 0 0% 0)",
+                  duration: 0.24,
+                  ease: "power2.out",
+                },
+                0,
+              )
+              .to(
+                principlesLetter,
+                {
+                  y: 0,
+                  duration: 0.26,
+                  ease: "power3.out",
+                },
+                0.04,
+              )
+              .to(
+                principlesHeading,
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.22,
+                  ease: "power3.out",
+                },
+                0.08,
+              )
+              .to(
+                principlesSupport,
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.18,
+                  ease: "power2.out",
+                },
+                0.12,
+              )
+              .to(
+                principlesDivider,
+                {
+                  scaleX: 1,
+                  duration: 0.14,
+                  ease: "power2.out",
+                },
+                0.15,
+              )
+              .to(
+                principleItems,
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: 0.14,
+                  stagger: 0.03,
+                  ease: "power2.out",
+                },
+                0.17,
+              );
+          }
+
+          layers.slice(1).forEach((incomingLayer, index) => {
+            const outgoingLayer = layers[index];
             const label = `card-transition-${index}`;
 
             timeline.addLabel(label);
-            timeline.set(incomingCard, { pointerEvents: "auto" }, label);
+            timeline.set(incomingLayer, { pointerEvents: "auto" }, label);
             timeline.to(
-              incomingCard,
+              incomingLayer,
               {
                 yPercent: 0,
                 duration: 1,
@@ -122,7 +221,7 @@ export function StackedVerticalCards({
               label,
             );
             timeline.to(
-              outgoingCard,
+              outgoingLayer,
               {
                 scale: 0.95,
                 y: -16,
@@ -131,10 +230,10 @@ export function StackedVerticalCards({
               },
               label,
             );
-            timeline.set(outgoingCard, { pointerEvents: "none" }, `${label}+=1`);
+            timeline.set(outgoingLayer, { pointerEvents: "none" }, `${label}+=1`);
           });
 
-          timeline.to({}, { duration: 0.45 });
+          timeline.to({}, { duration: 0.4 });
 
           void document.fonts.ready.then(() => ScrollTrigger.refresh());
         },
@@ -148,6 +247,7 @@ export function StackedVerticalCards({
   if (!enableStackedMotion) {
     return (
       <section ref={sectionRef} className="relative z-[2]">
+        <div className="overflow-hidden bg-background-dark">{principlesPanel}</div>
         {verticals.map((vertical, index) => (
           <div key={vertical.id} className="pt-4 first:pt-0">
             <BusinessVerticalCard
@@ -167,6 +267,9 @@ export function StackedVerticalCards({
         ref={stageRef}
         className="relative h-[100svh] w-full overflow-hidden [isolation:isolate]"
       >
+        <div ref={principlesRef} className="absolute inset-0 will-change-transform">
+          {principlesPanel}
+        </div>
         {verticals.map((vertical, index) => (
           <div
             key={vertical.id}
