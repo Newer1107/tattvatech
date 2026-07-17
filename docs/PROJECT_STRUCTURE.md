@@ -15,7 +15,7 @@ Do not convert this project into a monorepo unless the product direction explici
 ## Source Layout
 
 - `src/app`: routing, metadata, globals, and app entrypoints
-- `src/components/animations`: Lenis, GSAP, and reveal helpers
+- `src/components/animations`: GSAP timelines, reveal helpers, and lightweight motion wrappers
 - `src/components/cards`: reusable content cards
 - `src/components/layout`: page shell, navbar, footer, wrappers
 - `src/components/sections`: homepage sections in approved order

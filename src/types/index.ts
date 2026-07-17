@@ -16,6 +16,27 @@ export type Vertical = {
   emphasis: "primary" | "secondary";
 };
 
+export type BusinessVerticalTheme = "warm" | "dark" | "orange" | "amber";
+
+export interface BusinessVertical {
+  id: string;
+  number: string;
+  titleTop: string;
+  titleBottom: string;
+  description: string;
+  capabilities: string[];
+  anchor: string;
+  linkLabel: string;
+  image?: string;
+  imageAlt?: string;
+  theme: BusinessVerticalTheme;
+}
+
+export interface BusinessPrinciple {
+  title: string;
+  description: string;
+}
+
 export type Service = {
   title: string;
   description: string;

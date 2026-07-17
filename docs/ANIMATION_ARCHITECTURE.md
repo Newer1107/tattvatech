@@ -14,13 +14,14 @@
 
 ## Motion Usage
 
-- Use `motion/react` for section reveals, mobile menu transitions, and view-based content animation.
-- Prefer reusable presets from `src/lib/animations.ts`.
+- GSAP is the primary system for scroll-linked motion, section choreography, and coordinated transitions.
+- `motion/react` is reserved for lightweight UI state transitions such as the mobile menu.
+- Prefer reusable configuration from `src/animations/`.
 
 ## Cleanup Requirements
 
-- All animated effects must clean up listeners, `requestAnimationFrame` loops, and third-party instances.
-- `SmoothScroll` must destroy the Lenis instance on unmount.
+- All animated effects must clean up listeners, `requestAnimationFrame` loops, and plugin instances.
+- `useGSAP` or scoped GSAP contexts should own cleanup for section and intro timelines.
 
 ## Reduced Motion
 

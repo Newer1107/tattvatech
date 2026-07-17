@@ -21,7 +21,6 @@ The current homepage emphasizes technical credibility, long-term ambition, clari
 - Tailwind CSS
 - Motion
 - GSAP
-- Lenis
 - Lucide React
 
 ## Local Setup
