@@ -91,7 +91,6 @@ export function IntroHeroExperience() {
 
     void Promise.all([
       loadImage(introAssets.logo),
-      loadImage("/brand/tattvatech-logo.png"),
       loadImage(introAssets.hero),
     ]).then(() => {
       if (!cancelled) {

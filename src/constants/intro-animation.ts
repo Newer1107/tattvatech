@@ -19,6 +19,6 @@ export const introEase = {
 } as const;
 
 export const introAssets = {
-  logo: "/brand/animation-logo.png",
+  logo: "/brand/tattvatech-logo.png",
   hero: "/placeholders/hero-placeholder.jpg",
 } as const;
