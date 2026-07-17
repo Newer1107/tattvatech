@@ -37,6 +37,16 @@ export interface BusinessPrinciple {
   description: string;
 }
 
+export interface EditorialPrinciple {
+  word: string;
+  tone: "primary" | "secondary" | "accent" | "inverse";
+  desktopClassName: string;
+  mobileClassName?: string;
+  markerClassName?: string;
+  lineClassName?: string;
+  relatedIndexes?: number[];
+}
+
 export type Service = {
   title: string;
   description: string;

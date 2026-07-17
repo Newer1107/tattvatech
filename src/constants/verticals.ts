@@ -1,28 +1,66 @@
-import type { BusinessPrinciple, BusinessVertical } from "@/types";
+import type { BusinessVertical, EditorialPrinciple } from "@/types";
 
 export const businessVerticalsIntro = {
   label: "Principles We Follow",
-  heading: "Purpose before technology.\nClarity before complexity.",
+  heading: "Observe. Think. Build.\nScale. Evolve. Responsibly.",
   description:
-    "We design solutions around real needs, responsible engineering, clear communication, and systems built to grow.",
+    "Engineering meaningful technology through clarity, precision, and long-term thinking.",
 } as const;
 
-export const businessPrinciples: BusinessPrinciple[] = [
+export const businessPrinciples: EditorialPrinciple[] = [
   {
-    title: "Purpose-Led",
-    description: "Build around real problems, not fashionable technology.",
+    word: "Observe.",
+    tone: "primary",
+    desktopClassName: "left-[8%] top-[11%] max-w-[12rem] text-left",
+    mobileClassName: "self-start",
+    markerClassName: "left-[10%] top-[18%]",
+    lineClassName: "left-[7%] top-[27%] w-[18vw]",
+    relatedIndexes: [1, 2],
   },
   {
-    title: "Clarity",
-    description: "Make every product, process, and decision understandable.",
+    word: "Think.",
+    tone: "secondary",
+    desktopClassName: "right-[11%] top-[18%] max-w-[12rem] text-right",
+    mobileClassName: "self-end text-right",
+    markerClassName: "right-[15%] top-[26%]",
+    lineClassName: "right-[13%] top-[34%] w-[15vw]",
+    relatedIndexes: [0, 2, 3],
   },
   {
-    title: "Scalability",
-    description: "Engineer foundations that can grow with the organization.",
+    word: "Build.",
+    tone: "accent",
+    desktopClassName: "left-[18%] top-[36%] max-w-[11rem] text-left",
+    mobileClassName: "self-start",
+    markerClassName: "left-[26%] top-[44%]",
+    lineClassName: "left-[17%] top-[49%] w-[11vw]",
+    relatedIndexes: [0, 1, 4],
   },
   {
-    title: "Responsibility",
-    description: "Deliver secure, maintainable, and useful systems.",
+    word: "Scale.",
+    tone: "primary",
+    desktopClassName: "right-[16%] top-[52%] max-w-[11rem] text-right",
+    mobileClassName: "self-end text-right",
+    markerClassName: "right-[22%] top-[59%]",
+    lineClassName: "right-[18%] top-[66%] w-[10vw]",
+    relatedIndexes: [1, 3, 5],
+  },
+  {
+    word: "Evolve.",
+    tone: "inverse",
+    desktopClassName: "left-[12%] top-[66%] max-w-[12rem] text-left",
+    mobileClassName: "self-start",
+    markerClassName: "left-[22%] top-[76%]",
+    lineClassName: "left-[11%] top-[79%] w-[14vw]",
+    relatedIndexes: [2, 5],
+  },
+  {
+    word: "Responsibly.",
+    tone: "inverse",
+    desktopClassName: "right-[10%] top-[73%] max-w-[18rem] text-right",
+    mobileClassName: "self-end text-right",
+    markerClassName: "right-[12%] top-[82%]",
+    lineClassName: "right-[11%] top-[86%] w-[16vw]",
+    relatedIndexes: [3, 4],
   },
 ];
 

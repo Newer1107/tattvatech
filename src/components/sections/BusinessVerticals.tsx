@@ -1,90 +1,364 @@
 "use client";
 
-import { useRef } from "react";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { businessVerticals } from "@/constants/verticals";
+import Image from "next/image";
+import { useRef, useState } from "react";
+import { StackedVerticalCards } from "@/components/animations/StackedVerticalCards";
+import { gsap, motionMedia, ScrollTrigger, useGSAP } from "@/animations/config";
 import {
   businessPrinciples,
+  businessVerticals,
   businessVerticalsIntro,
 } from "@/constants/verticals";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionPreference } from "@/hooks/useReducedMotion";
-import { StackedVerticalCards } from "@/components/animations/StackedVerticalCards";
+import { cn } from "@/lib/utils";
+
+const principleToneClassNames = {
+  primary: "text-text-primary",
+  secondary: "text-text-secondary",
+  accent: "text-orange-primary",
+  inverse: "text-white/[0.94]",
+} as const;
 
 function PrinciplesLayer() {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [hoverReady, setHoverReady] = useState(false);
+
+  useGSAP(
+    () => {
+      const root = rootRef.current;
+
+      if (!root) {
+        return;
+      }
+
+      const background = root.querySelector<HTMLElement>("[data-principles-bg]");
+      const labels = gsap.utils.toArray<HTMLElement>("[data-principle-label]", root);
+      const words = gsap.utils.toArray<HTMLElement>("[data-principle-word]", root);
+      const lines = gsap.utils.toArray<HTMLElement>("[data-principle-line]", root);
+      const dots = gsap.utils.toArray<HTMLElement>("[data-principle-dot]", root);
+      const chars = gsap.utils.toArray<HTMLElement>("[data-support-char]", root);
+
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        {
+          desktop: motionMedia.desktop,
+          reduceMotion: motionMedia.reduceMotion,
+        },
+        (context) => {
+          const { desktop, reduceMotion } = context.conditions as {
+            desktop?: boolean;
+            reduceMotion?: boolean;
+          };
+
+          setHoverReady(Boolean(desktop && !reduceMotion));
+
+          if (reduceMotion) {
+            gsap.set([background, ...labels, ...words, ...lines, ...dots, ...chars], {
+              clearProps: "all",
+            });
+            return;
+          }
+
+          if (background) {
+            gsap.set(background, { scale: 1.04, y: -8, transformOrigin: "center center" });
+
+            gsap.to(background, {
+              y: 10,
+              ease: "none",
+              scrollTrigger: {
+                trigger: root,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.85,
+              },
+            });
+          }
+
+          gsap.set(labels, { autoAlpha: 0, y: 10 });
+          gsap.set(lines, { scaleX: 0, transformOrigin: "left center", autoAlpha: 0.6 });
+          gsap.set(dots, { autoAlpha: 0.4, scale: 0.68, transformOrigin: "center center" });
+          gsap.set(chars, { autoAlpha: 0, yPercent: 60 });
+
+          words.forEach((word, index) => {
+            const inset = index % 2 === 0 ? "0 100% 0 0" : "0 0 0 100%";
+            gsap.set(word, { clipPath: `inset(${inset})` });
+          });
+
+          const timeline = gsap.timeline({
+            defaults: { ease: "power3.out" },
+            scrollTrigger: {
+              trigger: root,
+              start: desktop ? "top 62%" : "top 78%",
+              once: true,
+            },
+            onComplete: () => setHoverReady(Boolean(desktop)),
+          });
+
+          timeline
+            .to(
+              words,
+              {
+                clipPath: "inset(0 0% 0 0)",
+                duration: 0.78,
+                stagger: 0.08,
+              },
+              0,
+            )
+            .to(
+              chars,
+              {
+                autoAlpha: 1,
+                yPercent: 0,
+                duration: 0.42,
+                stagger: 0.014,
+                ease: "power2.out",
+              },
+              0.18,
+            )
+            .to(
+              lines,
+              {
+                scaleX: 1,
+                autoAlpha: 0.85,
+                duration: 0.46,
+                stagger: 0.04,
+                ease: "power2.out",
+              },
+              0.26,
+            )
+            .to(
+              labels,
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.45,
+                stagger: 0.08,
+                ease: "power2.out",
+              },
+              0.34,
+            )
+            .to(
+              dots,
+              {
+                autoAlpha: 0.72,
+                scale: 1,
+                duration: 0.4,
+                stagger: 0.04,
+                ease: "power2.out",
+              },
+              0.4,
+            );
+
+          if (desktop) {
+            ScrollTrigger.refresh();
+          }
+        },
+      );
+
+      return () => mm.revert();
+    },
+    { scope: rootRef },
+  );
+
+  const supportCharacters = Array.from(businessVerticalsIntro.description);
 
   return (
     <div
       ref={rootRef}
-      className="principles-section relative flex w-full items-center overflow-hidden bg-background-dark lg:h-[100svh] lg:min-h-[100svh] lg:max-h-[100svh]"
+      className="relative flex w-full items-stretch overflow-hidden bg-background-warm lg:h-full lg:min-h-[95svh] xl:min-h-[100svh]"
     >
-      <div className="principles-inner relative z-[2] mx-auto grid h-full w-full max-w-[1440px] items-center gap-10 px-7 py-12 md:px-10 md:py-14 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)] lg:gap-[clamp(48px,7vw,110px)] lg:px-[clamp(28px,6vw,88px)] lg:py-[clamp(28px,4vw,52px)]">
-        <div className="relative flex h-full min-h-0 items-center">
-          <div className="principles-content relative z-[2] flex h-full min-h-0 w-full flex-col justify-center overflow-hidden">
-            <div
-              data-principles-letter
-              aria-hidden="true"
-              className="principles-giant-t pointer-events-none absolute left-[-0.08em] top-1/2 z-[0] flex -translate-y-1/2 items-start font-heading text-[clamp(28rem,52vw,76rem)] leading-[0.7] tracking-[-0.08em] text-orange-primary opacity-[0.11] md:text-[clamp(36rem,58vw,82rem)] lg:text-[clamp(48rem,72vw,88rem)]"
-            >
-              T
-            </div>
-
-            <div
-              data-principles-mask
-              className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(16,24,40,0.16)_0%,rgba(16,24,40,0)_52%)]"
-            />
-
-            <div className="relative z-[2] flex h-full min-h-0 flex-col justify-center">
-              <SectionLabel>{businessVerticalsIntro.label}</SectionLabel>
-
-              <div data-principles-heading className="mt-4 lg:mt-5">
-                <h2 className="font-heading text-[clamp(3rem,9vw,4.8rem)] leading-[0.9] tracking-[-0.055em] text-white lg:text-[clamp(3.8rem,5.8vw,6.8rem)] lg:leading-[0.88]">
-                  <span className="block">Purpose before</span>
-                  <span className="block">technology.</span>
-                  <span className="mt-1 block lg:mt-1.5">Clarity before</span>
-                  <span className="block">complexity.</span>
-                </h2>
-              </div>
-
-              <div
-                data-principles-divider
-                className="mt-5 h-px w-full max-w-[220px] bg-[linear-gradient(90deg,rgba(255,168,0,0.95)_0%,rgba(245,90,10,0.4)_100%)] lg:mt-6"
-              />
-
-              <div className="principles-grid mt-5 grid grid-cols-1 gap-x-3 gap-y-2.5 sm:grid-cols-2 lg:mt-[22px] lg:gap-x-3 lg:gap-y-2.5">
-                {businessPrinciples.map((principle) => (
-                  <div
-                    key={principle.title}
-                    data-principles-item
-                    className="principle-item min-h-0 rounded-[14px] border border-white/10 bg-white/6 px-4 py-[14px]"
-                  >
-                    <p className="text-[11px] font-semibold uppercase leading-[1.2] tracking-[0.14em] text-amber-primary">
-                      {principle.title}
-                    </p>
-                    <p className="mt-2 text-[clamp(0.82rem,1vw,0.95rem)] leading-[1.4] text-white/72">
-                      {principle.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="absolute inset-0">
+        <div data-principles-bg className="absolute inset-[-2%]">
+          <Image
+            src="/images/principal-section.jpeg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
         </div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(16,24,40,0.18))]" />
+      </div>
 
-        <div
-          data-principles-support
-          className="max-w-[32ch] justify-self-end self-center text-white"
-        >
-          <p className="text-[0.84rem] font-semibold uppercase tracking-[0.18em] text-orange-primary">
-            Why this matters
+      <div className="pointer-events-none absolute inset-0 hidden lg:block">
+        {businessPrinciples.map((principle, index) => {
+          const isActive = activeIndex === index;
+          const isNearby =
+            activeIndex !== null &&
+            businessPrinciples[activeIndex]?.relatedIndexes?.includes(index);
+
+          return (
+            <div key={`${principle.word}-decoration`}>
+              <span
+                data-principle-line
+                className={cn(
+                  "absolute h-px bg-[linear-gradient(90deg,rgba(245,90,10,0.12),rgba(245,90,10,0.88),rgba(245,90,10,0))] transition-opacity duration-300",
+                  principle.lineClassName,
+                  activeIndex === null
+                    ? "opacity-45"
+                    : isActive || isNearby
+                      ? "opacity-100"
+                      : "opacity-18",
+                )}
+              />
+              <span
+                data-principle-dot
+                className={cn(
+                  "absolute h-2.5 w-2.5 rounded-full bg-orange-primary/90 shadow-[0_0_0_1px_rgba(245,90,10,0.12)] transition-all duration-300",
+                  principle.markerClassName,
+                  activeIndex === null
+                    ? "opacity-70"
+                    : isActive || isNearby
+                      ? "opacity-100"
+                      : "opacity-25",
+                )}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="relative z-[2] mx-auto flex w-full max-w-[1440px] flex-col px-6 py-14 sm:px-8 md:px-10 md:py-16 lg:h-full lg:px-[clamp(32px,5vw,84px)] lg:py-[clamp(28px,4vw,48px)]">
+        <div className="flex flex-col gap-4 lg:hidden">
+          <p
+            data-principle-label
+            className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+          >
+            {businessVerticalsIntro.label}
           </p>
-          <p className="mt-4 text-[clamp(1rem,1.15vw,1.08rem)] leading-7 text-[#D0D5DD]">
+          <p className="max-w-[20ch] text-[clamp(18px,5vw,24px)] leading-[1.45] text-text-secondary">
             {businessVerticalsIntro.description}
           </p>
-          <p className="mt-4 text-sm leading-6 text-white/46">
-            These principles guide every service, product, training initiative, and applied technology solution.
-          </p>
+        </div>
+
+        <div className="relative mt-12 flex flex-col gap-8 lg:mt-0 lg:h-full lg:gap-0">
+          <div className="relative hidden lg:block lg:h-full">
+            <div className="absolute left-[8%] top-[8%] max-w-[18rem]">
+              <p
+                data-principle-label
+                className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+              >
+                {businessVerticalsIntro.label}
+              </p>
+            </div>
+
+            <div className="absolute right-[10%] top-[12%] max-w-[24rem] text-right">
+              <p
+                data-principle-label
+                className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+              >
+                TattvaTech philosophy
+              </p>
+              <p className="mt-5 max-w-[22ch] justify-self-end text-[clamp(18px,1.3vw,24px)] leading-[1.35] text-text-secondary">
+                {supportCharacters.map((character, index) => (
+                  <span
+                    key={`${character}-${index}`}
+                    data-support-char
+                    className="inline-block whitespace-pre"
+                  >
+                    {character}
+                  </span>
+                ))}
+              </p>
+            </div>
+
+            {businessPrinciples.map((principle, index) => {
+              const isActive = activeIndex === index;
+              const isNearby =
+                activeIndex !== null &&
+                businessPrinciples[activeIndex]?.relatedIndexes?.includes(index);
+              const isDimmed = activeIndex !== null && !isActive && !isNearby;
+
+              return (
+                <div
+                  key={principle.word}
+                  className={cn(
+                    "absolute z-[3]",
+                    principle.desktopClassName,
+                    isDimmed && "opacity-35",
+                    (isActive || isNearby) && "opacity-100",
+                    activeIndex === null && "opacity-100",
+                  )}
+                >
+                  <button
+                    type="button"
+                    data-principle-word
+                    data-principle-hover
+                    className={cn(
+                      "cursor-default text-balance font-heading text-[clamp(42px,5vw,82px)] leading-[0.9] tracking-[-0.07em] transition-[color,opacity,filter] duration-300 focus:outline-none",
+                      principleToneClassNames[principle.tone],
+                      hoverReady && isActive && "text-orange-primary",
+                    )}
+                    onMouseEnter={() => {
+                      if (hoverReady) {
+                        setActiveIndex(index);
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (hoverReady) {
+                        setActiveIndex(null);
+                      }
+                    }}
+                    onFocus={() => {
+                      if (hoverReady) {
+                        setActiveIndex(index);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (hoverReady) {
+                        setActiveIndex(null);
+                      }
+                    }}
+                  >
+                    {principle.word}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col gap-6 pt-2 lg:hidden">
+            {businessPrinciples.map((principle, index) => (
+              <div
+                key={principle.word}
+                className={cn(
+                  "border-b border-[rgba(16,24,40,0.08)] pb-5 last:border-b-0 last:pb-0",
+                  principle.mobileClassName,
+                )}
+              >
+                <p
+                  data-principle-word
+                  className={cn(
+                    "font-heading text-[clamp(42px,14vw,64px)] leading-[0.92] tracking-[-0.07em]",
+                    principleToneClassNames[principle.tone === "inverse" ? "primary" : principle.tone],
+                  )}
+                >
+                  {principle.word}
+                </p>
+                <div
+                  data-principle-line
+                  className="mt-4 h-px w-16 bg-[linear-gradient(90deg,rgba(245,90,10,0.92),rgba(245,90,10,0))]"
+                />
+                {index === businessPrinciples.length - 1 ? (
+                  <p className="mt-5 max-w-[18ch] text-[clamp(18px,5vw,22px)] leading-[1.4] text-text-secondary">
+                    {supportCharacters.map((character, charIndex) => (
+                      <span
+                        key={`${character}-${charIndex}`}
+                        data-support-char
+                        className="inline-block whitespace-pre"
+                      >
+                        {character}
+                      </span>
+                    ))}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
