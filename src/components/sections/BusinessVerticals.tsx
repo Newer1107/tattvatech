@@ -3,21 +3,37 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { StackedVerticalCards } from "@/components/animations/StackedVerticalCards";
-import { gsap, motionMedia, ScrollTrigger, useGSAP } from "@/animations/config";
+import { gsap, motionMedia, useGSAP } from "@/animations/config";
 import {
   businessPrinciples,
   businessVerticals,
   businessVerticalsIntro,
 } from "@/constants/verticals";
+import { SummaryPanel } from "@/components/sections/Summary";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionPreference } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
 const principleToneClassNames = {
-  primary: "text-text-primary",
-  secondary: "text-text-secondary",
-  accent: "text-orange-primary",
-  inverse: "text-white/[0.94]",
+  primary:
+    "text-[#101828] [text-shadow:0_1px_8px_rgba(255,255,255,0.45)]",
+  secondary:
+    "text-[#344054] [text-shadow:0_1px_8px_rgba(255,255,255,0.4)]",
+  accent:
+    "text-orange-primary [text-shadow:0_1px_6px_rgba(255,255,255,0.38)]",
+  inverse:
+    "text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.45),0_1px_2px_rgba(0,0,0,0.35)]",
+} as const;
+
+const backplateClassNames = {
+  light:
+    "bg-[linear-gradient(90deg,rgba(255,255,255,0.78)_0%,rgba(255,255,255,0.42)_65%,rgba(255,255,255,0)_100%)]",
+  dark:
+    "bg-[linear-gradient(90deg,rgba(16,24,40,0.7)_0%,rgba(16,24,40,0.35)_65%,rgba(16,24,40,0)_100%)]",
+  darkReverse:
+    "bg-[linear-gradient(270deg,rgba(16,24,40,0.7)_0%,rgba(16,24,40,0.35)_65%,rgba(16,24,40,0)_100%)]",
+  lightReverse:
+    "bg-[linear-gradient(270deg,rgba(255,255,255,0.78)_0%,rgba(255,255,255,0.42)_65%,rgba(255,255,255,0)_100%)]",
 } as const;
 
 function PrinciplesLayer() {
@@ -34,39 +50,33 @@ function PrinciplesLayer() {
       }
 
       const background = root.querySelector<HTMLElement>("[data-principles-bg]");
-      const labels = gsap.utils.toArray<HTMLElement>("[data-principle-label]", root);
-      const words = gsap.utils.toArray<HTMLElement>("[data-principle-word]", root);
-      const lines = gsap.utils.toArray<HTMLElement>("[data-principle-line]", root);
-      const dots = gsap.utils.toArray<HTMLElement>("[data-principle-dot]", root);
-      const chars = gsap.utils.toArray<HTMLElement>("[data-support-char]", root);
-
       const mm = gsap.matchMedia();
 
       mm.add(
         {
           desktop: motionMedia.desktop,
+          pointerFine: motionMedia.pointerFine,
           reduceMotion: motionMedia.reduceMotion,
         },
         (context) => {
-          const { desktop, reduceMotion } = context.conditions as {
+          const { desktop, pointerFine, reduceMotion } = context.conditions as {
             desktop?: boolean;
+            pointerFine?: boolean;
             reduceMotion?: boolean;
           };
 
-          setHoverReady(Boolean(desktop && !reduceMotion));
+          setHoverReady(Boolean(desktop && pointerFine && !reduceMotion));
 
           if (reduceMotion) {
-            gsap.set([background, ...labels, ...words, ...lines, ...dots, ...chars], {
-              clearProps: "all",
-            });
+            gsap.set(background, { clearProps: "all" });
             return;
           }
 
           if (background) {
-            gsap.set(background, { scale: 1.04, y: -8, transformOrigin: "center center" });
+            gsap.set(background, { scale: 1.025, y: -8, transformOrigin: "center center" });
 
             gsap.to(background, {
-              y: 10,
+              y: 7,
               ease: "none",
               scrollTrigger: {
                 trigger: root,
@@ -76,85 +86,6 @@ function PrinciplesLayer() {
               },
             });
           }
-
-          gsap.set(labels, { autoAlpha: 0, y: 10 });
-          gsap.set(lines, { scaleX: 0, transformOrigin: "left center", autoAlpha: 0.6 });
-          gsap.set(dots, { autoAlpha: 0.4, scale: 0.68, transformOrigin: "center center" });
-          gsap.set(chars, { autoAlpha: 0, yPercent: 60 });
-
-          words.forEach((word, index) => {
-            const inset = index % 2 === 0 ? "0 100% 0 0" : "0 0 0 100%";
-            gsap.set(word, { clipPath: `inset(${inset})` });
-          });
-
-          const timeline = gsap.timeline({
-            defaults: { ease: "power3.out" },
-            scrollTrigger: {
-              trigger: root,
-              start: desktop ? "top 62%" : "top 78%",
-              once: true,
-            },
-            onComplete: () => setHoverReady(Boolean(desktop)),
-          });
-
-          timeline
-            .to(
-              words,
-              {
-                clipPath: "inset(0 0% 0 0)",
-                duration: 0.78,
-                stagger: 0.08,
-              },
-              0,
-            )
-            .to(
-              chars,
-              {
-                autoAlpha: 1,
-                yPercent: 0,
-                duration: 0.42,
-                stagger: 0.014,
-                ease: "power2.out",
-              },
-              0.18,
-            )
-            .to(
-              lines,
-              {
-                scaleX: 1,
-                autoAlpha: 0.85,
-                duration: 0.46,
-                stagger: 0.04,
-                ease: "power2.out",
-              },
-              0.26,
-            )
-            .to(
-              labels,
-              {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.45,
-                stagger: 0.08,
-                ease: "power2.out",
-              },
-              0.34,
-            )
-            .to(
-              dots,
-              {
-                autoAlpha: 0.72,
-                scale: 1,
-                duration: 0.4,
-                stagger: 0.04,
-                ease: "power2.out",
-              },
-              0.4,
-            );
-
-          if (desktop) {
-            ScrollTrigger.refresh();
-          }
         },
       );
 
@@ -163,14 +94,12 @@ function PrinciplesLayer() {
     { scope: rootRef },
   );
 
-  const supportCharacters = Array.from(businessVerticalsIntro.description);
-
   return (
     <div
       ref={rootRef}
       className="relative flex w-full items-stretch overflow-hidden bg-background-warm lg:h-full lg:min-h-[95svh] xl:min-h-[100svh]"
     >
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         <div data-principles-bg className="absolute inset-[-2%]">
           <Image
             src="/images/principal-section.jpeg"
@@ -181,10 +110,10 @@ function PrinciplesLayer() {
             className="object-cover object-center"
           />
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(16,24,40,0.18))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(16,24,40,0.16))]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 hidden lg:block">
+      <div className="pointer-events-none absolute inset-0 z-[3] hidden lg:block">
         {businessPrinciples.map((principle, index) => {
           const isActive = activeIndex === index;
           const isNearby =
@@ -192,29 +121,29 @@ function PrinciplesLayer() {
             businessPrinciples[activeIndex]?.relatedIndexes?.includes(index);
 
           return (
-            <div key={`${principle.word}-decoration`}>
+            <div key={`${principle.word}-marker`}>
               <span
                 data-principle-line
                 className={cn(
-                  "absolute h-px bg-[linear-gradient(90deg,rgba(245,90,10,0.12),rgba(245,90,10,0.88),rgba(245,90,10,0))] transition-opacity duration-300",
+                  "absolute h-px bg-[linear-gradient(90deg,rgba(245,90,10,0.18),rgba(245,90,10,0.92),rgba(245,90,10,0))] transition-opacity duration-300",
                   principle.lineClassName,
                   activeIndex === null
                     ? "opacity-45"
                     : isActive || isNearby
                       ? "opacity-100"
-                      : "opacity-18",
+                      : "opacity-15",
                 )}
               />
               <span
                 data-principle-dot
                 className={cn(
-                  "absolute h-2.5 w-2.5 rounded-full bg-orange-primary/90 shadow-[0_0_0_1px_rgba(245,90,10,0.12)] transition-all duration-300",
+                  "absolute h-2 w-2 rounded-full bg-orange-primary transition-opacity duration-300",
                   principle.markerClassName,
                   activeIndex === null
                     ? "opacity-70"
                     : isActive || isNearby
                       ? "opacity-100"
-                      : "opacity-25",
+                      : "opacity-18",
                 )}
               />
             </div>
@@ -222,76 +151,145 @@ function PrinciplesLayer() {
         })}
       </div>
 
-      <div className="relative z-[2] mx-auto flex w-full max-w-[1440px] flex-col px-6 py-14 sm:px-8 md:px-10 md:py-16 lg:h-full lg:px-[clamp(32px,5vw,84px)] lg:py-[clamp(28px,4vw,48px)]">
-        <div className="flex flex-col gap-4 lg:hidden">
-          <p
-            data-principle-label
-            className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+      <div className="relative z-[2] mx-auto flex w-full max-w-[1440px] flex-col px-6 py-12 sm:px-8 md:px-10 md:py-14 lg:h-full lg:px-[clamp(6vw,7vw,8vw)] lg:py-[clamp(8vh,9vh,10vh)]">
+        <div className="flex flex-col gap-8 lg:hidden">
+          <div
+            data-principles-backplate
+            className={cn(
+              "inline-flex w-fit max-w-full rounded-[8px] px-4 py-3",
+              backplateClassNames.light,
+            )}
           >
-            {businessVerticalsIntro.label}
-          </p>
-          <p className="max-w-[20ch] text-[clamp(18px,5vw,24px)] leading-[1.45] text-text-secondary">
-            {businessVerticalsIntro.description}
-          </p>
+            <p
+              data-principles-label
+              className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+            >
+              {businessVerticalsIntro.label}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            {businessPrinciples.map((principle) => (
+              <div
+                key={principle.word}
+                data-principles-backplate
+                className={cn(
+                  "w-fit max-w-full rounded-[8px] px-4 py-3",
+                  principle.tone === "inverse"
+                    ? backplateClassNames.dark
+                    : backplateClassNames.light,
+                )}
+              >
+                <p
+                  data-principle-word
+                  className={cn(
+                    "font-heading text-[clamp(3rem,14vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.04em]",
+                    principleToneClassNames[
+                      principle.tone === "secondary" ? "secondary" : principle.tone
+                    ],
+                  )}
+                >
+                  {principle.word}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div
+            data-principles-backplate
+            className={cn(
+              "max-w-[28rem] rounded-[8px] px-4 py-3",
+              backplateClassNames.dark,
+            )}
+          >
+            <p
+              data-principles-support
+              className="text-[clamp(1rem,5vw,1.2rem)] leading-[1.35] text-white/[0.82] [text-shadow:0_2px_10px_rgba(0,0,0,0.45),0_1px_2px_rgba(0,0,0,0.35)]"
+            >
+              {businessVerticalsIntro.description}
+            </p>
+          </div>
         </div>
 
-        <div className="relative mt-12 flex flex-col gap-8 lg:mt-0 lg:h-full lg:gap-0">
-          <div className="relative hidden lg:block lg:h-full">
-            <div className="absolute left-[8%] top-[8%] max-w-[18rem]">
+        <div className="relative hidden h-full lg:block">
+          <div className="absolute left-[7%] top-[8%] z-[1]">
+            <div
+              data-principles-backplate
+              className={cn(
+                "w-fit rounded-[8px] px-4 py-3",
+                backplateClassNames.light,
+              )}
+            >
               <p
-                data-principle-label
-                className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+                data-principles-label
+                className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
               >
                 {businessVerticalsIntro.label}
               </p>
             </div>
+          </div>
 
-            <div className="absolute right-[10%] top-[12%] max-w-[24rem] text-right">
+          <div className="absolute right-[8%] top-[12%] z-[1] max-w-[28rem]">
+            <div
+              data-principles-backplate
+              className={cn(
+                "rounded-[8px] px-4 py-3",
+                backplateClassNames.lightReverse,
+              )}
+            >
               <p
-                data-principle-label
-                className="text-[13px] font-medium uppercase tracking-[0.18em] text-[rgba(16,24,40,0.65)]"
+                data-principles-support
+                className="text-right text-[clamp(1rem,1.25vw,1.25rem)] leading-[1.35] text-[#344054] [text-shadow:0_1px_8px_rgba(255,255,255,0.45)]"
               >
-                TattvaTech philosophy
-              </p>
-              <p className="mt-5 max-w-[22ch] justify-self-end text-[clamp(18px,1.3vw,24px)] leading-[1.35] text-text-secondary">
-                {supportCharacters.map((character, index) => (
-                  <span
-                    key={`${character}-${index}`}
-                    data-support-char
-                    className="inline-block whitespace-pre"
-                  >
-                    {character}
-                  </span>
-                ))}
+                {businessVerticalsIntro.description}
               </p>
             </div>
+          </div>
 
-            {businessPrinciples.map((principle, index) => {
-              const isActive = activeIndex === index;
-              const isNearby =
-                activeIndex !== null &&
-                businessPrinciples[activeIndex]?.relatedIndexes?.includes(index);
-              const isDimmed = activeIndex !== null && !isActive && !isNearby;
+          {businessPrinciples.map((principle, index) => {
+            const isActive = activeIndex === index;
+            const isNearby =
+              activeIndex !== null &&
+              businessPrinciples[activeIndex]?.relatedIndexes?.includes(index);
+            const isDimmed = activeIndex !== null && !isActive && !isNearby;
+            const backplateTone =
+              principle.tone === "inverse"
+                ? principle.word === "Responsibly."
+                  ? backplateClassNames.darkReverse
+                  : backplateClassNames.dark
+                : principle.word === "Scale."
+                  ? backplateClassNames.lightReverse
+                  : backplateClassNames.light;
 
-              return (
+            return (
+              <div
+                key={principle.word}
+                className={cn(
+                  "absolute z-[2] transition-opacity duration-300",
+                  principle.desktopClassName,
+                  isDimmed && "opacity-30",
+                )}
+              >
                 <div
-                  key={principle.word}
+                  data-principles-backplate
                   className={cn(
-                    "absolute z-[3]",
-                    principle.desktopClassName,
-                    isDimmed && "opacity-35",
-                    (isActive || isNearby) && "opacity-100",
-                    activeIndex === null && "opacity-100",
+                    "inline-flex rounded-[8px] px-4 py-3",
+                    backplateTone,
+                    principle.word === "Scale." || principle.word === "Responsibly."
+                      ? "justify-end"
+                      : "",
                   )}
                 >
                   <button
                     type="button"
                     data-principle-word
-                    data-principle-hover
                     className={cn(
-                      "cursor-default text-balance font-heading text-[clamp(42px,5vw,82px)] leading-[0.9] tracking-[-0.07em] transition-[color,opacity,filter] duration-300 focus:outline-none",
+                      "cursor-default text-balance font-heading text-[clamp(3rem,6vw,6.5rem)] font-medium leading-[0.95] tracking-[-0.04em] transition-colors duration-300 focus:outline-none",
+                      principle.word === "Responsibly."
+                        ? "text-[clamp(3.5rem,7vw,7.5rem)]"
+                        : "",
                       principleToneClassNames[principle.tone],
-                      hoverReady && isActive && "text-orange-primary",
+                      hoverReady && isActive && principle.tone !== "accent" && "text-orange-primary",
                     )}
                     onMouseEnter={() => {
                       if (hoverReady) {
@@ -317,48 +315,9 @@ function PrinciplesLayer() {
                     {principle.word}
                   </button>
                 </div>
-              );
-            })}
-          </div>
-
-          <div className="flex flex-col gap-6 pt-2 lg:hidden">
-            {businessPrinciples.map((principle, index) => (
-              <div
-                key={principle.word}
-                className={cn(
-                  "border-b border-[rgba(16,24,40,0.08)] pb-5 last:border-b-0 last:pb-0",
-                  principle.mobileClassName,
-                )}
-              >
-                <p
-                  data-principle-word
-                  className={cn(
-                    "font-heading text-[clamp(42px,14vw,64px)] leading-[0.92] tracking-[-0.07em]",
-                    principleToneClassNames[principle.tone === "inverse" ? "primary" : principle.tone],
-                  )}
-                >
-                  {principle.word}
-                </p>
-                <div
-                  data-principle-line
-                  className="mt-4 h-px w-16 bg-[linear-gradient(90deg,rgba(245,90,10,0.92),rgba(245,90,10,0))]"
-                />
-                {index === businessPrinciples.length - 1 ? (
-                  <p className="mt-5 max-w-[18ch] text-[clamp(18px,5vw,22px)] leading-[1.4] text-text-secondary">
-                    {supportCharacters.map((character, charIndex) => (
-                      <span
-                        key={`${character}-${charIndex}`}
-                        data-support-char
-                        className="inline-block whitespace-pre"
-                      >
-                        {character}
-                      </span>
-                    ))}
-                  </p>
-                ) : null}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -373,6 +332,7 @@ export function BusinessVerticals() {
   return (
     <section id="businesses" className="relative w-full bg-background-dark">
       <StackedVerticalCards
+        summaryPanel={<SummaryPanel animated={false} className="h-full" />}
         principlesPanel={<PrinciplesLayer />}
         verticals={businessVerticals}
         enableStackedMotion={enableStackedMotion}
