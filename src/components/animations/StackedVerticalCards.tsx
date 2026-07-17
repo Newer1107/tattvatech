@@ -115,11 +115,11 @@ export function StackedVerticalCards({
             principlesDivider &&
             principlesSupport
           ) {
-            gsap.set(principlesMask, { clipPath: "inset(0 0 100% 0)" });
-            gsap.set(principlesLetter, { y: 36, autoAlpha: 0.11 });
-            gsap.set(principlesHeading, { y: 22, autoAlpha: 0 });
-            gsap.set(principlesSupport, { y: 18, autoAlpha: 0 });
-            gsap.set(principleItems, { y: 12, autoAlpha: 0 });
+            gsap.set(principlesMask, { clipPath: "inset(0 100% 0 0)" });
+            gsap.set(principlesLetter, { y: 22, autoAlpha: 0.11 });
+            gsap.set(principlesHeading, { y: 12, autoAlpha: 1 });
+            gsap.set(principlesSupport, { y: 10, autoAlpha: 1 });
+            gsap.set(principleItems, { y: 8, autoAlpha: 1 });
             gsap.set(principlesDivider, { scaleX: 0, transformOrigin: "left center" });
           }
 
@@ -149,8 +149,8 @@ export function StackedVerticalCards({
               .to(
                 principlesMask,
                 {
-                  clipPath: "inset(0 0 0% 0)",
-                  duration: 0.24,
+                  clipPath: "inset(0 0 0 0)",
+                  duration: 0.18,
                   ease: "power2.out",
                 },
                 0,
@@ -159,50 +159,47 @@ export function StackedVerticalCards({
                 principlesLetter,
                 {
                   y: 0,
-                  duration: 0.26,
+                  duration: 0.22,
                   ease: "power3.out",
                 },
-                0.04,
+                0.02,
               )
               .to(
                 principlesHeading,
                 {
                   y: 0,
-                  autoAlpha: 1,
-                  duration: 0.22,
+                  duration: 0.18,
                   ease: "power3.out",
                 },
-                0.08,
+                0.04,
               )
               .to(
                 principlesSupport,
                 {
                   y: 0,
-                  autoAlpha: 1,
-                  duration: 0.18,
+                  duration: 0.16,
                   ease: "power2.out",
                 },
-                0.12,
+                0.06,
               )
               .to(
                 principlesDivider,
                 {
                   scaleX: 1,
-                  duration: 0.14,
+                  duration: 0.12,
                   ease: "power2.out",
                 },
-                0.15,
+                0.08,
               )
               .to(
                 principleItems,
                 {
                   y: 0,
-                  autoAlpha: 1,
-                  duration: 0.14,
+                  duration: 0.12,
                   stagger: 0.03,
                   ease: "power2.out",
                 },
-                0.17,
+                0.1,
               );
           }
 

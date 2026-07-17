@@ -2,8 +2,7 @@ export const summaryIntro = {
   label: "Company Summary",
   heading: "A parent technology brand built to connect capability, products, field systems, and training.",
   body: [
-    "TattvaTech is a founder-led technology company operated by Loukik Salvi, Rishit Singh, and Raunak.",
-    "The parent brand exists to hold four connected lines of work: services, products, drones, and training, so each one strengthens the others instead of growing in isolation.",
+    "The parent brand connects four lines of work: services, products, drones, and training, so each one strengthens the others instead of growing in isolation.",
   ],
 } as const;
 
