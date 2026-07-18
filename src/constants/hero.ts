@@ -3,10 +3,13 @@ export type HeroSceneMode = "explore" | "contact" | null;
 export const heroContent = {
   label: "TATTVATECH",
   heading: "Engineering ideas into useful technology.",
+  headingLines: ["Engineering ideas", "into useful", "technology."],
   body:
     "We build digital services, scalable software products, drone solutions, and industry-focused technical training.",
   supportingLabel: "Engineered across four connected verticals",
   supportingValue: "04",
+  supportingNote:
+    "Digital services, products, field systems, and training shaped as one connected offering.",
 } as const;
 
 export const heroActions = {
