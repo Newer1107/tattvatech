@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { StackedVerticalCards } from "@/components/animations/StackedVerticalCards";
 import { gsap, motionMedia, useGSAP } from "@/animations/config";
@@ -100,16 +98,13 @@ function PrinciplesLayer() {
       className="relative flex w-full items-stretch overflow-hidden bg-background-warm lg:h-full lg:min-h-[95svh] xl:min-h-[100svh]"
     >
       <div className="absolute inset-0 z-0">
-        <div data-principles-bg className="absolute inset-[-2%]">
-          <Image
-            src="/images/principal-section.jpeg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        </div>
+        <div
+          data-principles-bg
+          className="absolute inset-[-2%] bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/images/principal-section.jpeg?v=20260717b')",
+          }}
+        />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(16,24,40,0.16))]" />
       </div>
 
