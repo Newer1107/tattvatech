@@ -149,17 +149,9 @@ export function Hero({ refs, introHidden = false }: HeroProps) {
                 <div
                   className="hero-browser relative aspect-[537/377] w-[min(92%,760px)] max-w-none overflow-visible border-none outline-none shadow-none max-lg:w-full"
                 >
-                  <div className="absolute left-[3%] top-[17%] z-[1] h-[68%] w-[92%] rounded-[14px] border border-[rgba(15,23,42,0.45)] bg-white" />
-
-                  <div className="absolute left-[3%] top-[17%] z-[2] flex h-[10.5%] w-[92%] items-center rounded-t-[14px] border border-b-0 border-[rgba(15,23,42,0.45)] bg-[#FAF8F5] px-[4.5%]">
-                    <span className="size-[10px] rounded-full border border-[rgba(16,24,40,0.75)]" />
-                    <span className="ml-2 size-[10px] rounded-full border border-[rgba(16,24,40,0.75)]" />
-                    <span className="ml-2 size-[10px] rounded-full border border-[rgba(16,24,40,0.75)]" />
-                  </div>
-
-                  <div className="absolute inset-x-0 bottom-0 z-[3] h-[96%]">
+                  <div className="absolute inset-0 z-[1]">
                     <Image
-                      src="/images/hero/Hero-Section.svg"
+                      src="/images/hero/Hero-Section.png"
                       alt="Hand artwork inside the hero browser frame"
                       fill
                       priority
