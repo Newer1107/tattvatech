@@ -473,69 +473,37 @@ function Hero() {
     };
   }, []);
 
-  /* Hero entrance: heading clip-reveal + letter-spacing, badge scale, network draw, particles */
+  /* Hero entrance: staggered blur + slide reveal with ambient background settle */
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      /* Network lines draw in */
-      tl.to(".network-line", {
-        strokeDashoffset: 0,
-        duration: 0.8,
-        stagger: 0.06,
-        ease: "power2.out",
-      });
-      /* Network nodes fade in */
       tl.fromTo(
         ".network-node",
         { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.4, stagger: 0.04 },
-        "-=0.6",
+        { scale: 1, opacity: 1, duration: 0.4, stagger: 0.03 },
+        0,
       );
 
-      /* Badge: scale-in + fade */
-      tl.fromTo(
-        ".hero-badge",
-        { scale: 0.85, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5 },
-        "-=0.5",
-      );
+      const items = [
+        { sel: ".hero-badge", y: -8, blur: 4, dur: 0.5, at: 0.2 },
+        { sel: ".hero-heading-line-1", y: 28, blur: 6, dur: 0.7, at: 0.35 },
+        { sel: ".hero-heading-line-2", y: 28, blur: 6, dur: 0.7, at: 0.5 },
+        { sel: ".hero-paragraph", y: 18, blur: 3, dur: 0.6, at: 0.65 },
+        { sel: ".hero-actions", y: 14, blur: 2, dur: 0.5, at: 0.8 },
+      ];
 
-      /* Heading line 1: clip from left */
-      tl.fromTo(
-        ".hero-heading-line-1",
-        { clipPath: "inset(0 100% 0 0)" },
-        { clipPath: "inset(0 0% 0 0)", opacity: 1, duration: 0.8 },
-        "-=0.3",
-      );
+      items.forEach(({ sel, y, blur, dur, at }) => {
+        tl.fromTo(
+          sel,
+          { y, opacity: 0, filter: `blur(${blur}px)` },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: dur },
+          at,
+        );
+      });
 
-      /* Heading line 2: letter-spacing from condensed */
-      tl.fromTo(
-        ".hero-heading-line-2",
-        { letterSpacing: "-0.06em", opacity: 0 },
-        { letterSpacing: "normal", opacity: 1, duration: 0.8 },
-        "-=0.6",
-      );
-
-      /* Paragraph: slide up + fade */
-      tl.fromTo(
-        ".hero-paragraph",
-        { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6 },
-        "-=0.5",
-      );
-
-      /* Buttons: slide up + fade */
-      tl.fromTo(
-        ".hero-actions",
-        { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6 },
-        "-=0.4",
-      );
-
-      /* Floating particles: continuous drift */
       gsap.utils.toArray<Element>(".hero-particle").forEach((dot) => {
         gsap.set(dot, { opacity: 0.15 });
         gsap.to(dot, {
@@ -573,17 +541,17 @@ function Hero() {
         aria-hidden="true"
       >
         {/* Connection lines */}
-        <path d="M220,420 L360,510 L490,440 L440,310 L310,340 L220,420" stroke="#ff7a18" strokeWidth="1.5" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.35" />
-        <path d="M310,340 L400,200 L440,310" stroke="#ff7a18" strokeWidth="1.2" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.3" />
-        <path d="M360,510 L530,340 L440,310" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.25" />
-        <path d="M530,340 L550,480 L490,440" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.25" />
-        <path d="M140,480 L220,420 L100,380" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
-        <path d="M310,340 L180,320 L100,380" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
-        <path d="M360,510 L490,440 L550,480" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
-        <path d="M220,420 L310,340 L400,200" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
-        <path d="M140,480 L360,510" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
-        <path d="M400,200 L530,340" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
-        <path d="M180,320 L220,420" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
+        <path d="M220,420 L360,510 L490,440 L440,310 L310,340 L220,420" stroke="#ff7a18" strokeWidth="1.5" className="network-line" opacity="0.35" />
+        <path d="M310,340 L400,200 L440,310" stroke="#ff7a18" strokeWidth="1.2" className="network-line" opacity="0.3" />
+        <path d="M360,510 L530,340 L440,310" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.25" />
+        <path d="M530,340 L550,480 L490,440" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.25" />
+        <path d="M140,480 L220,420 L100,380" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.2" />
+        <path d="M310,340 L180,320 L100,380" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.2" />
+        <path d="M360,510 L490,440 L550,480" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.2" />
+        <path d="M220,420 L310,340 L400,200" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.15" />
+        <path d="M140,480 L360,510" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
+        <path d="M400,200 L530,340" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
+        <path d="M180,320 L220,420" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
         {/* Network nodes */}
         <circle cx="220" cy="420" r="4.5" fill="#ff7a18" className="network-node" opacity="0" />
         <circle cx="360" cy="510" r="3.5" fill="#ff7a18" className="network-node" opacity="0" />
