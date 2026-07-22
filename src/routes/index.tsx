@@ -587,7 +587,7 @@ function Hero() {
       </svg>
 
       <div className="relative mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-center px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
-        <div className="hero-badge">
+        <div className="hero-badge" style={{ opacity: 0 }}>
           <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
             A founder-led technology company · Est. 2024
@@ -600,21 +600,21 @@ function Hero() {
               className="font-display text-[clamp(2.75rem,8.5vw,8rem)] leading-[0.9] text-balance"
               style={{ transform: `translateY(${p * -40}px)` }}
             >
-              <span className="block hero-heading-line-1">
+              <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
                 Technology
               </span>
-              <span className="block hero-heading-line-2 italic text-gradient-orange">
+              <span className="block hero-heading-line-2 italic text-gradient-orange" style={{ opacity: 0 }}>
                 that transforms.
               </span>
             </h1>
 
-            <p className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
+            <p className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg" style={{ opacity: 0 }}>
               TattvaTech builds practical technology across software, AI, drones,
               digital products, and technical education—creating solutions that grow
               stronger through connected expertise.
             </p>
 
-            <div className="hero-actions mt-10 flex flex-wrap items-center gap-4">
+            <div className="hero-actions mt-10 flex flex-wrap items-center gap-4" style={{ opacity: 0 }}>
               <MagneticButton href="#services">Explore our work</MagneticButton>
               <MagneticButton href="#ecosystem" variant="ghost">
                 Discover our ecosystem
