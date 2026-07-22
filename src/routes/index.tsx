@@ -1398,6 +1398,7 @@ function Products() {
 /* ---------------------------------- drones -------------------------------- */
 
 function Drones() {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const rows = [
     ["Research", "Applied research across flight, sensing, and autonomy."],
     ["Industrial", "Aerial systems for inspection, surveying, and monitoring."],
@@ -1449,6 +1450,23 @@ function Drones() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section id="drones" className="relative overflow-hidden bg-cream py-24 text-ink md:py-40 scroll-mt-24">
       <FlightPathBg />
@@ -1464,9 +1482,20 @@ function Drones() {
               Research, industrial applications, consulting, and training across the
               drone stack—built by engineers who fly what they design.
             </p>
-            <div className="mt-10">
-              <MediaFrame aspect="video" caption="Aerial footage · Add media" />
-            </div>
+            <Reveal delay={140}>
+              <div className="group relative mt-10 overflow-hidden rounded-3xl border border-border shadow-warm">
+                <video
+                  ref={videoRef}
+                  className="w-full aspect-video object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                >
+                  <source src="/drones-aerial.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </Reveal>
           </div>
           <div className="md:col-span-7">
             <div className="capability-grid grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x">
