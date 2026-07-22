@@ -95,6 +95,53 @@ function useCursor() {
   return { coreRef, ringRef, hover };
 }
 
+/* ----------------------------- card hover -------------------------------- */
+
+function useCardHover(selector: string) {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const cards = document.querySelectorAll<HTMLElement>(selector);
+    if (!cards.length) return;
+
+    const ctx = gsap.context(() => {
+      cards.forEach((card) => {
+        gsap.set(card, { transformPerspective: 800, transformStyle: "preserve-3d" });
+
+        const toRotX = gsap.quickTo(card, "rotationX", { duration: 0.3, ease: "power2.out" });
+        const toRotY = gsap.quickTo(card, "rotationY", { duration: 0.3, ease: "power2.out" });
+
+        const onEnter = () => {
+          gsap.to(card, { scale: 1.02, duration: 0.35, ease: "power2.out", overwrite: "auto" });
+        };
+
+        const onMove = (e: MouseEvent) => {
+          const r = card.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          toRotY(((e.clientX - cx) / (r.width / 2)) * 3);
+          toRotX(-((e.clientY - cy) / (r.height / 2)) * 3);
+        };
+
+        const onLeave = () => {
+          gsap.to(card, {
+            scale: 1, rotationX: 0, rotationY: 0,
+            duration: 0.4, ease: "power3.out", overwrite: "auto",
+          });
+        };
+
+        card.addEventListener("mouseenter", onEnter);
+        card.addEventListener("mousemove", onMove);
+        card.addEventListener("mouseleave", onLeave);
+      });
+    });
+
+    return () => ctx.revert();
+  }, [selector]);
+}
+
 /* -------------------------------- primitives ------------------------------ */
 
 function Reveal({
@@ -426,6 +473,85 @@ function Hero() {
     };
   }, []);
 
+  /* Hero entrance: heading clip-reveal + letter-spacing, badge scale, network draw, particles */
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      /* Network lines draw in */
+      tl.to(".network-line", {
+        strokeDashoffset: 0,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: "power2.out",
+      });
+      /* Network nodes fade in */
+      tl.fromTo(
+        ".network-node",
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.4, stagger: 0.04 },
+        "-=0.6",
+      );
+
+      /* Badge: scale-in + fade */
+      tl.fromTo(
+        ".hero-badge",
+        { scale: 0.85, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5 },
+        "-=0.5",
+      );
+
+      /* Heading line 1: clip from left */
+      tl.fromTo(
+        ".hero-heading-line-1",
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", opacity: 1, duration: 0.8 },
+        "-=0.3",
+      );
+
+      /* Heading line 2: letter-spacing from condensed */
+      tl.fromTo(
+        ".hero-heading-line-2",
+        { letterSpacing: "-0.06em", opacity: 0 },
+        { letterSpacing: "normal", opacity: 1, duration: 0.8 },
+        "-=0.6",
+      );
+
+      /* Paragraph: slide up + fade */
+      tl.fromTo(
+        ".hero-paragraph",
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6 },
+        "-=0.5",
+      );
+
+      /* Buttons: slide up + fade */
+      tl.fromTo(
+        ".hero-actions",
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6 },
+        "-=0.4",
+      );
+
+      /* Floating particles: continuous drift */
+      gsap.utils.toArray<Element>(".hero-particle").forEach((dot) => {
+        gsap.set(dot, { opacity: 0.15 });
+        gsap.to(dot, {
+          x: gsap.utils.random(-40, 40),
+          y: gsap.utils.random(-40, 40),
+          duration: gsap.utils.random(3, 6),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="top" className="relative overflow-hidden bg-ivory">
       <div className="absolute inset-0 text-ink">
@@ -438,11 +564,62 @@ function Hero() {
           transition: "background 300ms ease-out",
         }}
       />
-      <div className="pointer-events-none absolute -right-40 -top-20 h-[560px] w-[560px] rounded-full glow-orange opacity-70 blur-3xl float-slow" />
-      <div className="pointer-events-none absolute -left-40 bottom-0 h-[440px] w-[440px] rounded-full glow-orange opacity-50 blur-3xl" />
+      {/* Animated SVG network */}
+      <svg
+        className="pointer-events-none absolute bottom-0 right-0 h-[640px] w-[640px] max-w-[140%] opacity-40 lg:opacity-60"
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        {/* Connection lines */}
+        <path d="M220,420 L360,510 L490,440 L440,310 L310,340 L220,420" stroke="#ff7a18" strokeWidth="1.5" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.35" />
+        <path d="M310,340 L400,200 L440,310" stroke="#ff7a18" strokeWidth="1.2" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.3" />
+        <path d="M360,510 L530,340 L440,310" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.25" />
+        <path d="M530,340 L550,480 L490,440" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.25" />
+        <path d="M140,480 L220,420 L100,380" stroke="#ff7a18" strokeWidth="1" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
+        <path d="M310,340 L180,320 L100,380" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
+        <path d="M360,510 L490,440 L550,480" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.2" />
+        <path d="M220,420 L310,340 L400,200" stroke="#ff7a18" strokeWidth="0.8" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
+        <path d="M140,480 L360,510" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
+        <path d="M400,200 L530,340" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
+        <path d="M180,320 L220,420" stroke="#ff7a18" strokeWidth="0.6" className="network-line" strokeDasharray="2000" strokeDashoffset="2000" opacity="0.15" />
+        {/* Network nodes */}
+        <circle cx="220" cy="420" r="4.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="360" cy="510" r="3.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="490" cy="440" r="4" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="440" cy="310" r="3" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="310" cy="340" r="3.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="140" cy="480" r="2.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="100" cy="380" r="2" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="530" cy="340" r="3" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="550" cy="480" r="2.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="400" cy="200" r="3" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="180" cy="320" r="2.5" fill="#ff7a18" className="network-node" opacity="0" />
+        <circle cx="260" cy="240" r="2" fill="#ff7a18" className="network-node" opacity="0" />
+        {/* Floating particles */}
+        <circle cx="80" cy="120" r="2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="320" cy="80" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="500" cy="100" r="2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="120" cy="280" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="560" cy="200" r="1.8" fill="#ff7a18" className="hero-particle" />
+        <circle cx="380" cy="150" r="1.2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="200" cy="180" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="460" cy="540" r="1.8" fill="#ff7a18" className="hero-particle" />
+        <circle cx="40" cy="540" r="2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="520" cy="560" r="1.2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="160" cy="400" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="440" cy="220" r="1.8" fill="#ff7a18" className="hero-particle" />
+        <circle cx="280" cy="520" r="1.2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="580" cy="380" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="70" cy="300" r="1.8" fill="#ff7a18" className="hero-particle" />
+        <circle cx="480" cy="60" r="1.2" fill="#ff7a18" className="hero-particle" />
+        <circle cx="340" cy="420" r="1.5" fill="#ff7a18" className="hero-particle" />
+        <circle cx="60" cy="440" r="1.2" fill="#ff7a18" className="hero-particle" />
+      </svg>
 
       <div className="relative mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-center px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
-        <div className="reveal-in">
+        <div className="hero-badge">
           <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
             A founder-led technology company · Est. 2024
@@ -455,30 +632,21 @@ function Hero() {
               className="font-display text-[clamp(2.75rem,8.5vw,8rem)] leading-[0.9] text-balance"
               style={{ transform: `translateY(${p * -40}px)` }}
             >
-              <span className="block reveal-up" style={{ animationDelay: "80ms" }}>
+              <span className="block hero-heading-line-1">
                 Technology
               </span>
-              <span
-                className="block reveal-up italic text-gradient-orange"
-                style={{ animationDelay: "220ms" }}
-              >
+              <span className="block hero-heading-line-2 italic text-gradient-orange">
                 that transforms.
               </span>
             </h1>
 
-            <p
-              className="reveal-up mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg"
-              style={{ animationDelay: "460ms" }}
-            >
+            <p className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
               TattvaTech builds practical technology across software, AI, drones,
               digital products, and technical education—creating solutions that grow
               stronger through connected expertise.
             </p>
 
-            <div
-              className="reveal-up mt-10 flex flex-wrap items-center gap-4"
-              style={{ animationDelay: "620ms" }}
-            >
+            <div className="hero-actions mt-10 flex flex-wrap items-center gap-4">
               <MagneticButton href="#services">Explore our work</MagneticButton>
               <MagneticButton href="#ecosystem" variant="ghost">
                 Discover our ecosystem
@@ -630,6 +798,47 @@ function About() {
     { k: "Evolve", d: "Continuous refinement guided by outcomes rather than trends." },
     { k: "Responsibly", d: "Practical innovation grounded in ethics, trust, and durability." },
   ];
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "#about .step-card",
+        { y: 60, rotation: (i: number) => (i % 2 === 0 ? -2 : 2), autoAlpha: 0 },
+        {
+          y: 0,
+          rotation: 0,
+          autoAlpha: 1,
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: "#about .step-grid",
+            start: "top 80%",
+            end: "top 45%",
+            scrub: 0.5,
+          },
+        },
+      );
+
+      gsap.fromTo(
+        "#about .step-num",
+        { autoAlpha: 0 },
+        {
+          autoAlpha: 1,
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: "#about .step-grid",
+            start: "top 82%",
+            end: "top 50%",
+            scrub: 0.5,
+          },
+        },
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="about" className="relative bg-ivory py-32 md:py-40">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -662,16 +871,18 @@ function About() {
           </div>
         </Reveal>
 
-
-
-        <div className="mt-24 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
+        <div className="step-grid mt-24 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
           {steps.map((s, i) => (
-                <Reveal key={s.k} delay={i * 90}>
+            <Reveal key={s.k} delay={i * 90}>
               <div
-                className="group relative h-full bg-ivory p-8 transition-colors duration-500 hover:bg-cream"
+                className="step-card group relative h-full bg-ivory p-8 transition-colors duration-500 hover:bg-cream"
                 data-cursor="hover"
+                data-card
               >
                 <div className="flex items-baseline justify-between">
+                  <span className="step-num text-xs tabular-nums text-orange/60">
+                    0{i + 1}
+                  </span>
                   <span className="h-px w-10 origin-right scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
                 </div>
                 <h3 className="mt-10 font-display text-3xl">{s.k}.</h3>
@@ -683,6 +894,94 @@ function About() {
       </div>
     </section>
   );
+}
+
+/* ----------------------------- ecosystem hooks ---------------------------- */
+
+function useEcosystemLines() {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const cards = grid.querySelectorAll<HTMLElement>("[data-card]");
+    const paths = grid.querySelectorAll<SVGPathElement>(".ecosystem-line");
+    if (cards.length !== 4 || paths.length !== 4) return;
+
+    const updatePaths = () => {
+      const gridRect = grid.getBoundingClientRect();
+      const positions = Array.from(cards).map((c) => {
+        const r = c.getBoundingClientRect();
+        return {
+          x: r.left + r.width / 2 - gridRect.left,
+          y: r.top + r.height / 2 - gridRect.top,
+        };
+      });
+      const conns: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 0]];
+      paths.forEach((path, i) => {
+        const [from, to] = conns[i];
+        const x1 = positions[from].x, y1 = positions[from].y;
+        const x2 = positions[to].x, y2 = positions[to].y;
+        const mx = (x1 + x2) / 2;
+        path.setAttribute("d", `M ${x1} ${y1} Q ${mx} ${y1}, ${mx} ${(y1 + y2) / 2} Q ${mx} ${y2}, ${x2} ${y2}`);
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = String(len);
+        path.style.strokeDashoffset = String(len);
+      });
+    };
+
+    updatePaths();
+    window.addEventListener("resize", updatePaths);
+
+    const triggers = Array.from(paths).map((path, i) =>
+      ScrollTrigger.create({
+        trigger: cards[i],
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          const len = path.getTotalLength();
+          gsap.to(path, { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" });
+        },
+      })
+    );
+
+    return () => {
+      window.removeEventListener("resize", updatePaths);
+      triggers.forEach((t) => t.kill());
+    };
+  }, []);
+
+  return gridRef;
+}
+
+function useEcosystemBar() {
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const segs = document.querySelectorAll<HTMLElement>("#ecosystem .bar-segment, #ecosystem .bar-arrow");
+    if (!segs.length) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#ecosystem",
+        start: "top 65%",
+        end: "top 20%",
+        scrub: 1,
+      },
+    });
+
+    segs.forEach((seg) => {
+      tl.fromTo(seg, { autoAlpha: 0, x: -6 }, { autoAlpha: 1, x: 0, duration: 0.25 }, "+=0.04");
+    });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, []);
 }
 
 /* -------------------------------- ecosystem ------------------------------- */
@@ -715,6 +1014,69 @@ function Ecosystem() {
     },
   ];
 
+  const gridRef = useEcosystemLines();
+  useEcosystemBar();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "#ecosystem .eco-card",
+        { scale: 0.95, y: 30, autoAlpha: 0 },
+        {
+          scale: 1,
+          y: 0,
+          autoAlpha: 1,
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: "#ecosystem .eco-grid",
+            start: "top 80%",
+            end: "top 45%",
+            scrub: 0.5,
+          },
+        },
+      );
+
+      gsap.utils.toArray<SVGPathElement>("#ecosystem .eco-arrow path").forEach((path) => {
+        const len = path.getTotalLength();
+        gsap.fromTo(
+          path,
+          { strokeDasharray: len, strokeDashoffset: len },
+          {
+            strokeDashoffset: 0,
+            scrollTrigger: {
+              trigger: path.closest(".eco-card"),
+              start: "top 75%",
+              end: "top 45%",
+              scrub: 0.5,
+            },
+          },
+        );
+      });
+
+      const words = document.querySelectorAll("#ecosystem .eco-closed-loop .eco-word");
+      words.forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { color: "rgb(var(--color-charcoal) / 0.7)" },
+          {
+            color: "var(--color-orange)",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 85%",
+              end: "top 65%",
+              scrub: 0.5,
+            },
+          },
+        );
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="ecosystem" className="relative overflow-hidden bg-cream py-32 md:py-40">
       <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
@@ -740,12 +1102,31 @@ function Ecosystem() {
           </div>
         </div>
 
-        <div className="mt-16 grid gap-5 md:mt-24 md:grid-cols-2 md:gap-6">
+        <div ref={gridRef} className="relative mt-16 md:mt-24">
+          <svg
+            className="pointer-events-none absolute inset-0 z-[2] hidden h-full w-full md:block"
+            style={{ overflow: "visible" }}
+            aria-hidden
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <path
+                key={i}
+                className="ecosystem-line"
+                stroke="var(--orange)"
+                strokeWidth="2"
+                fill="none"
+                opacity="0.5"
+                strokeLinecap="round"
+              />
+            ))}
+          </svg>
+          <div className="eco-grid relative z-[3] grid gap-5 md:grid-cols-2 md:gap-6">
           {nodes.map((n, i) => (
             <Reveal key={n.k} delay={i * 90}>
               <article
-                className="group relative overflow-hidden rounded-3xl border border-border bg-ivory p-8 shadow-soft transition-all duration-500 hover:-translate-y-1 hover:border-orange/50 hover:shadow-warm md:p-10"
+                className="eco-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-8 shadow-soft transition-all duration-500 hover:-translate-y-1 hover:border-orange/50 hover:shadow-warm md:p-10"
                 data-cursor="hover"
+                data-card
               >
                 <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-all duration-700 group-hover:bg-orange/20" />
 
@@ -774,7 +1155,7 @@ function Ecosystem() {
                   ))}
                 </div>
 
-                <div className="mt-8 flex items-center gap-3 border-t border-border pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60">
+                <div className="eco-arrow mt-8 flex items-center gap-3 border-t border-border pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60">
                   <span>Feeds</span>
                   <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 text-orange" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M4 10h12M11 5l5 5-5 5" />
@@ -785,15 +1166,33 @@ function Ecosystem() {
             </Reveal>
           ))}
         </div>
+        </div>
 
         <Reveal delay={200}>
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-12 md:px-8">
+          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-between gap-4 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-12 md:px-8">
             <span className="flex items-center gap-3">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_10px_var(--orange)]" />
               A closed loop
             </span>
             <span className="hidden md:inline">
-              Services → Products → Drones → Training → Services
+              {[
+                { type: "segment", text: "Services " },
+                { type: "arrow", text: "→ " },
+                { type: "segment", text: "Products " },
+                { type: "arrow", text: "→ " },
+                { type: "segment", text: "Drones " },
+                { type: "arrow", text: "→ " },
+                { type: "segment", text: "Training " },
+                { type: "arrow", text: "→ " },
+                { type: "segment", text: "Services" },
+              ].map((item, i) => (
+                <span
+                  key={i}
+                  className={`eco-word ${item.type === "arrow" ? "bar-arrow" : "bar-segment"}`}
+                >
+                  {item.text}
+                </span>
+              ))}
             </span>
             <span className="text-orange">Compounding expertise</span>
           </div>
@@ -818,6 +1217,49 @@ const services = [
 ];
 
 function Services() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray<HTMLElement>("#services .service-item").forEach((item, i) => {
+        const num = item.querySelector<HTMLElement>(".service-num");
+        const title = item.querySelector<HTMLElement>(".service-title");
+        const desc = item.querySelector<HTMLElement>(".service-desc");
+        const divider = item.querySelector<HTMLElement>(".service-divider");
+        const makeST = (item: HTMLElement) => ({
+          trigger: item,
+          start: "top 85%",
+          end: "top 45%",
+          scrub: 0.5,
+        });
+        if (num && title) {
+          gsap.fromTo(
+            [num, title],
+            { x: -30, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, scrollTrigger: makeST(item), duration: 0.5 },
+          );
+        }
+        if (desc) {
+          gsap.fromTo(
+            desc,
+            { x: 30, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, scrollTrigger: makeST(item), duration: 0.5 },
+          );
+        }
+        if (divider) {
+          gsap.fromTo(
+            divider,
+            { scaleX: 0 },
+            { scaleX: 1, transformOrigin: "left center", scrollTrigger: makeST(item), duration: 0.4 },
+          );
+        }
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="services" className="relative bg-ivory py-32 md:py-40">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -837,20 +1279,21 @@ function Services() {
             <ul className="divide-y divide-border border-y border-border">
               {services.map((s, i) => (
                 <Reveal key={s.k} delay={i * 60}>
-                  <li className="group relative overflow-hidden">
+                  <li className="service-item group relative overflow-hidden">
+                    <span className="service-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
                     <a
                       href="#contact"
                       data-cursor="hover"
                       className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-6 py-7"
                     >
-                      <span className="text-xs tabular-nums text-orange">
+                      <span className="service-num text-xs tabular-nums text-orange">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="min-w-0">
-                        <div className="font-display text-2xl transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
+                        <div className="service-title font-display text-2xl transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
                           {s.k}
                         </div>
-                        <p className="mt-1 hidden max-w-md text-sm text-charcoal md:block">
+                        <p className="service-desc mt-1 hidden max-w-md text-sm text-charcoal md:block">
                           {s.d}
                         </p>
                       </div>
@@ -916,6 +1359,7 @@ function Products() {
             <Reveal key={it.k} delay={i * 90}>
               <article
                 data-cursor="hover"
+                data-card
                 className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border bg-ivory p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-warm"
               >
                 <div>
@@ -958,8 +1402,51 @@ function Drones() {
     ["Innovation", "Prototyping new applications for aerial technology."],
     ["Training", "Pilot programs, technical courses, and certifications."],
   ];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray<SVGPathElement>(".flight-path").forEach((path) => {
+        const len = path.getTotalLength();
+        gsap.fromTo(
+          path,
+          { strokeDasharray: len, strokeDashoffset: len },
+          {
+            strokeDashoffset: 0,
+            scrollTrigger: {
+              trigger: path.closest("section"),
+              start: "top 80%",
+              end: "top 45%",
+              scrub: 1,
+            },
+          },
+        );
+      });
+
+      gsap.fromTo(
+        "#drones .capability-item",
+        { x: (i: number) => (i % 2 === 0 ? -40 : 40), autoAlpha: 0 },
+        {
+          x: 0,
+          autoAlpha: 1,
+          stagger: 0.12,
+          scrollTrigger: {
+            trigger: "#drones .capability-grid",
+            start: "top 75%",
+            end: "top 45%",
+            scrub: 0.8,
+          },
+        },
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative overflow-hidden bg-cream py-32 text-ink md:py-40">
+    <section id="drones" className="relative overflow-hidden bg-cream py-32 text-ink md:py-40">
       <FlightPathBg />
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-16 md:grid-cols-12">
@@ -978,10 +1465,10 @@ function Drones() {
             </div>
           </div>
           <div className="md:col-span-7">
-            <div className="grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x">
+            <div className="capability-grid grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x">
               {rows.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 60}>
-                  <div className="group relative p-8" data-cursor="hover">
+                  <div className="capability-item group relative p-8" data-cursor="hover">
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs uppercase tracking-[0.24em] text-orange">
                         Capability
@@ -1020,6 +1507,7 @@ function FlightPathBg() {
       {Array.from({ length: 7 }).map((_, i) => (
         <path
           key={i}
+          className="flight-path"
           d={`M 0 ${120 + i * 100} C 300 ${80 + i * 80}, 900 ${160 + i * 90}, 1200 ${100 + i * 100}`}
           fill="none"
           stroke="url(#fp)"
@@ -1050,8 +1538,66 @@ function Training() {
     ["Student Upskilling", "Career-ready tracks in software, AI, and drones."],
     ["Corporate Training", "Structured programs for engineering organizations."],
   ];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "#training .timeline-line",
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          transformOrigin: "top center",
+          scrollTrigger: {
+            trigger: "#training .timeline-list",
+            start: "top 80%",
+            end: "top 45%",
+            scrub: 1,
+          },
+        },
+      );
+
+      gsap.utils.toArray<HTMLElement>("#training .timeline-item").forEach((item) => {
+        const dot = item.querySelector<HTMLElement>(".timeline-dot");
+        gsap.fromTo(
+          item,
+          { y: 40, autoAlpha: 0 },
+          {
+            y: 0,
+            autoAlpha: 1,
+            scrollTrigger: {
+              trigger: item,
+              start: "top 85%",
+              end: "top 45%",
+              scrub: 0.5,
+            },
+          },
+        );
+        if (dot) {
+          gsap.fromTo(
+            dot,
+            { scale: 0 },
+            {
+              scale: 1,
+              scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+                end: "top 45%",
+                scrub: 0.5,
+              },
+            },
+          );
+        }
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative bg-ivory py-32 md:py-40">
+    <section id="training" className="relative bg-ivory py-32 md:py-40">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-14 md:grid-cols-12 md:gap-x-16 md:gap-y-12">
           <div className="md:col-span-4">
@@ -1079,11 +1625,12 @@ function Training() {
             </div>
           </Reveal>
           <div className="md:col-span-7">
-            <ol className="relative border-l border-border">
+            <ol className="timeline-list relative border-l border-border">
+              <span className="timeline-line pointer-events-none absolute left-0 top-0 h-full w-px origin-top bg-orange/70" />
               {items.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 80}>
-                  <li className="group relative pb-12 pl-10 last:pb-0">
-                    <span className="absolute left-0 top-1.5 grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full border border-border bg-ivory transition-all duration-500 group-hover:border-orange group-hover:bg-orange">
+                  <li className="timeline-item group relative pb-12 pl-10 last:pb-0">
+                    <span className="timeline-dot absolute left-0 top-1.5 grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full border border-border bg-ivory transition-all duration-500 group-hover:border-orange group-hover:bg-orange">
                       <span className="h-1.5 w-1.5 rounded-full bg-orange transition-colors group-hover:bg-ivory" />
                     </span>
                     <div className="flex flex-wrap items-baseline gap-4">
@@ -1168,8 +1715,39 @@ function Why() {
     ["Scalable thinking", "Architecture that survives its second year."],
     ["Responsible innovation", "Technology built with care for its context."],
   ];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray<HTMLElement>("#why .why-row").forEach((row) => {
+        const num = row.querySelector<HTMLElement>(".why-num");
+        const title = row.querySelector<HTMLElement>(".why-title");
+        const makeST = () => ({
+          trigger: row,
+          start: "top 85%",
+          end: "top 45%",
+          scrub: 0.5,
+        });
+        if (num) {
+          gsap.fromTo(num, { autoAlpha: 0 }, { autoAlpha: 1, scrollTrigger: makeST() });
+        }
+        if (title) {
+          gsap.fromTo(
+            title,
+            { x: -24, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, scrollTrigger: makeST(), duration: 0.5 },
+          );
+        }
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative bg-ivory py-32 md:py-40">
+    <section id="why" className="relative bg-ivory py-32 md:py-40">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-16 md:grid-cols-12">
           <div className="md:col-span-4">
@@ -1187,12 +1765,12 @@ function Why() {
             <dl className="divide-y divide-border border-y border-border">
               {rows.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 50}>
-                  <div className="grid grid-cols-12 items-baseline gap-6 py-7">
+                  <div className="why-row grid grid-cols-12 items-baseline gap-6 py-7">
                     <dt className="col-span-12 flex items-baseline gap-4 md:col-span-5">
-                      <span className="text-xs tabular-nums text-orange">
+                      <span className="why-num text-xs tabular-nums text-orange">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="font-display text-2xl md:text-3xl">{k}</span>
+                      <span className="why-title font-display text-2xl md:text-3xl">{k}</span>
                     </dt>
                     <dd className="col-span-12 text-sm text-charcoal md:col-span-7 md:text-base">
                       {d}
@@ -1211,6 +1789,64 @@ function Why() {
 /* ---------------------------------- CTA ---------------------------------- */
 
 function CTA() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const heading = document.querySelector("#contact .cta-heading");
+      if (heading) {
+        const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT, null);
+        const textNodes: Text[] = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+
+        textNodes.forEach((node) => {
+          const words = node.textContent!.split(/(\s+)/);
+          const frag = document.createDocumentFragment();
+          words.forEach((w) => {
+            if (w.trim() === "") {
+              frag.appendChild(document.createTextNode(w));
+            } else {
+              const span = document.createElement("span");
+              span.className = "cta-word";
+              span.style.display = "inline-block";
+              span.textContent = w;
+              frag.appendChild(span);
+            }
+          });
+          node.parentNode!.replaceChild(frag, node);
+        });
+
+        gsap.fromTo(
+          ".cta-word",
+          { autoAlpha: 0, y: 20 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.035,
+            duration: 0.5,
+            ease: "power3.out",
+            scrollTrigger: { trigger: "#contact", start: "top 80%", once: true },
+          },
+        );
+      }
+
+      const btn = document.querySelector<HTMLElement>("#contact .cta-btn");
+      if (btn) {
+        gsap.to(btn, {
+          scale: 1.02,
+          duration: 1.5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+          scrollTrigger: { trigger: "#contact", start: "top 80%" },
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section id="contact" className="relative overflow-hidden">
       <div className="absolute inset-0 gradient-sunset" />
@@ -1223,7 +1859,7 @@ function CTA() {
             </SectionLabel>
         </Reveal>
         <Reveal delay={100}>
-          <h2 className="mt-8 font-display text-[clamp(2.5rem,10vw,10rem)] leading-[0.92] text-balance">
+          <h2 className="cta-heading mt-8 font-display text-[clamp(2.5rem,10vw,10rem)] leading-[0.92] text-balance">
             Let's build technology <br />
             <span className="italic text-ivory/85">that matters.</span>
           </h2>
@@ -1238,7 +1874,7 @@ function CTA() {
           <Reveal delay={320} className="md:col-span-6 md:justify-self-end">
             <div className="flex flex-wrap items-center gap-4">
               <MagneticButton href="mailto:hello@tattvatech.com" variant="onDark">
-                Start a conversation
+                <span className="cta-btn">Start a conversation</span>
               </MagneticButton>
               <a
                 href="mailto:hello@tattvatech.com"
@@ -1328,6 +1964,7 @@ function Index() {
   useSectionReveal("services");
   useSectionReveal("process");
   useSectionReveal("contact");
+  useCardHover("[data-card]");
   return (
     <main>
       <div
