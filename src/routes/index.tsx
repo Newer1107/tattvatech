@@ -343,11 +343,28 @@ function Cursor() {
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("top");
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const ids = ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { threshold: 0.25, rootMargin: "-80px 0px 0px 0px" },
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   const links = [
@@ -361,58 +378,77 @@ function Nav() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "backdrop-blur-xl bg-ivory/70 border-b border-border/60" : "bg-transparent"
+        scrolled
+          ? "backdrop-blur-xl bg-ivory/85 border-b border-border/60"
+          : "backdrop-blur-md bg-ivory/40"
       }`}
     >
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-6 py-4 md:flex md:justify-between md:px-10 md:py-5">
-        <a href="#top" data-cursor="hover" className="group flex min-w-0 items-center gap-2.5">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full gradient-sunset text-ivory transition-transform duration-700 group-hover:rotate-180">
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" />
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10 md:py-5">
+        <a href="#top" data-cursor="hover" className="group flex items-center gap-2.5">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg gradient-sunset text-ivory transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-orange/20">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M12 3v18M3 12h18M7 7l10 10M17 7l-10 10" />
             </svg>
           </span>
           <span className="truncate text-[15px] font-semibold tracking-tight">
             Tattva<span className="text-orange">Tech</span>
           </span>
         </a>
-        <nav className="hidden items-center gap-8 md:flex">
-          {links.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              data-cursor="hover"
-              className="group relative text-sm text-charcoal transition-colors hover:text-ink"
-            >
-              {label}
-              <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
-            </a>
-          ))}
+
+        <nav className="hidden items-center gap-1 md:flex">
+          {links.map(([label, href]) => {
+            const isActive = active === href.slice(1);
+            return (
+              <a
+                key={href}
+                href={href}
+                data-cursor="hover"
+                className={`rounded-full px-4 py-2 text-sm transition-all duration-300 ${
+                  isActive
+                    ? "bg-orange/10 text-orange font-medium"
+                    : "text-charcoal hover:bg-ink/5 hover:text-ink"
+                }`}
+              >
+                {label}
+              </a>
+            );
+          })}
         </nav>
-        <div className="hidden md:block">
+
+        <div className="hidden items-center gap-4 md:flex">
           <MagneticButton href="#contact">Start a conversation</MagneticButton>
         </div>
+
         <button
           aria-label="Toggle menu"
           onClick={() => setOpen((s) => !s)}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border md:hidden"
+          className="relative z-50 grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border md:hidden"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
           </svg>
         </button>
       </div>
+
       {open && (
-        <div className="border-t border-border bg-ivory md:hidden">
-          <div className="flex flex-col p-6">
+        <div className="fixed inset-0 z-40 backdrop-blur-xl bg-ivory/90 md:hidden overscroll-behavior-none" onClick={() => setOpen(false)}>
+          <div className="flex h-full flex-col justify-center gap-2 px-10" onClick={(e) => e.stopPropagation()}>
             {links.map(([l, h]) => (
-              <a key={h} href={h} onClick={() => setOpen(false)} className="py-3 text-lg">
+              <a
+                key={h}
+                href={h}
+                onClick={() => setOpen(false)}
+                className={`border-b border-border/30 py-5 text-2xl font-medium transition-colors hover:text-orange ${
+                  active === h.slice(1) ? "text-orange" : "text-ink"
+                }`}
+              >
                 {l}
               </a>
             ))}
             <a
               href="#contact"
               onClick={() => setOpen(false)}
-              className="mt-4 inline-flex items-center justify-center rounded-full gradient-sunset px-4 py-3 text-sm font-medium text-ivory"
+              className="mt-6 inline-flex items-center justify-center rounded-full gradient-sunset px-8 py-4 text-base font-medium text-ivory"
             >
               Start a conversation
             </a>
@@ -534,7 +570,7 @@ function Hero() {
       />
       {/* Animated SVG network */}
       <svg
-        className="pointer-events-none absolute bottom-0 right-0 h-[640px] w-[640px] max-w-[140%] opacity-40 lg:opacity-60"
+        className="pointer-events-none absolute bottom-0 right-0 h-[480px] w-[480px] max-w-none opacity-40 sm:h-[640px] sm:w-[640px] sm:max-w-[140%] lg:opacity-60"
         viewBox="0 0 600 600"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -597,7 +633,7 @@ function Hero() {
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-7">
             <h1
-              className="font-display text-[clamp(2.75rem,8.5vw,8rem)] leading-[0.9] text-balance"
+              className="font-display text-[clamp(2rem,8.5vw,8rem)] leading-[0.9] text-balance break-words"
               style={{ transform: `translateY(${p * -40}px)` }}
             >
               <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
@@ -631,7 +667,7 @@ function Hero() {
           </div>
         </div>
 
-        <div className="mt-16 grid grid-cols-2 gap-6 border-t border-ink/10 pt-8 text-xs uppercase tracking-[0.24em] text-charcoal/60 md:mt-24 md:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-4 border-t border-ink/10 pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60 md:mt-24 md:gap-6 md:pt-8 md:grid-cols-4">
           {["Software · AI", "Drones · Aerial", "Products", "Training"].map((t, i) => (
             <div
               key={t}
@@ -808,9 +844,9 @@ function About() {
   }, []);
 
   return (
-    <section id="about" className="relative bg-ivory py-32 md:py-40">
+    <section id="about" className="relative bg-ivory py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-4">
             <Reveal>
               <SectionLabel>The Company</SectionLabel>
@@ -818,7 +854,7 @@ function About() {
           </div>
           <div className="md:col-span-8">
             <Reveal delay={80}>
-              <h2 className="font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance">
+              <h2 className="font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
                 A parent technology company where each vertical strengthens{" "}
                 <span className="italic text-gradient-orange">the others.</span>
               </h2>
@@ -834,12 +870,12 @@ function About() {
         </div>
 
         <Reveal delay={100}>
-          <div className="mt-16">
+          <div className="mt-10 md:mt-16">
             <MediaFrame aspect="wide" caption="Studio · Add image or video" />
           </div>
         </Reveal>
 
-        <div className="step-grid mt-24 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
+        <div className="step-grid mt-12 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5 md:mt-24">
           {steps.map((s, i) => (
             <Reveal key={s.k} delay={i * 90}>
               <div
@@ -853,7 +889,7 @@ function About() {
                   </span>
                   <span className="h-px w-10 origin-right scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
                 </div>
-                <h3 className="mt-10 font-display text-3xl">{s.k}.</h3>
+                <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{s.k}.</h3>
                 <p className="mt-4 text-sm leading-relaxed text-charcoal">{s.d}</p>
               </div>
             </Reveal>
@@ -1046,7 +1082,7 @@ function Ecosystem() {
   }, []);
 
   return (
-    <section id="ecosystem" className="relative overflow-hidden bg-cream py-32 md:py-40">
+    <section id="ecosystem" className="relative overflow-hidden bg-cream py-24 md:py-40 scroll-mt-24">
       <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
       <div className="pointer-events-none absolute -right-40 top-1/3 h-[520px] w-[520px] rounded-full glow-orange opacity-40 blur-3xl" />
 
@@ -1054,7 +1090,7 @@ function Ecosystem() {
         <div className="grid items-end gap-10 md:grid-cols-12">
           <div className="md:col-span-7">
             <SectionLabel>The Ecosystem</SectionLabel>
-            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance">
+            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
               Four verticals.{" "}
               <span className="italic text-gradient-orange">One system.</span>
             </h2>
@@ -1070,7 +1106,7 @@ function Ecosystem() {
           </div>
         </div>
 
-        <div ref={gridRef} className="relative mt-16 md:mt-24">
+        <div ref={gridRef} className="relative mt-10 md:mt-24">
           <svg
             className="pointer-events-none absolute inset-0 z-[2] hidden h-full w-full md:block"
             style={{ overflow: "visible" }}
@@ -1105,7 +1141,7 @@ function Ecosystem() {
                   <span className="h-px w-16 origin-right scale-x-50 bg-ink/20 transition-transform duration-500 group-hover:scale-x-100 group-hover:bg-orange" />
                 </div>
 
-                <h3 className="mt-10 font-display text-4xl leading-[1] md:text-5xl">
+                <h3 className="mt-6 font-display text-3xl leading-[1] md:mt-10 md:text-5xl">
                   {n.k}
                   <span className="text-orange">.</span>
                 </h3>
@@ -1137,7 +1173,7 @@ function Ecosystem() {
         </div>
 
         <Reveal delay={200}>
-          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-between gap-4 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-12 md:px-8">
+          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-12 md:px-8 md:justify-between md:gap-4">
             <span className="flex items-center gap-3">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_10px_var(--orange)]" />
               A closed loop
@@ -1229,15 +1265,15 @@ function Services() {
   }, []);
 
   return (
-    <section id="services" className="relative bg-ivory py-32 md:py-40">
+    <section id="services" className="relative bg-ivory py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-4">
             <Reveal>
               <SectionLabel>Services</SectionLabel>
             </Reveal>
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance">
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
                 Engineering as a{" "}
                 <span className="italic text-gradient-orange">long-term practice.</span>
               </h2>
@@ -1252,20 +1288,20 @@ function Services() {
                     <a
                       href="#contact"
                       data-cursor="hover"
-                      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-6 py-7"
+                      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 py-6 md:gap-6 md:py-7"
                     >
                       <span className="service-num text-xs tabular-nums text-orange">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="min-w-0">
-                        <div className="service-title font-display text-2xl transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
+                        <div className="service-title font-display text-xl transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
                           {s.k}
                         </div>
                         <p className="service-desc mt-1 hidden max-w-md text-sm text-charcoal md:block">
                           {s.d}
                         </p>
                       </div>
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border transition-all duration-500 group-hover:border-orange group-hover:bg-orange group-hover:text-ivory">
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-border transition-all duration-500 group-hover:border-orange group-hover:bg-orange group-hover:text-ivory md:h-11 md:w-11">
                         <svg
                           viewBox="0 0 20 20"
                           className="h-3.5 w-3.5"
@@ -1298,16 +1334,16 @@ function Products() {
     { k: "Compounding IP", d: "Each release strengthens the ecosystem and shortens delivery." },
   ];
   return (
-    <section className="relative overflow-hidden bg-cream py-32 md:py-40">
+    <section className="relative overflow-hidden bg-cream py-24 md:py-40">
       <div className="pointer-events-none absolute -left-40 top-1/3 h-[400px] w-[400px] rounded-full glow-orange opacity-40 blur-3xl" />
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12 md:items-end">
+        <div className="grid gap-10 md:grid-cols-12 md:items-end md:gap-16">
           <div className="md:col-span-6">
             <Reveal>
               <SectionLabel>Products</SectionLabel>
             </Reveal>
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance">
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
                 Products born from{" "}
                 <span className="italic text-gradient-orange">real work.</span>
               </h2>
@@ -1322,7 +1358,7 @@ function Products() {
           </Reveal>
         </div>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {items.map((it, i) => (
             <Reveal key={it.k} delay={i * 90}>
               <article
@@ -1346,10 +1382,10 @@ function Products() {
                       <path d="M4 10h16M10 4v16" />
                     </svg>
                   </div>
-                  <h3 className="mt-14 font-display text-3xl">{it.k}</h3>
-                  <p className="mt-4 text-sm leading-relaxed text-charcoal">{it.d}</p>
+                  <h3 className="mt-10 font-display text-2xl md:mt-14 md:text-3xl">{it.k}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-charcoal md:mt-4">{it.d}</p>
                 </div>
-                <div className="mt-10 h-px w-full origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100" />
+                <div className="mt-8 h-px w-full origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100 md:mt-10" />
               </article>
             </Reveal>
           ))}
@@ -1414,13 +1450,13 @@ function Drones() {
   }, []);
 
   return (
-    <section id="drones" className="relative overflow-hidden bg-cream py-32 text-ink md:py-40">
+    <section id="drones" className="relative overflow-hidden bg-cream py-24 text-ink md:py-40 scroll-mt-24">
       <FlightPathBg />
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-5">
             <SectionLabel>Drones</SectionLabel>
-            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance">
+            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
               Aerial systems,{" "}
               <span className="italic text-gradient-orange">grounded engineering.</span>
             </h2>
@@ -1436,14 +1472,14 @@ function Drones() {
             <div className="capability-grid grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x">
               {rows.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 60}>
-                  <div className="capability-item group relative p-8" data-cursor="hover">
+                  <div className="capability-item group relative p-6 md:p-8" data-cursor="hover">
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs uppercase tracking-[0.24em] text-orange">
                         Capability
                       </span>
                       <span className="h-1.5 w-1.5 rounded-full bg-orange opacity-70 transition-opacity group-hover:opacity-100" />
                     </div>
-                    <h3 className="mt-10 font-display text-3xl">{k}</h3>
+                    <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{k}</h3>
                     <p className="mt-3 text-sm leading-relaxed text-charcoal">{d}</p>
                   </div>
                 </Reveal>
@@ -1565,9 +1601,9 @@ function Training() {
   }, []);
 
   return (
-    <section id="training" className="relative bg-ivory py-32 md:py-40">
+    <section id="training" className="relative bg-ivory py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-14 md:grid-cols-12 md:gap-x-16 md:gap-y-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-x-16 md:gap-y-12">
           <div className="md:col-span-4">
             <Reveal>
               <SectionLabel>Training</SectionLabel>
@@ -1575,7 +1611,7 @@ function Training() {
           </div>
           <div className="md:col-span-8">
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance">
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
                 Knowledge that{" "}
                 <span className="italic text-gradient-orange">travels.</span>
               </h2>
@@ -1597,7 +1633,7 @@ function Training() {
               <span className="timeline-line pointer-events-none absolute left-0 top-0 h-full w-px origin-top bg-orange/70" />
               {items.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 80}>
-                  <li className="timeline-item group relative pb-12 pl-10 last:pb-0">
+                  <li className="timeline-item group relative pb-8 pl-8 last:pb-0 md:pb-12 md:pl-10">
                     <span className="timeline-dot absolute left-0 top-1.5 grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full border border-border bg-ivory transition-all duration-500 group-hover:border-orange group-hover:bg-orange">
                       <span className="h-1.5 w-1.5 rounded-full bg-orange transition-colors group-hover:bg-ivory" />
                     </span>
@@ -1605,7 +1641,7 @@ function Training() {
                       <span className="text-xs uppercase tracking-[0.24em] text-orange">
                         Program
                       </span>
-                      <h3 className="font-display text-2xl md:text-3xl">{k}</h3>
+                      <h3 className="font-display text-xl md:text-3xl">{k}</h3>
                     </div>
                     <p className="mt-3 max-w-xl text-sm leading-relaxed text-charcoal">
                       {d}
@@ -1633,15 +1669,15 @@ function Process() {
     ["Improve", "Real usage data feeds back into the cycle. The system gets smarter over time."],
   ];
   return (
-    <section id="process" className="relative overflow-hidden bg-cream py-32 md:py-40">
+    <section id="process" className="relative overflow-hidden bg-cream py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-4">
             <Reveal>
               <SectionLabel>Process</SectionLabel>
             </Reveal>
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance">
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
                 A calm,{" "}
                 <span className="italic text-gradient-orange">deliberate cadence.</span>
               </h2>
@@ -1715,15 +1751,15 @@ function Why() {
   }, []);
 
   return (
-    <section id="why" className="relative bg-ivory py-32 md:py-40">
+    <section id="why" className="relative bg-ivory py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-16 md:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-4">
             <Reveal>
               <SectionLabel>Why TattvaTech</SectionLabel>
             </Reveal>
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance">
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
                 Confidence through{" "}
                 <span className="italic text-gradient-orange">restraint.</span>
               </h2>
@@ -1738,7 +1774,7 @@ function Why() {
                       <span className="why-num text-xs tabular-nums text-orange">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="why-title font-display text-2xl md:text-3xl">{k}</span>
+                      <span className="why-title font-display text-xl md:text-3xl">{k}</span>
                     </dt>
                     <dd className="col-span-12 text-sm text-charcoal md:col-span-7 md:text-base">
                       {d}
@@ -1820,19 +1856,19 @@ function CTA() {
       <div className="absolute inset-0 gradient-sunset" />
       <div className="pointer-events-none absolute inset-0 bg-noise opacity-40 text-ink" />
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-15 text-ivory" />
-      <div className="relative mx-auto max-w-[1400px] px-6 py-32 text-ivory md:px-10 md:py-48">
+      <div className="relative mx-auto max-w-[1400px] px-6 py-24 text-ivory md:px-10 md:py-48 scroll-mt-24">
         <Reveal>
             <SectionLabel>
               <span className="text-ivory">Contact</span>
             </SectionLabel>
         </Reveal>
         <Reveal delay={100}>
-          <h2 className="cta-heading mt-8 font-display text-[clamp(2.5rem,10vw,10rem)] leading-[0.92] text-balance">
+          <h2 className="cta-heading mt-8 font-display text-[clamp(1.75rem,10vw,10rem)] leading-[0.92] text-balance break-words">
             Let's build technology <br />
             <span className="italic text-ivory/85">that matters.</span>
           </h2>
         </Reveal>
-        <div className="mt-16 grid gap-10 md:grid-cols-12 md:items-end">
+        <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-12 md:items-end md:gap-10">
           <Reveal delay={220} className="md:col-span-6">
             <p className="max-w-md text-pretty text-ivory/80">
               Tell us about your problem, your team, or the system you're trying to
@@ -1871,8 +1907,8 @@ function Footer() {
   ];
   return (
     <footer className="bg-ivory">
-      <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10">
-        <div className="grid gap-12 md:grid-cols-12">
+      <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-20">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-4">
             <div className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full gradient-sunset text-ivory">
@@ -1900,7 +1936,7 @@ function Footer() {
                       <a
                         href="#"
                         data-cursor="hover"
-                        className="text-sm text-charcoal underline-offset-4 hover:text-ink hover:underline"
+                        className="block py-2 text-sm text-charcoal underline-offset-4 hover:text-ink hover:underline md:py-0"
                       >
                         {l}
                       </a>
@@ -1911,7 +1947,7 @@ function Footer() {
             ))}
           </div>
         </div>
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-border pt-8 text-xs text-charcoal md:flex-row md:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 text-xs text-charcoal md:mt-16 md:flex-row md:items-center md:pt-8">
           <div>© {new Date().getFullYear()} TattvaTech. All rights reserved.</div>
           <div className="flex items-center gap-6">
             <span>Made with intent</span>
