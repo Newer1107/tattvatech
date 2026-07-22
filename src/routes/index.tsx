@@ -991,119 +991,24 @@ function useEcosystemBar() {
 /* -------------------------------- ecosystem ------------------------------- */
 
 function Ecosystem() {
-  const nodes = [
-    {
-      k: "Services",
-      desc: "Custom software, AI systems, cloud infrastructure, and design—delivered as long-term engineering partnerships.",
-      tags: ["Web", "Mobile", "AI", "Cloud"],
-      feeds: "Services",
-    },
-    {
-      k: "Products",
-      desc: "Scalable software products built from recurring, real-world problems discovered during service delivery.",
-      tags: ["SaaS", "Tools", "Platforms"],
-      feeds: "Products",
-    },
-    {
-      k: "Drones",
-      desc: "Research, industrial applications, aerial systems, consulting, and training across the drone stack.",
-      tags: ["Aerial", "Telemetry", "Industry"],
-      feeds: "Drones",
-    },
-    {
-      k: "Training",
-      desc: "College programs, workshops, faculty development, student upskilling, and corporate training.",
-      tags: ["Colleges", "Workshops", "Corporate"],
-      feeds: "Training",
-    },
-  ];
-  void nodes;
-
-  const gridRef = useEcosystemLines();
-  useEcosystemBar();
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "#ecosystem .eco-card",
-        { scale: 0.95, y: 30, autoAlpha: 0 },
-        {
-          scale: 1,
-          y: 0,
-          autoAlpha: 1,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: "#ecosystem .eco-grid",
-            start: "top 80%",
-            end: "top 45%",
-            scrub: 0.5,
-          },
-        },
-      );
-
-      gsap.utils.toArray<SVGPathElement>("#ecosystem .eco-arrow path").forEach((path) => {
-        const len = path.getTotalLength();
-        gsap.fromTo(
-          path,
-          { strokeDasharray: len, strokeDashoffset: len },
-          {
-            strokeDashoffset: 0,
-            scrollTrigger: {
-              trigger: path.closest(".eco-card"),
-              start: "top 75%",
-              end: "top 45%",
-              scrub: 0.5,
-            },
-          },
-        );
-      });
-
-      const words = document.querySelectorAll("#ecosystem .eco-closed-loop .eco-word");
-      words.forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { color: "rgb(var(--color-charcoal) / 0.7)" },
-          {
-            color: "var(--color-orange)",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              end: "top 65%",
-              scrub: 0.5,
-            },
-          },
-        );
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section
-      id="ecosystem"
-      className="verticals-section relative overflow-hidden bg-cream py-24 lg:py-0 scroll-mt-24"
-    >
+    <section id="ecosystem" className="verticals-section relative bg-cream scroll-mt-24">
       <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
-      <div className="pointer-events-none absolute -right-40 top-1/3 h-[520px] w-[520px] rounded-full glow-orange opacity-40 blur-3xl" />
 
-      <div className="verticals-shell relative mx-auto flex max-w-[1400px] flex-col px-6 md:px-10">
-        <div className="verticals-header grid items-end gap-8 md:grid-cols-12 md:gap-10">
-          <div className="md:col-span-7">
-            <SectionLabel>The Ecosystem</SectionLabel>
-            <h2
-              data-reveal
-              className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words"
-            >
+      <div className="verticals-inner relative">
+        <div className="verticals-eyebrow">
+          <SectionLabel>The Ecosystem</SectionLabel>
+        </div>
+
+        <div className="verticals-header">
+          <div>
+            <h2 data-reveal className="verticals-title mt-6 font-display text-balance break-words">
               Four verticals. <span className="italic text-gradient-orange">One system.</span>
             </h2>
           </div>
-          <div className="md:col-span-5">
+          <div className="verticals-copy">
             <Reveal delay={120}>
-              <p className="max-w-md text-pretty text-base leading-relaxed text-charcoal md:text-lg">
+              <p className="max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
                 Every part of TattvaTech feeds the others. Insights from services become products.
                 Field work sharpens training. Training strengthens engineering.
               </p>
@@ -1111,120 +1016,63 @@ function Ecosystem() {
           </div>
         </div>
 
-        <div ref={gridRef} className="verticals-frame relative mt-10 lg:mt-0">
-          <svg
-            className="verticals-connector pointer-events-none absolute inset-0 z-[0] hidden h-full w-full md:block"
-            style={{ overflow: "visible" }}
-            aria-hidden
-          >
-            {[0, 1, 2, 3].map((i) => (
-              <path
-                key={i}
-                className="ecosystem-line"
-                stroke="var(--orange)"
-                strokeWidth="2"
-                fill="none"
-                opacity="0.5"
-                strokeLinecap="round"
-              />
-            ))}
-          </svg>
-          <div className="verticals-grid eco-grid relative z-[1] grid gap-5 md:grid-cols-2 md:gap-6">
-            {verticalRoutes.map((vertical, i) => (
-              <Reveal key={vertical.title} delay={i * 90}>
-                <article
-                  className="eco-card vertical-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-6 shadow-soft transition-colors duration-300 hover:border-orange/50 hover:shadow-warm md:p-8 xl:p-9"
-                  data-cursor="hover"
-                  data-card
-                >
-                  <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-colors duration-300 group-hover:bg-orange/20" />
+        <div className="verticals-grid">
+          {verticalRoutes.map((vertical, i) => (
+            <Reveal key={vertical.title} delay={i * 90}>
+              <article
+                className="vertical-card group relative rounded-[28px] shadow-soft"
+                data-cursor="hover"
+                data-card
+              >
+                <div className="vertical-card__main-link">
+                  <div className="vertical-card__header">
+                    <span className="vertical-card__eyebrow text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
+                      Vertical
+                    </span>
+                    <span className="vertical-card__rule" />
+                  </div>
 
+                  <div className="vertical-card__body">
+                    <h3>
+                      {vertical.title}
+                      <span className="text-orange">.</span>
+                    </h3>
+
+                    <p>{vertical.description}</p>
+
+                    <div className="vertical-card__tags">
+                      {vertical.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="vertical-card__footer">
                   <Link
                     to={vertical.href}
-                    className="vertical-card__main-link block rounded-[inherit] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange"
+                    className="vertical-card__cta"
                     aria-label={`View ${vertical.title}`}
                   >
-                    <div className="flex items-baseline justify-between gap-4">
-                      <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
-                        Vertical
-                      </span>
-                      <span className="h-px w-14 bg-ink/20 transition-colors duration-300 group-hover:bg-orange" />
-                    </div>
-
-                    <div className="vertical-card__content">
-                      <h3 className="mt-6 font-display text-[clamp(2.6rem,4vw,4.6rem)] leading-[0.95] md:mt-8">
-                        {vertical.title}
-                        <span className="text-orange">.</span>
-                      </h3>
-
-                      <p className="mt-4 max-w-[46ch] text-pretty text-[clamp(0.95rem,1.15vw,1.15rem)] leading-[1.45] text-charcoal">
-                        {vertical.description}
-                      </p>
-
-                      <div className="vertical-card__tags mt-6 flex flex-wrap gap-2">
-                        {vertical.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80 transition-colors duration-300 group-hover:border-orange/40 group-hover:text-ink"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-orange">
-                        <span>View {vertical.title}</span>
-                        <span aria-hidden>↗</span>
-                      </span>
-                    </div>
+                    <span>View {vertical.title}</span>
+                    <span aria-hidden="true">&#8599;</span>
                   </Link>
-
-                  <div className="vertical-card__footer mt-6 flex items-center gap-3 border-t border-border pt-4 text-xs uppercase tracking-[0.24em] text-charcoal/60">
-                    <span>Feeds</span>
-                    <span aria-hidden className="text-orange">
-                      →
-                    </span>
-                    <Link
-                      to={vertical.feedsHref}
-                      className="rounded-full text-ink transition-colors duration-300 hover:text-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
-                    >
-                      {vertical.feedsInto}
-                    </Link>
-                  </div>
-                </article>
-              </Reveal>
-            ))}
-          </div>
+                </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
 
         <Reveal delay={200}>
-          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-8 md:px-8 md:justify-between md:gap-4">
-            <span className="flex items-center gap-3">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_10px_var(--orange)]" />
-              A closed loop
-            </span>
-            <span className="hidden md:inline">
-              {[
-                { type: "segment", text: "Services " },
-                { type: "arrow", text: "→ " },
-                { type: "segment", text: "Products " },
-                { type: "arrow", text: "→ " },
-                { type: "segment", text: "Drones " },
-                { type: "arrow", text: "→ " },
-                { type: "segment", text: "Training " },
-                { type: "arrow", text: "→ " },
-                { type: "segment", text: "Services" },
-              ].map((item, i) => (
-                <span
-                  key={i}
-                  className={`eco-word ${item.type === "arrow" ? "bar-arrow" : "bar-segment"}`}
-                >
-                  {item.text}
-                </span>
-              ))}
-            </span>
-            <span className="text-orange">Compounding expertise</span>
-          </div>
+          <p className="verticals-closing text-pretty text-charcoal/75">
+            A connected system where each vertical stays readable, evenly weighted, and clearly
+            routed.
+          </p>
         </Reveal>
       </div>
     </section>

@@ -9,8 +9,6 @@ export type VerticalRoute = {
   href: "/services" | "/products" | "/drones" | "/training";
   description: string;
   tags: string[];
-  feedsInto: VerticalKey;
-  feedsHref: "/services" | "/products" | "/drones" | "/training";
 };
 
 export type FooterLink = {
@@ -32,8 +30,6 @@ export const verticalRoutes: VerticalRoute[] = [
     description:
       "Custom software, AI systems, cloud infrastructure, and design delivered as long-term engineering partnerships.",
     tags: ["Web", "Mobile", "AI", "Cloud"],
-    feedsInto: "Services",
-    feedsHref: "/services",
   },
   {
     title: "Products",
@@ -41,8 +37,6 @@ export const verticalRoutes: VerticalRoute[] = [
     description:
       "Scalable software products built from recurring, real-world problems discovered during service delivery.",
     tags: ["SaaS", "Tools", "Platforms"],
-    feedsInto: "Products",
-    feedsHref: "/products",
   },
   {
     title: "Drones",
@@ -50,8 +44,6 @@ export const verticalRoutes: VerticalRoute[] = [
     description:
       "Research, industrial applications, aerial systems, consulting, and training across the drone stack.",
     tags: ["Aerial", "Telemetry", "Industry"],
-    feedsInto: "Drones",
-    feedsHref: "/drones",
   },
   {
     title: "Training",
@@ -59,8 +51,6 @@ export const verticalRoutes: VerticalRoute[] = [
     description:
       "College programs, workshops, faculty development, student upskilling, and corporate training.",
     tags: ["Colleges", "Workshops", "Corporate"],
-    feedsInto: "Training",
-    feedsHref: "/training",
   },
 ];
 
