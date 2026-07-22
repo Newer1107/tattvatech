@@ -462,6 +462,7 @@ function Nav() {
 /* ---------------------------------- hero ---------------------------------- */
 
 function Hero() {
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
   const p = useScrollProgress();
   useEffect(() => {
@@ -554,6 +555,23 @@ function Hero() {
     });
 
     return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -659,11 +677,18 @@ function Hero() {
           </div>
 
           <div className="reveal-up lg:col-span-5" style={{ animationDelay: "300ms" }}>
-            <MediaFrame
-              aspect="portrait"
-              caption="Product tour · Add video or screen recording"
-              accent
-            />
+            <div className="group relative overflow-hidden rounded-3xl border border-border shadow-warm">
+              <video
+                ref={heroVideoRef}
+                className="w-full aspect-[4/5] object-cover"
+                muted
+                loop
+                playsInline
+                preload="auto"
+              >
+                <source src="/hero-ui.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
         </div>
 
