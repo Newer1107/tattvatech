@@ -51,7 +51,6 @@ function useReveal<T extends HTMLElement>() {
   return { ref, shown };
 }
 
-
 function useScrollProgress() {
   const [p, setP] = useState(0);
   useEffect(() => {
@@ -127,8 +126,12 @@ function useCardHover(selector: string) {
 
         const onLeave = () => {
           gsap.to(card, {
-            scale: 1, rotationX: 0, rotationY: 0,
-            duration: 0.4, ease: "power3.out", overwrite: "auto",
+            scale: 1,
+            rotationX: 0,
+            rotationY: 0,
+            duration: 0.4,
+            ease: "power3.out",
+            overwrite: "auto",
           });
         };
 
@@ -172,7 +175,6 @@ function Reveal({
     </As>
   );
 }
-
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -248,7 +250,13 @@ function MagneticButton({
         className="relative z-10 grid h-6 w-6 place-items-center rounded-full bg-ink/90 text-ivory transition-transform duration-500 group-hover:translate-x-0.5"
         aria-hidden
       >
-        <svg viewBox="0 0 20 20" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          viewBox="0 0 20 20"
+          className="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M4 10h12M11 5l5 5-5 5" />
         </svg>
       </span>
@@ -272,7 +280,9 @@ function Cursor() {
     document.body.style.cursor = "none";
     const mq = window.matchMedia("(pointer: coarse)");
     if (mq.matches) document.body.style.cursor = "";
-    return () => { document.body.style.cursor = ""; };
+    return () => {
+      document.body.style.cursor = "";
+    };
   }, []);
 
   if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return null;
@@ -298,7 +308,9 @@ function Cursor() {
             background: hover
               ? "color-mix(in oklab, var(--orange) 20%, transparent)"
               : "color-mix(in oklab, var(--orange) 40%, transparent)",
-            border: hover ? "1.5px solid color-mix(in oklab, var(--orange) 50%, transparent)" : "1px solid color-mix(in oklab, var(--orange) 30%, transparent)",
+            border: hover
+              ? "1.5px solid color-mix(in oklab, var(--orange) 50%, transparent)"
+              : "1px solid color-mix(in oklab, var(--orange) 30%, transparent)",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
             boxShadow: hover
@@ -341,15 +353,8 @@ function Cursor() {
 /* ---------------------------------- nav ----------------------------------- */
 
 function Nav() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("top");
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const ids = ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
@@ -376,26 +381,21 @@ function Nav() {
   ] as const;
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "backdrop-blur-xl bg-ivory/85 border-b border-border/60"
-          : "backdrop-blur-md bg-ivory/40"
-      }`}
-    >
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10 md:py-5">
-        <a href="#top" data-cursor="hover" className="group flex items-center gap-2.5">
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg gradient-sunset text-ivory transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-orange/20">
-            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M12 3v18M3 12h18M7 7l10 10M17 7l-10 10" />
-            </svg>
-          </span>
-          <span className="truncate text-[15px] font-semibold tracking-tight">
-            Tattva<span className="text-orange">Tech</span>
-          </span>
+    <header className="navbar relative z-10 w-full">
+      <div className="flex items-center justify-between gap-4 py-4 md:py-5">
+        <a href="#top" data-cursor="hover" className="group flex shrink-0 items-center">
+          <img
+            src="/Logo.png"
+            alt="TattvaTech"
+            width={220}
+            height={220}
+            loading="eager"
+            fetchPriority="high"
+            className="navbar-logo"
+          />
         </a>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden min-w-0 items-center gap-1 md:flex">
           {links.map(([label, href]) => {
             const isActive = active === href.slice(1);
             return (
@@ -415,7 +415,7 @@ function Nav() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden shrink-0 items-center gap-4 md:flex">
           <MagneticButton href="#contact">Start a conversation</MagneticButton>
         </div>
 
@@ -424,15 +424,27 @@ function Nav() {
           onClick={() => setOpen((s) => !s)}
           className="relative z-50 grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border md:hidden"
         >
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
           </svg>
         </button>
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-40 backdrop-blur-xl bg-ivory/90 md:hidden overscroll-behavior-none" onClick={() => setOpen(false)}>
-          <div className="flex h-full flex-col justify-center gap-2 px-10" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-40 backdrop-blur-xl bg-ivory/90 md:hidden overscroll-behavior-none"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="flex h-full flex-col justify-center gap-2 px-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             {links.map(([l, h]) => (
               <a
                 key={h}
@@ -575,7 +587,7 @@ function Hero() {
   }, []);
 
   return (
-    <section id="top" className="relative overflow-hidden bg-ivory">
+    <section id="top" className="hero-section relative overflow-hidden bg-ivory">
       <div className="absolute inset-0 text-ink">
         <div className="absolute inset-0 bg-grid grid-drift opacity-70" />
       </div>
@@ -595,17 +607,83 @@ function Hero() {
         aria-hidden="true"
       >
         {/* Connection lines */}
-        <path d="M220,420 L360,510 L490,440 L440,310 L310,340 L220,420" stroke="#ff7a18" strokeWidth="1.5" className="network-line" opacity="0.35" />
-        <path d="M310,340 L400,200 L440,310" stroke="#ff7a18" strokeWidth="1.2" className="network-line" opacity="0.3" />
-        <path d="M360,510 L530,340 L440,310" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.25" />
-        <path d="M530,340 L550,480 L490,440" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.25" />
-        <path d="M140,480 L220,420 L100,380" stroke="#ff7a18" strokeWidth="1" className="network-line" opacity="0.2" />
-        <path d="M310,340 L180,320 L100,380" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.2" />
-        <path d="M360,510 L490,440 L550,480" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.2" />
-        <path d="M220,420 L310,340 L400,200" stroke="#ff7a18" strokeWidth="0.8" className="network-line" opacity="0.15" />
-        <path d="M140,480 L360,510" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
-        <path d="M400,200 L530,340" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
-        <path d="M180,320 L220,420" stroke="#ff7a18" strokeWidth="0.6" className="network-line" opacity="0.15" />
+        <path
+          d="M220,420 L360,510 L490,440 L440,310 L310,340 L220,420"
+          stroke="#ff7a18"
+          strokeWidth="1.5"
+          className="network-line"
+          opacity="0.35"
+        />
+        <path
+          d="M310,340 L400,200 L440,310"
+          stroke="#ff7a18"
+          strokeWidth="1.2"
+          className="network-line"
+          opacity="0.3"
+        />
+        <path
+          d="M360,510 L530,340 L440,310"
+          stroke="#ff7a18"
+          strokeWidth="1"
+          className="network-line"
+          opacity="0.25"
+        />
+        <path
+          d="M530,340 L550,480 L490,440"
+          stroke="#ff7a18"
+          strokeWidth="1"
+          className="network-line"
+          opacity="0.25"
+        />
+        <path
+          d="M140,480 L220,420 L100,380"
+          stroke="#ff7a18"
+          strokeWidth="1"
+          className="network-line"
+          opacity="0.2"
+        />
+        <path
+          d="M310,340 L180,320 L100,380"
+          stroke="#ff7a18"
+          strokeWidth="0.8"
+          className="network-line"
+          opacity="0.2"
+        />
+        <path
+          d="M360,510 L490,440 L550,480"
+          stroke="#ff7a18"
+          strokeWidth="0.8"
+          className="network-line"
+          opacity="0.2"
+        />
+        <path
+          d="M220,420 L310,340 L400,200"
+          stroke="#ff7a18"
+          strokeWidth="0.8"
+          className="network-line"
+          opacity="0.15"
+        />
+        <path
+          d="M140,480 L360,510"
+          stroke="#ff7a18"
+          strokeWidth="0.6"
+          className="network-line"
+          opacity="0.15"
+        />
+        <path
+          d="M400,200 L530,340"
+          stroke="#ff7a18"
+          strokeWidth="0.6"
+          className="network-line"
+          opacity="0.15"
+        />
+        <path
+          d="M180,320 L220,420"
+          stroke="#ff7a18"
+          strokeWidth="0.6"
+          className="network-line"
+          opacity="0.15"
+        />
         {/* Network nodes */}
         <circle cx="220" cy="420" r="4.5" fill="#ff7a18" className="network-node" opacity="0" />
         <circle cx="360" cy="510" r="3.5" fill="#ff7a18" className="network-node" opacity="0" />
@@ -640,69 +718,82 @@ function Hero() {
         <circle cx="60" cy="440" r="1.2" fill="#ff7a18" className="hero-particle" />
       </svg>
 
-      <div className="relative mx-auto flex min-h-[100dvh] max-w-[1400px] flex-col justify-center px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
-        <div className="hero-badge" style={{ opacity: 0 }}>
-          <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
-            A founder-led technology company · Est. 2024
-          </div>
-        </div>
+      <div className="relative mx-auto flex min-h-[100svh] max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
+        <Nav />
 
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-7">
-            <h1
-              className="font-display text-[clamp(2rem,8.5vw,8rem)] leading-[0.9] text-balance break-words"
-              style={{ transform: `translateY(${p * -40}px)` }}
-            >
-              <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
-                Technology
-              </span>
-              <span className="block hero-heading-line-2 italic text-gradient-orange" style={{ opacity: 0 }}>
-                that transforms.
-              </span>
-            </h1>
-
-            <p className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg" style={{ opacity: 0 }}>
-              TattvaTech builds practical technology across software, AI, drones,
-              digital products, and technical education—creating solutions that grow
-              stronger through connected expertise.
-            </p>
-
-            <div className="hero-actions mt-10 flex flex-wrap items-center gap-4" style={{ opacity: 0 }}>
-              <MagneticButton href="#services">Explore our work</MagneticButton>
-              <MagneticButton href="#ecosystem" variant="ghost">
-                Discover our ecosystem
-              </MagneticButton>
+        <div className="flex flex-1 flex-col justify-center py-6 md:py-8">
+          <div className="hero-badge" style={{ opacity: 0 }}>
+            <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
+              A founder-led technology company · Est. 2024
             </div>
           </div>
 
-          <div className="reveal-up lg:col-span-5" style={{ animationDelay: "300ms" }}>
-            <div className="group relative overflow-hidden rounded-3xl border border-border shadow-warm">
-              <video
-                ref={heroVideoRef}
-                className="w-full aspect-[4/5] object-cover"
-                muted
-                loop
-                playsInline
-                preload="auto"
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="lg:col-span-7">
+              <h1
+                className="font-display text-[clamp(2rem,8.5vw,8rem)] leading-[0.9] text-balance break-words"
+                style={{ transform: `translateY(${p * -40}px)` }}
               >
-                <source src="/hero-ui.mp4" type="video/mp4" />
-              </video>
+                <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
+                  Technology
+                </span>
+                <span
+                  className="block hero-heading-line-2 italic text-gradient-orange"
+                  style={{ opacity: 0 }}
+                >
+                  that transforms.
+                </span>
+              </h1>
+
+              <p
+                className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg"
+                style={{ opacity: 0 }}
+              >
+                TattvaTech builds practical technology across software, AI, drones, digital
+                products, and technical education—creating solutions that grow stronger through
+                connected expertise.
+              </p>
+
+              <div
+                className="hero-actions mt-10 flex flex-wrap items-center gap-4"
+                style={{ opacity: 0 }}
+              >
+                <MagneticButton href="#services">Explore our work</MagneticButton>
+                <MagneticButton href="#ecosystem" variant="ghost">
+                  Discover our ecosystem
+                </MagneticButton>
+              </div>
+            </div>
+
+            <div className="reveal-up lg:col-span-5" style={{ animationDelay: "300ms" }}>
+              <div className="group relative overflow-hidden rounded-3xl border border-border shadow-warm">
+                <video
+                  ref={heroVideoRef}
+                  className="aspect-[4/5] w-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                >
+                  <source src="/hero-ui.mp4" type="video/mp4" />
+                </video>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 border-t border-ink/10 pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60 md:mt-24 md:gap-6 md:pt-8 md:grid-cols-4">
-          {["Software · AI", "Drones · Aerial", "Products", "Training"].map((t, i) => (
-            <div
-              key={t}
-              className="reveal-up flex items-center gap-2"
-              style={{ animationDelay: `${760 + i * 90}ms` }}
-            >
-              <span className="h-2 w-2 rounded-full bg-orange/60" />
-              <span>{t}</span>
-            </div>
-          ))}
+          <div className="mt-10 grid grid-cols-2 gap-4 border-t border-ink/10 pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60 md:mt-24 md:grid-cols-4 md:gap-6 md:pt-8">
+            {["Software · AI", "Drones · Aerial", "Products", "Training"].map((t, i) => (
+              <div
+                key={t}
+                className="reveal-up flex items-center gap-2"
+                style={{ animationDelay: `${760 + i * 90}ms` }}
+              >
+                <span className="h-2 w-2 rounded-full bg-orange/60" />
+                <span>{t}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -741,7 +832,9 @@ function MediaFrame({
       data-cursor="hover"
       aria-label={caption ?? "Media placeholder"}
     >
-      <div className={`absolute inset-0 ${onDark ? "text-ivory" : "text-ink"} bg-grid-fine opacity-40`} />
+      <div
+        className={`absolute inset-0 ${onDark ? "text-ivory" : "text-ink"} bg-grid-fine opacity-40`}
+      />
       {accent && (
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full glow-orange opacity-70 blur-3xl" />
       )}
@@ -765,14 +858,21 @@ function MediaFrame({
         </span>
       </div>
 
-      <span className={`pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t ${onDark ? "border-ivory/40" : "border-ink/30"}`} />
-      <span className={`pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t ${onDark ? "border-ivory/40" : "border-ink/30"}`} />
-      <span className={`pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l ${onDark ? "border-ivory/40" : "border-ink/30"}`} />
-      <span className={`pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r ${onDark ? "border-ivory/40" : "border-ink/30"}`} />
+      <span
+        className={`pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t ${onDark ? "border-ivory/40" : "border-ink/30"}`}
+      />
+      <span
+        className={`pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t ${onDark ? "border-ivory/40" : "border-ink/30"}`}
+      />
+      <span
+        className={`pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l ${onDark ? "border-ivory/40" : "border-ink/30"}`}
+      />
+      <span
+        className={`pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r ${onDark ? "border-ivory/40" : "border-ink/30"}`}
+      />
     </figure>
   );
 }
-
 
 function Ticks() {
   return (
@@ -886,9 +986,9 @@ function About() {
             </Reveal>
             <Reveal delay={200}>
               <p className="mt-8 max-w-2xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
-                TattvaTech is founder-led. We build software, AI systems, drones, digital
-                products, and technical education—not as separate businesses, but as an
-                ecosystem that compounds expertise over time.
+                TattvaTech is founder-led. We build software, AI systems, drones, digital products,
+                and technical education—not as separate businesses, but as an ecosystem that
+                compounds expertise over time.
               </p>
             </Reveal>
           </div>
@@ -909,9 +1009,7 @@ function About() {
                 data-card
               >
                 <div className="flex items-baseline justify-between">
-                  <span className="step-num text-xs tabular-nums text-orange/60">
-                    0{i + 1}
-                  </span>
+                  <span className="step-num text-xs tabular-nums text-orange/60">0{i + 1}</span>
                   <span className="h-px w-10 origin-right scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
                 </div>
                 <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{s.k}.</h3>
@@ -949,13 +1047,23 @@ function useEcosystemLines() {
           y: r.top + r.height / 2 - gridRect.top,
         };
       });
-      const conns: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 0]];
+      const conns: [number, number][] = [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
+      ];
       paths.forEach((path, i) => {
         const [from, to] = conns[i];
-        const x1 = positions[from].x, y1 = positions[from].y;
-        const x2 = positions[to].x, y2 = positions[to].y;
+        const x1 = positions[from].x,
+          y1 = positions[from].y;
+        const x2 = positions[to].x,
+          y2 = positions[to].y;
         const mx = (x1 + x2) / 2;
-        path.setAttribute("d", `M ${x1} ${y1} Q ${mx} ${y1}, ${mx} ${(y1 + y2) / 2} Q ${mx} ${y2}, ${x2} ${y2}`);
+        path.setAttribute(
+          "d",
+          `M ${x1} ${y1} Q ${mx} ${y1}, ${mx} ${(y1 + y2) / 2} Q ${mx} ${y2}, ${x2} ${y2}`,
+        );
         const len = path.getTotalLength();
         path.style.strokeDasharray = String(len);
         path.style.strokeDashoffset = String(len);
@@ -974,7 +1082,7 @@ function useEcosystemLines() {
           const len = path.getTotalLength();
           gsap.to(path, { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" });
         },
-      })
+      }),
     );
 
     return () => {
@@ -990,7 +1098,9 @@ function useEcosystemBar() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const segs = document.querySelectorAll<HTMLElement>("#ecosystem .bar-segment, #ecosystem .bar-arrow");
+    const segs = document.querySelectorAll<HTMLElement>(
+      "#ecosystem .bar-segment, #ecosystem .bar-arrow",
+    );
     if (!segs.length) return;
 
     const tl = gsap.timeline({
@@ -1107,7 +1217,10 @@ function Ecosystem() {
   }, []);
 
   return (
-    <section id="ecosystem" className="relative overflow-hidden bg-cream py-24 md:py-40 scroll-mt-24">
+    <section
+      id="ecosystem"
+      className="relative overflow-hidden bg-cream py-24 md:py-40 scroll-mt-24"
+    >
       <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
       <div className="pointer-events-none absolute -right-40 top-1/3 h-[520px] w-[520px] rounded-full glow-orange opacity-40 blur-3xl" />
 
@@ -1115,17 +1228,18 @@ function Ecosystem() {
         <div className="grid items-end gap-10 md:grid-cols-12">
           <div className="md:col-span-7">
             <SectionLabel>The Ecosystem</SectionLabel>
-            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
-              Four verticals.{" "}
-              <span className="italic text-gradient-orange">One system.</span>
+            <h2
+              data-reveal
+              className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words"
+            >
+              Four verticals. <span className="italic text-gradient-orange">One system.</span>
             </h2>
           </div>
           <div className="md:col-span-5">
             <Reveal delay={120}>
               <p className="max-w-md text-pretty text-base leading-relaxed text-charcoal md:text-lg">
-                Every part of TattvaTech feeds the others. Insights from services
-                become products. Field work sharpens training. Training strengthens
-                engineering.
+                Every part of TattvaTech feeds the others. Insights from services become products.
+                Field work sharpens training. Training strengthens engineering.
               </p>
             </Reveal>
           </div>
@@ -1150,51 +1264,57 @@ function Ecosystem() {
             ))}
           </svg>
           <div className="eco-grid relative z-[3] grid gap-5 md:grid-cols-2 md:gap-6">
-          {nodes.map((n, i) => (
-            <Reveal key={n.k} delay={i * 90}>
-              <article
-                className="eco-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-8 shadow-soft transition-all duration-500 hover:-translate-y-1 hover:border-orange/50 hover:shadow-warm md:p-10"
-                data-cursor="hover"
-                data-card
-              >
-                <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-all duration-700 group-hover:bg-orange/20" />
+            {nodes.map((n, i) => (
+              <Reveal key={n.k} delay={i * 90}>
+                <article
+                  className="eco-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-8 shadow-soft transition-all duration-500 hover:-translate-y-1 hover:border-orange/50 hover:shadow-warm md:p-10"
+                  data-cursor="hover"
+                  data-card
+                >
+                  <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-all duration-700 group-hover:bg-orange/20" />
 
-                <div className="flex items-baseline justify-between">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
-                    Vertical
-                  </span>
-                  <span className="h-px w-16 origin-right scale-x-50 bg-ink/20 transition-transform duration-500 group-hover:scale-x-100 group-hover:bg-orange" />
-                </div>
-
-                <h3 className="mt-6 font-display text-3xl leading-[1] md:mt-10 md:text-5xl">
-                  {n.k}
-                  <span className="text-orange">.</span>
-                </h3>
-
-                <p className="mt-5 max-w-md text-pretty text-charcoal">{n.desc}</p>
-
-                <div className="mt-8 flex flex-wrap gap-2">
-                  {n.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80 transition-colors duration-300 group-hover:border-orange/40 group-hover:text-ink"
-                    >
-                      {t}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
+                      Vertical
                     </span>
-                  ))}
-                </div>
+                    <span className="h-px w-16 origin-right scale-x-50 bg-ink/20 transition-transform duration-500 group-hover:scale-x-100 group-hover:bg-orange" />
+                  </div>
 
-                <div className="eco-arrow mt-8 flex items-center gap-3 border-t border-border pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60">
-                  <span>Feeds</span>
-                  <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 text-orange" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M4 10h12M11 5l5 5-5 5" />
-                  </svg>
-                  <span className="text-ink">{n.feeds}</span>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
+                  <h3 className="mt-6 font-display text-3xl leading-[1] md:mt-10 md:text-5xl">
+                    {n.k}
+                    <span className="text-orange">.</span>
+                  </h3>
+
+                  <p className="mt-5 max-w-md text-pretty text-charcoal">{n.desc}</p>
+
+                  <div className="mt-8 flex flex-wrap gap-2">
+                    {n.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80 transition-colors duration-300 group-hover:border-orange/40 group-hover:text-ink"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="eco-arrow mt-8 flex items-center gap-3 border-t border-border pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60">
+                    <span>Feeds</span>
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="h-3.5 w-3.5 text-orange"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path d="M4 10h12M11 5l5 5-5 5" />
+                    </svg>
+                    <span className="text-ink">{n.feeds}</span>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
         </div>
 
         <Reveal delay={200}>
@@ -1230,8 +1350,6 @@ function Ecosystem() {
     </section>
   );
 }
-
-
 
 /* --------------------------------- services ------------------------------- */
 
@@ -1280,7 +1398,12 @@ function Services() {
           gsap.fromTo(
             divider,
             { scaleX: 0 },
-            { scaleX: 1, transformOrigin: "left center", scrollTrigger: makeST(item), duration: 0.4 },
+            {
+              scaleX: 1,
+              transformOrigin: "left center",
+              scrollTrigger: makeST(item),
+              duration: 0.4,
+            },
           );
         }
       });
@@ -1354,7 +1477,10 @@ function Services() {
 
 function Products() {
   const items = [
-    { k: "Recurring problems", d: "We surface patterns across engagements and turn them into products." },
+    {
+      k: "Recurring problems",
+      d: "We surface patterns across engagements and turn them into products.",
+    },
     { k: "Own the stack", d: "Products built with the same engineering rigor as our services." },
     { k: "Compounding IP", d: "Each release strengthens the ecosystem and shortens delivery." },
   ];
@@ -1369,16 +1495,15 @@ function Products() {
             </Reveal>
             <Reveal delay={80}>
               <h2 className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
-                Products born from{" "}
-                <span className="italic text-gradient-orange">real work.</span>
+                Products born from <span className="italic text-gradient-orange">real work.</span>
               </h2>
             </Reveal>
           </div>
           <Reveal delay={160} className="md:col-span-6">
             <p className="max-w-xl text-pretty text-charcoal">
-              We build scalable software products from recurring, real-world problems
-              discovered during service delivery—shipped with the discipline of a
-              product company and the pragmatism of an engineering team.
+              We build scalable software products from recurring, real-world problems discovered
+              during service delivery—shipped with the discipline of a product company and the
+              pragmatism of an engineering team.
             </p>
           </Reveal>
         </div>
@@ -1493,19 +1618,25 @@ function Drones() {
   }, []);
 
   return (
-    <section id="drones" className="relative overflow-hidden bg-cream py-24 text-ink md:py-40 scroll-mt-24">
+    <section
+      id="drones"
+      className="relative overflow-hidden bg-cream py-24 text-ink md:py-40 scroll-mt-24"
+    >
       <FlightPathBg />
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="grid gap-10 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-5">
             <SectionLabel>Drones</SectionLabel>
-            <h2 data-reveal className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words">
+            <h2
+              data-reveal
+              className="mt-6 font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1] text-balance break-words"
+            >
               Aerial systems,{" "}
               <span className="italic text-gradient-orange">grounded engineering.</span>
             </h2>
             <p data-reveal className="mt-6 max-w-md text-pretty text-charcoal">
-              Research, industrial applications, consulting, and training across the
-              drone stack—built by engineers who fly what they design.
+              Research, industrial applications, consulting, and training across the drone
+              stack—built by engineers who fly what they design.
             </p>
             <Reveal delay={140}>
               <div className="group relative mt-10 overflow-hidden rounded-3xl border border-border shadow-warm">
@@ -1545,7 +1676,6 @@ function Drones() {
     </section>
   );
 }
-
 
 function FlightPathBg() {
   return (
@@ -1666,20 +1796,23 @@ function Training() {
           <div className="md:col-span-8">
             <Reveal delay={80}>
               <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Knowledge that{" "}
-                <span className="italic text-gradient-orange">travels.</span>
+                Knowledge that <span className="italic text-gradient-orange">travels.</span>
               </h2>
             </Reveal>
             <Reveal delay={160}>
               <p className="mt-6 max-w-sm text-pretty text-charcoal">
-                We teach what we build. Programs, workshops, and long-form curricula
-                designed to move engineers, students, and faculty forward.
+                We teach what we build. Programs, workshops, and long-form curricula designed to
+                move engineers, students, and faculty forward.
               </p>
             </Reveal>
           </div>
           <Reveal delay={180} className="md:col-span-5">
             <div className="md:sticky md:top-28">
-              <MediaFrame aspect="video" caption="Cohort · Add video" className="md:aspect-[16/11]" />
+              <MediaFrame
+                aspect="video"
+                caption="Cohort · Add video"
+                className="md:aspect-[16/11]"
+              />
             </div>
           </Reveal>
           <div className="md:col-span-7">
@@ -1697,9 +1830,7 @@ function Training() {
                       </span>
                       <h3 className="font-display text-xl md:text-3xl">{k}</h3>
                     </div>
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-charcoal">
-                      {d}
-                    </p>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-charcoal">{d}</p>
                   </li>
                 </Reveal>
               ))}
@@ -1717,9 +1848,15 @@ function Process() {
   const steps = [
     ["Understand", "We learn your domain, your constraints, and what success actually looks like."],
     ["Research", "We explore the problem space, what's been tried, what failed, what's possible."],
-    ["Design", "Architecture, interfaces, and systems planned before a single line of production code."],
+    [
+      "Design",
+      "Architecture, interfaces, and systems planned before a single line of production code.",
+    ],
     ["Build", "Clean engineering with regular checkpoints, not long silences."],
-    ["Deploy", "Shipping to production with confidence—monitored, documented, backed out if needed."],
+    [
+      "Deploy",
+      "Shipping to production with confidence—monitored, documented, backed out if needed.",
+    ],
     ["Improve", "Real usage data feeds back into the cycle. The system gets smarter over time."],
   ];
   return (
@@ -1732,29 +1869,28 @@ function Process() {
             </Reveal>
             <Reveal delay={80}>
               <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                A calm,{" "}
-                <span className="italic text-gradient-orange">deliberate cadence.</span>
+                A calm, <span className="italic text-gradient-orange">deliberate cadence.</span>
               </h2>
             </Reveal>
           </div>
           <div className="md:col-span-8">
             <Reveal delay={160}>
               <p className="mb-10 max-w-xl text-pretty text-sm leading-relaxed text-charcoal">
-                Every engagement follows the same cycle—not because we lack creativity, but
-                because disciplined process is what lets us move fast without breaking things.
+                Every engagement follows the same cycle—not because we lack creativity, but because
+                disciplined process is what lets us move fast without breaking things.
               </p>
             </Reveal>
             <ol className="grid gap-5 md:grid-cols-6">
-                {steps.map(([title, desc], i) => (
-                  <Reveal key={title} delay={i * 90}>
-                    <li className="relative">
-                      <h3 className="font-display text-lg">{title}</h3>
-                      <span className="mt-2 block h-px w-8 bg-orange/60" />
-                      <p className="mt-3 text-xs leading-relaxed text-charcoal">{desc}</p>
-                    </li>
-                  </Reveal>
-                ))}
-              </ol>
+              {steps.map(([title, desc], i) => (
+                <Reveal key={title} delay={i * 90}>
+                  <li className="relative">
+                    <h3 className="font-display text-lg">{title}</h3>
+                    <span className="mt-2 block h-px w-8 bg-orange/60" />
+                    <p className="mt-3 text-xs leading-relaxed text-charcoal">{desc}</p>
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
           </div>
         </div>
       </div>
@@ -1814,8 +1950,7 @@ function Why() {
             </Reveal>
             <Reveal delay={80}>
               <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Confidence through{" "}
-                <span className="italic text-gradient-orange">restraint.</span>
+                Confidence through <span className="italic text-gradient-orange">restraint.</span>
               </h2>
             </Reveal>
           </div>
@@ -1912,9 +2047,9 @@ function CTA() {
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-15 text-ivory" />
       <div className="relative mx-auto max-w-[1400px] px-6 py-24 text-ivory md:px-10 md:py-48 scroll-mt-24">
         <Reveal>
-            <SectionLabel>
-              <span className="text-ivory">Contact</span>
-            </SectionLabel>
+          <SectionLabel>
+            <span className="text-ivory">Contact</span>
+          </SectionLabel>
         </Reveal>
         <Reveal delay={100}>
           <h2 className="cta-heading mt-8 font-display text-[clamp(1.75rem,10vw,10rem)] leading-[0.92] text-balance break-words">
@@ -1925,8 +2060,8 @@ function CTA() {
         <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-12 md:items-end md:gap-10">
           <Reveal delay={220} className="md:col-span-6">
             <p className="max-w-md text-pretty text-ivory/80">
-              Tell us about your problem, your team, or the system you're trying to
-              build. We reply personally, and we reply well.
+              Tell us about your problem, your team, or the system you're trying to build. We reply
+              personally, and we reply well.
             </p>
           </Reveal>
           <Reveal delay={320} className="md:col-span-6 md:justify-self-end">
@@ -1944,7 +2079,6 @@ function CTA() {
             </div>
           </Reveal>
         </div>
-
       </div>
     </section>
   );
@@ -1964,17 +2098,17 @@ function Footer() {
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-20">
         <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-4">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full gradient-sunset text-ivory">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" />
-                </svg>
-              </span>
-              <span className="text-[15px] font-semibold tracking-tight">
-                Tattva<span className="text-orange">Tech</span>
-              </span>
+            <div className="footer-brand">
+              <img
+                src="/Logo.png"
+                alt="TattvaTech"
+                width={220}
+                height={220}
+                loading="lazy"
+                className="footer-logo"
+              />
             </div>
-            <p className="mt-6 max-w-xs text-sm text-charcoal">
+            <p className="max-w-xs text-sm text-charcoal">
               Technology that transforms—engineered with clarity, precision, and purpose.
             </p>
           </div>
@@ -2030,7 +2164,6 @@ function Index() {
         style={{ width: `${p * 100}%`, transition: "width 100ms linear" }}
       />
       <Cursor />
-      <Nav />
       <Hero />
       <Marquee />
       <About />
