@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DronesRouteImport } from './routes/drones'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as TrainingRouteImport } from './routes/training'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DronesRoute = DronesRouteImport.update({
+  id: '/drones',
+  path: '/drones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainingRoute = TrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/drones': typeof DronesRoute
+  '/products': typeof ProductsRoute
+  '/services': typeof ServicesRoute
+  '/training': typeof TrainingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/drones': typeof DronesRoute
+  '/products': typeof ProductsRoute
+  '/services': typeof ServicesRoute
+  '/training': typeof TrainingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/drones': typeof DronesRoute
+  '/products': typeof ProductsRoute
+  '/services': typeof ServicesRoute
+  '/training': typeof TrainingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/drones' | '/products' | '/services' | '/training'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/drones' | '/products' | '/services' | '/training'
+  id: '__root__' | '/' | '/drones' | '/products' | '/services' | '/training'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DronesRoute: typeof DronesRoute
+  ProductsRoute: typeof ProductsRoute
+  ServicesRoute: typeof ServicesRoute
+  TrainingRoute: typeof TrainingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +88,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/drones': {
+      id: '/drones'
+      path: '/drones'
+      fullPath: '/drones'
+      preLoaderRoute: typeof DronesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/training': {
+      id: '/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DronesRoute: DronesRoute,
+  ProductsRoute: ProductsRoute,
+  ServicesRoute: ServicesRoute,
+  TrainingRoute: TrainingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

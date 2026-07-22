@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { ButtonLink, SiteFooter } from "@/components/site-chrome";
 import { gsap, ScrollTrigger } from "@/lib/animations";
 import { useSectionReveal } from "@/lib/scroll-animations";
+import { PUBLIC_EMAIL, PUBLIC_EMAIL_MAILTO, verticalRoutes } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -94,57 +96,6 @@ function useCursor() {
   return { coreRef, ringRef, hover };
 }
 
-/* ----------------------------- card hover -------------------------------- */
-
-function useCardHover(selector: string) {
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const cards = document.querySelectorAll<HTMLElement>(selector);
-    if (!cards.length) return;
-
-    const ctx = gsap.context(() => {
-      cards.forEach((card) => {
-        gsap.set(card, { transformPerspective: 800, transformStyle: "preserve-3d" });
-
-        const toRotX = gsap.quickTo(card, "rotationX", { duration: 0.3, ease: "power2.out" });
-        const toRotY = gsap.quickTo(card, "rotationY", { duration: 0.3, ease: "power2.out" });
-
-        const onEnter = () => {
-          gsap.to(card, { scale: 1.02, duration: 0.35, ease: "power2.out", overwrite: "auto" });
-        };
-
-        const onMove = (e: MouseEvent) => {
-          const r = card.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          toRotY(((e.clientX - cx) / (r.width / 2)) * 3);
-          toRotX(-((e.clientY - cy) / (r.height / 2)) * 3);
-        };
-
-        const onLeave = () => {
-          gsap.to(card, {
-            scale: 1,
-            rotationX: 0,
-            rotationY: 0,
-            duration: 0.4,
-            ease: "power3.out",
-            overwrite: "auto",
-          });
-        };
-
-        card.addEventListener("mouseenter", onEnter);
-        card.addEventListener("mousemove", onMove);
-        card.addEventListener("mouseleave", onLeave);
-      });
-    });
-
-    return () => ctx.revert();
-  }, [selector]);
-}
-
 /* -------------------------------- primitives ------------------------------ */
 
 function Reveal({
@@ -182,92 +133,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       <span className="h-px w-8 bg-orange/50" />
       <span>{children}</span>
     </div>
-  );
-}
-
-function MagneticButton({
-  href,
-  children,
-  variant = "primary",
-}: {
-  href: string;
-  children: React.ReactNode;
-  variant?: "primary" | "ghost" | "onDark";
-}) {
-  const ref = useRef<HTMLAnchorElement | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    const toX = gsap.quickTo(el, "x", { duration: 0.35, ease: "power3.out" });
-    const toY = gsap.quickTo(el, "y", { duration: 0.35, ease: "power3.out" });
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const d = Math.hypot(dx, dy);
-      if (d < 140) {
-        toX(dx * 0.18);
-        toY(dy * 0.18);
-      } else {
-        toX(0);
-        toY(0);
-      }
-    };
-    const onLeave = () => {
-      gsap.to(el, { x: 0, y: 0, duration: 0.4, ease: "power3.out" });
-    };
-    window.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
-  const base =
-    "group relative inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-medium overflow-hidden transition-colors duration-500 will-change-transform";
-  const styles =
-    variant === "primary"
-      ? "gradient-sunset text-ivory shadow-warm"
-      : variant === "onDark"
-        ? "bg-ivory text-ink"
-        : "border border-ink/20 text-ink hover:border-ink";
-  return (
-    <a
-      ref={ref}
-      href={href}
-      data-cursor="hover"
-      className={`${base} ${styles}`}
-      style={{
-        transition: "color 500ms, background 500ms",
-      }}
-    >
-      <span className="relative z-10">{children}</span>
-      <span
-        className="relative z-10 grid h-6 w-6 place-items-center rounded-full bg-ink/90 text-ivory transition-transform duration-500 group-hover:translate-x-0.5"
-        aria-hidden
-      >
-        <svg
-          viewBox="0 0 20 20"
-          className="h-3 w-3"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M4 10h12M11 5l5 5-5 5" />
-        </svg>
-      </span>
-      {variant === "primary" && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ animation: "shine 1.6s ease-out infinite" }}
-        />
-      )}
-    </a>
   );
 }
 
@@ -416,7 +281,7 @@ function Nav() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-4 md:flex">
-          <MagneticButton href="#contact">Start a conversation</MagneticButton>
+          <ButtonLink href="#contact">Start a conversation</ButtonLink>
         </div>
 
         <button
@@ -759,10 +624,10 @@ function Hero() {
                 className="hero-actions mt-10 flex flex-wrap items-center gap-4"
                 style={{ opacity: 0 }}
               >
-                <MagneticButton href="#services">Explore our work</MagneticButton>
-                <MagneticButton href="#ecosystem" variant="ghost">
+                <ButtonLink href="#services">Explore our work</ButtonLink>
+                <ButtonLink href="#ecosystem" variant="ghost">
                   Discover our ecosystem
-                </MagneticButton>
+                </ButtonLink>
               </div>
             </div>
 
@@ -1131,27 +996,28 @@ function Ecosystem() {
       k: "Services",
       desc: "Custom software, AI systems, cloud infrastructure, and design—delivered as long-term engineering partnerships.",
       tags: ["Web", "Mobile", "AI", "Cloud"],
-      feeds: "Products",
+      feeds: "Services",
     },
     {
       k: "Products",
       desc: "Scalable software products built from recurring, real-world problems discovered during service delivery.",
       tags: ["SaaS", "Tools", "Platforms"],
-      feeds: "Drones",
+      feeds: "Products",
     },
     {
       k: "Drones",
       desc: "Research, industrial applications, aerial systems, consulting, and training across the drone stack.",
       tags: ["Aerial", "Telemetry", "Industry"],
-      feeds: "Training",
+      feeds: "Drones",
     },
     {
       k: "Training",
       desc: "College programs, workshops, faculty development, student upskilling, and corporate training.",
       tags: ["Colleges", "Workshops", "Corporate"],
-      feeds: "Services",
+      feeds: "Training",
     },
   ];
+  void nodes;
 
   const gridRef = useEcosystemLines();
   useEcosystemBar();
@@ -1219,13 +1085,13 @@ function Ecosystem() {
   return (
     <section
       id="ecosystem"
-      className="relative overflow-hidden bg-cream py-24 md:py-40 scroll-mt-24"
+      className="verticals-section relative overflow-hidden bg-cream py-24 lg:py-0 scroll-mt-24"
     >
       <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
       <div className="pointer-events-none absolute -right-40 top-1/3 h-[520px] w-[520px] rounded-full glow-orange opacity-40 blur-3xl" />
 
-      <div className="relative mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid items-end gap-10 md:grid-cols-12">
+      <div className="verticals-shell relative mx-auto flex max-w-[1400px] flex-col px-6 md:px-10">
+        <div className="verticals-header grid items-end gap-8 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-7">
             <SectionLabel>The Ecosystem</SectionLabel>
             <h2
@@ -1245,9 +1111,9 @@ function Ecosystem() {
           </div>
         </div>
 
-        <div ref={gridRef} className="relative mt-10 md:mt-24">
+        <div ref={gridRef} className="verticals-frame relative mt-10 lg:mt-0">
           <svg
-            className="pointer-events-none absolute inset-0 z-[2] hidden h-full w-full md:block"
+            className="verticals-connector pointer-events-none absolute inset-0 z-[0] hidden h-full w-full md:block"
             style={{ overflow: "visible" }}
             aria-hidden
           >
@@ -1263,53 +1129,67 @@ function Ecosystem() {
               />
             ))}
           </svg>
-          <div className="eco-grid relative z-[3] grid gap-5 md:grid-cols-2 md:gap-6">
-            {nodes.map((n, i) => (
-              <Reveal key={n.k} delay={i * 90}>
+          <div className="verticals-grid eco-grid relative z-[1] grid gap-5 md:grid-cols-2 md:gap-6">
+            {verticalRoutes.map((vertical, i) => (
+              <Reveal key={vertical.title} delay={i * 90}>
                 <article
-                  className="eco-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-8 shadow-soft transition-all duration-500 hover:-translate-y-1 hover:border-orange/50 hover:shadow-warm md:p-10"
+                  className="eco-card vertical-card group relative overflow-hidden rounded-3xl border border-border bg-ivory p-6 shadow-soft transition-colors duration-300 hover:border-orange/50 hover:shadow-warm md:p-8 xl:p-9"
                   data-cursor="hover"
                   data-card
                 >
-                  <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-all duration-700 group-hover:bg-orange/20" />
+                  <span className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-orange/0 blur-3xl transition-colors duration-300 group-hover:bg-orange/20" />
 
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
-                      Vertical
-                    </span>
-                    <span className="h-px w-16 origin-right scale-x-50 bg-ink/20 transition-transform duration-500 group-hover:scale-x-100 group-hover:bg-orange" />
-                  </div>
-
-                  <h3 className="mt-6 font-display text-3xl leading-[1] md:mt-10 md:text-5xl">
-                    {n.k}
-                    <span className="text-orange">.</span>
-                  </h3>
-
-                  <p className="mt-5 max-w-md text-pretty text-charcoal">{n.desc}</p>
-
-                  <div className="mt-8 flex flex-wrap gap-2">
-                    {n.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80 transition-colors duration-300 group-hover:border-orange/40 group-hover:text-ink"
-                      >
-                        {t}
+                  <Link
+                    to={vertical.href}
+                    className="vertical-card__main-link block rounded-[inherit] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange"
+                    aria-label={`View ${vertical.title}`}
+                  >
+                    <div className="flex items-baseline justify-between gap-4">
+                      <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
+                        Vertical
                       </span>
-                    ))}
-                  </div>
+                      <span className="h-px w-14 bg-ink/20 transition-colors duration-300 group-hover:bg-orange" />
+                    </div>
 
-                  <div className="eco-arrow mt-8 flex items-center gap-3 border-t border-border pt-6 text-xs uppercase tracking-[0.24em] text-charcoal/60">
+                    <div className="vertical-card__content">
+                      <h3 className="mt-6 font-display text-[clamp(2.6rem,4vw,4.6rem)] leading-[0.95] md:mt-8">
+                        {vertical.title}
+                        <span className="text-orange">.</span>
+                      </h3>
+
+                      <p className="mt-4 max-w-[46ch] text-pretty text-[clamp(0.95rem,1.15vw,1.15rem)] leading-[1.45] text-charcoal">
+                        {vertical.description}
+                      </p>
+
+                      <div className="vertical-card__tags mt-6 flex flex-wrap gap-2">
+                        {vertical.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80 transition-colors duration-300 group-hover:border-orange/40 group-hover:text-ink"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-orange">
+                        <span>View {vertical.title}</span>
+                        <span aria-hidden>↗</span>
+                      </span>
+                    </div>
+                  </Link>
+
+                  <div className="vertical-card__footer mt-6 flex items-center gap-3 border-t border-border pt-4 text-xs uppercase tracking-[0.24em] text-charcoal/60">
                     <span>Feeds</span>
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="h-3.5 w-3.5 text-orange"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
+                    <span aria-hidden className="text-orange">
+                      →
+                    </span>
+                    <Link
+                      to={vertical.feedsHref}
+                      className="rounded-full text-ink transition-colors duration-300 hover:text-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
                     >
-                      <path d="M4 10h12M11 5l5 5-5 5" />
-                    </svg>
-                    <span className="text-ink">{n.feeds}</span>
+                      {vertical.feedsInto}
+                    </Link>
                   </div>
                 </article>
               </Reveal>
@@ -1318,7 +1198,7 @@ function Ecosystem() {
         </div>
 
         <Reveal delay={200}>
-          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-12 md:px-8 md:justify-between md:gap-4">
+          <div className="eco-closed-loop mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-full border border-border bg-ivory px-6 py-4 text-xs uppercase tracking-[0.24em] text-charcoal/70 md:mt-8 md:px-8 md:justify-between md:gap-4">
             <span className="flex items-center gap-3">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_10px_var(--orange)]" />
               A closed loop
@@ -1442,9 +1322,7 @@ function Services() {
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="min-w-0">
-                        <div className="service-title font-display text-xl transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
-                          {s.k}
-                        </div>
+                        <div className="service-title font-display text-xl md:text-4xl">{s.k}</div>
                         <p className="service-desc mt-1 hidden max-w-md text-sm text-charcoal md:block">
                           {s.d}
                         </p>
@@ -1514,7 +1392,7 @@ function Products() {
               <article
                 data-cursor="hover"
                 data-card
-                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border bg-ivory p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-warm"
+                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border bg-ivory p-8 transition-colors duration-300 hover:shadow-warm"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -1816,12 +1694,12 @@ function Training() {
             </div>
           </Reveal>
           <div className="md:col-span-7">
-            <ol className="timeline-list relative border-l border-border">
-              <span className="timeline-line pointer-events-none absolute left-0 top-0 h-full w-px origin-top bg-orange/70" />
+            <ol className="timeline-list relative">
+              <span className="timeline-line pointer-events-none absolute top-0 h-full w-px origin-top bg-orange/70" />
               {items.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 80}>
                   <li className="timeline-item group relative pb-8 pl-8 last:pb-0 md:pb-12 md:pl-10">
-                    <span className="timeline-dot absolute left-0 top-1.5 grid h-6 w-6 -translate-x-1/2 place-items-center rounded-full border border-border bg-ivory transition-all duration-500 group-hover:border-orange group-hover:bg-orange">
+                    <span className="timeline-dot absolute grid h-6 w-6 place-items-center rounded-full border border-border bg-ivory transition-colors duration-300 group-hover:border-orange group-hover:bg-orange">
                       <span className="h-1.5 w-1.5 rounded-full bg-orange transition-colors group-hover:bg-ivory" />
                     </span>
                     <div className="flex flex-wrap items-baseline gap-4">
@@ -2023,18 +1901,6 @@ function CTA() {
           },
         );
       }
-
-      const btn = document.querySelector<HTMLElement>("#contact .cta-btn");
-      if (btn) {
-        gsap.to(btn, {
-          scale: 1.02,
-          duration: 1.5,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-          scrollTrigger: { trigger: "#contact", start: "top 80%" },
-        });
-      }
     });
 
     return () => ctx.revert();
@@ -2066,15 +1932,15 @@ function CTA() {
           </Reveal>
           <Reveal delay={320} className="md:col-span-6 md:justify-self-end">
             <div className="flex flex-wrap items-center gap-4">
-              <MagneticButton href="mailto:hello@tattvatech.com" variant="onDark">
+              <ButtonLink href={PUBLIC_EMAIL_MAILTO} variant="onDark">
                 <span className="cta-btn">Start a conversation</span>
-              </MagneticButton>
+              </ButtonLink>
               <a
-                href="mailto:hello@tattvatech.com"
+                href={PUBLIC_EMAIL_MAILTO}
                 data-cursor="hover"
-                className="text-sm text-ivory/90 underline-offset-4 hover:underline"
+                className="contact-email text-sm text-ivory/90 underline-offset-4 hover:underline"
               >
-                hello@tattvatech.com
+                {PUBLIC_EMAIL}
               </a>
             </div>
           </Reveal>
@@ -2086,12 +1952,12 @@ function CTA() {
 
 /* --------------------------------- footer --------------------------------- */
 
-function Footer() {
+function LegacyFooter() {
   const cols: [string, string[]][] = [
     ["Company", ["About", "Ecosystem", "Principles", "Contact"]],
     ["Services", ["Web", "Software", "Mobile", "AI & Automation", "Cloud & DevOps"]],
     ["Verticals", ["Products", "Drones", "Training"]],
-    ["Contact", ["hello@tattvatech.com", "LinkedIn", "X / Twitter", "GitHub"]],
+    ["Contact", [PUBLIC_EMAIL, "LinkedIn", "X / Twitter", "GitHub"]],
   ];
   return (
     <footer className="bg-ivory">
@@ -2147,6 +2013,10 @@ function Footer() {
   );
 }
 
+function Footer() {
+  return <SiteFooter />;
+}
+
 /* --------------------------------- index --------------------------------- */
 
 function Index() {
@@ -2156,7 +2026,6 @@ function Index() {
   useSectionReveal("services");
   useSectionReveal("process");
   useSectionReveal("contact");
-  useCardHover("[data-card]");
   return (
     <main>
       <div
