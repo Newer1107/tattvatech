@@ -1043,25 +1043,25 @@ function Ecosystem() {
               >
                 <div className="vertical-card__main-link">
                   <div className="vertical-card__header">
-                    <span className="vertical-card__eyebrow text-[11px] font-medium uppercase tracking-[0.28em] text-orange">
+                    <span className="vertical-card__eyebrow">
                       Vertical
                     </span>
                     <span className="vertical-card__rule" />
                   </div>
 
                   <div className="vertical-card__body">
-                    <h3>
+                    <h3 className="vertical-card__title">
                       {vertical.title}
-                      <span className="text-orange">.</span>
+                      <span className="vertical-card__period">.</span>
                     </h3>
 
-                    <p>{vertical.description}</p>
+                    <p className="vertical-card__description">{vertical.description}</p>
 
                     <div className="vertical-card__tags">
                       {vertical.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-ink/15 bg-cream px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-charcoal/80"
+                          className="vertical-card__tag rounded-full border border-ink/15 bg-cream px-3 py-1"
                         >
                           {tag}
                         </span>
