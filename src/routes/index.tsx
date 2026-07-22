@@ -672,12 +672,14 @@ function MediaFrame({
   caption,
   accent = false,
   onDark = false,
+  videoSrc,
   className = "",
 }: {
   aspect?: "video" | "portrait" | "square" | "wide";
   caption?: string;
   accent?: boolean;
   onDark?: boolean;
+  videoSrc?: string;
   className?: string;
 }) {
   const ratio =
@@ -697,26 +699,41 @@ function MediaFrame({
       data-cursor="hover"
       aria-label={caption ?? "Media placeholder"}
     >
-      <div
-        className={`absolute inset-0 ${onDark ? "text-ivory" : "text-ink"} bg-grid-fine opacity-40`}
-      />
+      {videoSrc ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      ) : (
+        <div
+          className={`absolute inset-0 ${onDark ? "text-ivory" : "text-ink"} bg-grid-fine opacity-40`}
+        />
+      )}
       {accent && (
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full glow-orange opacity-70 blur-3xl" />
       )}
 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <span
-          className={`grid h-14 w-14 place-items-center rounded-full ${
-            onDark ? "bg-ivory/10 text-ivory" : "bg-ivory text-ink"
-          } shadow-soft transition-transform duration-500 group-hover:scale-105`}
-        >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </span>
+        {!videoSrc && (
+          <span
+            className={`grid h-14 w-14 place-items-center rounded-full ${
+              onDark ? "bg-ivory/10 text-ivory" : "bg-ivory text-ink"
+            } shadow-soft transition-transform duration-500 group-hover:scale-105`}
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        )}
         <span
           className={`text-[11px] font-medium uppercase tracking-[0.28em] ${
-            onDark ? "text-ivory/70" : "text-charcoal/70"
+            videoSrc ? "text-ivory/80" : onDark ? "text-ivory/70" : "text-charcoal/70"
           }`}
         >
           {caption ?? "Add media"}
@@ -861,7 +878,7 @@ function About() {
 
         <Reveal delay={100}>
           <div className="mt-10 md:mt-16">
-            <MediaFrame aspect="wide" caption="Studio · Add image or video" />
+            <MediaFrame aspect="wide" caption="Studio" videoSrc="/about.mp4" />
           </div>
         </Reveal>
 
@@ -1536,7 +1553,8 @@ function Training() {
             <div className="md:sticky md:top-28">
               <MediaFrame
                 aspect="video"
-                caption="Cohort · Add video"
+                caption="Cohort"
+                videoSrc="/training.mp4"
                 className="md:aspect-[16/11]"
               />
             </div>
