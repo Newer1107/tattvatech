@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ButtonLink, SiteFooter } from "@/components/site-chrome";
+import { assetPath } from "@/lib/assets";
 import { gsap, ScrollTrigger } from "@/lib/animations";
 import { useSectionReveal } from "@/lib/scroll-animations";
 import { PUBLIC_EMAIL, PUBLIC_EMAIL_MAILTO, verticalRoutes } from "@/lib/site";
@@ -250,7 +251,7 @@ function Nav() {
       <div className="flex items-center justify-between gap-4 py-4 md:py-5">
         <a href="#top" data-cursor="hover" className="group flex shrink-0 items-center">
           <img
-            src="/Logo.png"
+            src={assetPath("/Logo.png")}
             alt="TattvaTech"
             width={220}
             height={220}
@@ -636,12 +637,15 @@ function Hero() {
                 <video
                   ref={heroVideoRef}
                   className="aspect-[4/5] w-full object-cover"
+                  autoPlay
                   muted
+                  defaultMuted
                   loop
                   playsInline
                   preload="auto"
+                  disablePictureInPicture
                 >
-                  <source src="/hero-ui.mp4" type="video/mp4" />
+                  <source src={assetPath("/hero-ui.mp4")} type="video/mp4" />
                 </video>
               </div>
             </div>
@@ -705,10 +709,12 @@ function MediaFrame({
           autoPlay
           loop
           muted
+          defaultMuted
           playsInline
           preload="metadata"
+          disablePictureInPicture
         >
-          <source src={videoSrc} type="video/mp4" />
+          <source src={assetPath(videoSrc)} type="video/mp4" />
         </video>
       ) : (
         <div
@@ -1386,12 +1392,15 @@ function Drones() {
                 <video
                   ref={videoRef}
                   className="w-full aspect-video object-cover"
+                  autoPlay
                   muted
+                  defaultMuted
                   loop
                   playsInline
                   preload="auto"
+                  disablePictureInPicture
                 >
-                  <source src="/drones-aerial.mp4" type="video/mp4" />
+                  <source src={assetPath("/drones-aerial.mp4")} type="video/mp4" />
                 </video>
               </div>
             </Reveal>
@@ -1832,7 +1841,7 @@ function LegacyFooter() {
           <div className="md:col-span-4">
             <div className="footer-brand">
               <img
-                src="/Logo.png"
+                src={assetPath("/Logo.png")}
                 alt="TattvaTech"
                 width={220}
                 height={220}

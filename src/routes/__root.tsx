@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { assetPath } from "@/lib/assets";
 
 import appCss from "../styles.css?url";
 
@@ -100,7 +101,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: assetPath("/Logo.png"), type: "image/png" },
+      { rel: "shortcut icon", href: assetPath("/Logo.png"), type: "image/png" },
+      { rel: "apple-touch-icon", href: assetPath("/Logo.png") },
     ],
   }),
   shellComponent: RootShell,

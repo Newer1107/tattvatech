@@ -6,6 +6,7 @@ import {
   footerColumns,
   verticalRoutes,
 } from "@/lib/site";
+import { assetPath } from "@/lib/assets";
 
 type ButtonLinkProps = {
   href: string;
@@ -64,7 +65,7 @@ export function SiteFooter() {
           <div className="md:col-span-4">
             <div className="footer-brand">
               <img
-                src="/Logo.png"
+                src={assetPath("/Logo.png")}
                 alt="TattvaTech"
                 width={220}
                 height={220}
@@ -121,7 +122,13 @@ export function SecondaryPageHeader() {
     <header className="border-b border-border bg-ivory/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-6 py-5 md:px-10">
         <Link to="/" className="flex shrink-0 items-center" aria-label="Go to TattvaTech home">
-          <img src="/Logo.png" alt="TattvaTech" width={220} height={220} className="navbar-logo" />
+          <img
+            src={assetPath("/Logo.png")}
+            alt="TattvaTech"
+            width={220}
+            height={220}
+            className="navbar-logo"
+          />
         </Link>
         <nav className="flex flex-wrap items-center gap-2 text-sm">
           {verticalRoutes.map((route) => (
