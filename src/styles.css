@@ -197,7 +197,8 @@
 
 .hero-section {
   position: relative;
-  min-height: 100svh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .navbar {
@@ -208,9 +209,74 @@
 
 .navbar-logo {
   width: auto;
-  height: clamp(44px, 4.5vw, 64px);
-  max-width: min(190px, 40vw);
+  height: clamp(56px, 5.8vw, 92px);
+  max-width: min(280px, 52vw);
   object-fit: contain;
+  filter: drop-shadow(0 10px 24px color-mix(in oklab, var(--orange) 18%, transparent));
+}
+
+.hero-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.hero-content {
+  min-height: 0;
+}
+
+.hero-grid {
+  align-items: center;
+}
+
+.hero-copy {
+  max-width: 46rem;
+}
+
+.hero-media {
+  width: min(100%, 30rem);
+  margin-inline: auto;
+}
+
+.hero-media-frame {
+  aspect-ratio: 4 / 5;
+  min-height: clamp(420px, 42vw, 620px);
+  max-height: 68dvh;
+}
+
+.about-video-section {
+  position: relative;
+  height: 220svh;
+  height: 220dvh;
+  overflow: clip;
+}
+
+.about-video-pin {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: clip;
+}
+
+.about-video-frame {
+  width: 100dvw;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--cream);
+  box-shadow:
+    0 24px 80px -40px color-mix(in oklab, var(--ink) 35%, transparent),
+    0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent);
+  will-change: transform, border-radius;
+}
+
+.about-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
 }
 
 .footer-brand {
@@ -548,8 +614,13 @@
 
 @media (max-width: 768px) {
   .navbar-logo {
-    height: 40px;
-    max-width: 140px;
+    height: 52px;
+    max-width: 180px;
+  }
+
+  .about-video-section {
+    height: 145svh;
+    height: 145dvh;
   }
 
   .footer-logo {
@@ -582,8 +653,48 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .about-video-section {
+    height: 190svh;
+    height: 190dvh;
+  }
+}
+
 @media (min-width: 1024px) {
+  .hero-content {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding-top: clamp(20px, 2vh, 28px);
+    padding-bottom: clamp(24px, 3vh, 40px);
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(360px, 440px);
+    gap: clamp(48px, 5vw, 84px);
+  }
+
   .verticals-copy {
     padding-bottom: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-video-section {
+    height: auto;
+    padding-inline: 12px;
+  }
+
+  .about-video-pin {
+    height: auto;
+    overflow: visible;
+  }
+
+  .about-video-frame {
+    width: 100%;
+    height: min(72svh, 760px);
+    height: min(72dvh, 760px);
+    border-radius: 28px !important;
+    transform: none !important;
+    will-change: auto;
   }
 }

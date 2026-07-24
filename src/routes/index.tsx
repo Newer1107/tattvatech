@@ -584,10 +584,10 @@ function Hero() {
         <circle cx="60" cy="440" r="1.2" fill="#ff7a18" className="hero-particle" />
       </svg>
 
-      <div className="relative mx-auto flex min-h-[100svh] max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
+      <div className="hero-shell relative mx-auto flex max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
         <Nav />
 
-        <div className="flex flex-1 flex-col justify-center py-6 md:py-8">
+        <div className="hero-content flex flex-1 flex-col justify-center py-6 md:py-8">
           <div className="hero-badge" style={{ opacity: 0 }}>
             <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
@@ -595,10 +595,10 @@ function Hero() {
             </div>
           </div>
 
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-            <div className="lg:col-span-7">
+          <div className="hero-grid grid gap-10">
+            <div className="hero-copy">
               <h1
-                className="font-display text-[clamp(2rem,8.5vw,8rem)] leading-[0.9] text-balance break-words"
+                className="font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words"
                 style={{ transform: `translateY(${p * -40}px)` }}
               >
                 <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
@@ -632,14 +632,13 @@ function Hero() {
               </div>
             </div>
 
-            <div className="reveal-up lg:col-span-5" style={{ animationDelay: "300ms" }}>
-              <div className="group relative overflow-hidden rounded-3xl border border-border shadow-warm">
+            <div className="hero-media reveal-up" style={{ animationDelay: "300ms" }}>
+              <div className="hero-media-frame group relative overflow-hidden rounded-3xl border border-border shadow-warm">
                 <video
                   ref={heroVideoRef}
-                  className="aspect-[4/5] w-full object-cover"
+                  className="h-full w-full object-cover"
                   autoPlay
                   muted
-                  defaultMuted
                   loop
                   playsInline
                   preload="auto"
@@ -709,7 +708,6 @@ function MediaFrame({
           autoPlay
           loop
           muted
-          defaultMuted
           playsInline
           preload="metadata"
           disablePictureInPicture
@@ -742,7 +740,7 @@ function MediaFrame({
             videoSrc ? "text-ivory/80" : onDark ? "text-ivory/70" : "text-charcoal/70"
           }`}
         >
-          {caption ?? "Add media"}
+          {caption ?? ""}
         </span>
       </div>
 
@@ -808,6 +806,10 @@ function Marquee() {
 /* ---------------------------------- about --------------------------------- */
 
 function About() {
+  const aboutVideoSectionRef = useRef<HTMLDivElement>(null);
+  const aboutVideoPinRef = useRef<HTMLDivElement>(null);
+  const aboutVideoFrameRef = useRef<HTMLDivElement>(null);
+  const aboutVideoRef = useRef<HTMLVideoElement>(null);
   const steps = [
     { k: "Observe", d: "Real problems, patterns, and gaps in how technology is actually used." },
     { k: "Build", d: "Engineered solutions with clarity, restraint, and long-term architecture." },
@@ -856,6 +858,199 @@ function About() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const section = aboutVideoSectionRef.current;
+    const pin = aboutVideoPinRef.current;
+    const frame = aboutVideoFrameRef.current;
+    const video = aboutVideoRef.current;
+    if (!section || !pin || !frame || !video) return;
+
+    const playVideo = () => video.play().catch(() => {});
+    const pauseVideo = () => video.pause();
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (prefersReducedMotion.matches) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry?.isIntersecting) {
+            playVideo();
+          } else {
+            pauseVideo();
+          }
+        },
+        { threshold: 0.35 },
+      );
+      observer.observe(video);
+      return () => observer.disconnect();
+    }
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+    const geometry = {
+      startScaleX: 0.5,
+      startScaleY: 0.5,
+      startRadius: 52,
+      arrivalScaleX: 0.8,
+      arrivalScaleY: 0.8,
+      arrivalRadius: 40,
+      finalScaleX: 1,
+      finalScaleY: 1,
+      finalRadius: 32,
+    };
+    let updateFrameGeometry = () => {};
+
+    const ctx = gsap.context(() => {
+      const arrivalTween = gsap.to(frame, {
+        scaleX: () => geometry.arrivalScaleX,
+        scaleY: () => geometry.arrivalScaleY,
+        borderRadius: () => geometry.arrivalRadius,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#about",
+          start: () => {
+            if (window.innerWidth < 768) return "top 88%";
+            if (window.innerWidth < 1024) return "top 84%";
+            return "top 82%";
+          },
+          end: () => {
+            if (window.innerWidth < 768) return "top 36%";
+            if (window.innerWidth < 1024) return "top 28%";
+            return "top 22%";
+          },
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => {
+            const viewportHeight = window.innerHeight;
+            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 0.75)}`;
+            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 0.95)}`;
+            return `+=${Math.round(viewportHeight * 1.05)}`;
+          },
+          scrub: 1,
+          pin,
+          pinSpacing: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onEnter: playVideo,
+          onEnterBack: playVideo,
+          onLeave: pauseVideo,
+          onLeaveBack: pauseVideo,
+        },
+      });
+
+      timeline
+        .addLabel("initial")
+        .to({}, { duration: 0.08 })
+        .addLabel("expand")
+        .to(
+          frame,
+          {
+            scaleX: () => geometry.finalScaleX,
+            scaleY: () => geometry.finalScaleY,
+            borderRadius: () => geometry.finalRadius,
+            ease: "none",
+            duration: 0.66,
+          },
+          "expand",
+        )
+        .addLabel("fullscreen")
+        .to(frame, { yPercent: -1, ease: "none", duration: 0.08 })
+        .addLabel("release");
+
+      updateFrameGeometry = () => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const isMobile = viewportWidth < 768;
+        const isTablet = viewportWidth < 1024;
+
+        const finalHorizontalMargin = isMobile
+          ? 16
+          : isTablet
+            ? clamp(viewportWidth * 0.03, 22, 32)
+            : clamp(viewportWidth * 0.035, 42, 72);
+        const finalHeight = isMobile
+          ? clamp(viewportHeight * 0.7, viewportHeight * 0.66, viewportHeight * 0.74)
+          : isTablet
+            ? clamp(viewportHeight * 0.76, viewportHeight * 0.72, viewportHeight * 0.8)
+            : clamp(viewportHeight * 0.8, viewportHeight * 0.76, 860);
+        const finalWidth = viewportWidth - finalHorizontalMargin * 2;
+        const finalScaleX = finalWidth / viewportWidth;
+        const finalScaleY = finalHeight / viewportHeight;
+        const finalRadius = isMobile ? 24 : isTablet ? 28 : clamp(viewportWidth * 0.022, 28, 40);
+
+        const initialWidth = isMobile
+          ? finalWidth * 0.5
+          : isTablet
+            ? finalWidth * 0.46
+            : finalWidth * 0.42;
+        const initialHeight = isMobile
+          ? finalHeight * 0.56
+          : isTablet
+            ? finalHeight * 0.52
+            : finalHeight * 0.48;
+        const arrivalWidth = isMobile
+          ? finalWidth * 0.82
+          : isTablet
+            ? finalWidth * 0.84
+            : finalWidth * 0.86;
+        const arrivalHeight = isMobile
+          ? finalHeight * 0.82
+          : isTablet
+            ? finalHeight * 0.84
+            : finalHeight * 0.86;
+        const initialScaleX = initialWidth / viewportWidth;
+        const initialScaleY = initialHeight / viewportHeight;
+        const arrivalScaleX = arrivalWidth / viewportWidth;
+        const arrivalScaleY = arrivalHeight / viewportHeight;
+        const initialRadius = isMobile ? 28 : isTablet ? 36 : clamp(viewportWidth * 0.038, 48, 72);
+        const arrivalRadius = isMobile ? 26 : isTablet ? 30 : clamp(viewportWidth * 0.024, 34, 48);
+
+        geometry.startScaleX = initialScaleX;
+        geometry.startScaleY = initialScaleY;
+        geometry.startRadius = initialRadius;
+        geometry.arrivalScaleX = arrivalScaleX;
+        geometry.arrivalScaleY = arrivalScaleY;
+        geometry.arrivalRadius = arrivalRadius;
+        geometry.finalScaleX = finalScaleX;
+        geometry.finalScaleY = finalScaleY;
+        geometry.finalRadius = finalRadius;
+
+        gsap.set(frame, {
+          width: viewportWidth,
+          height: viewportHeight,
+          x: 0,
+          y: 0,
+          scaleX: geometry.startScaleX,
+          scaleY: geometry.startScaleY,
+          borderRadius: geometry.startRadius,
+          transformOrigin: "center center",
+        });
+      };
+
+      ScrollTrigger.addEventListener("refreshInit", updateFrameGeometry);
+      updateFrameGeometry();
+    }, section);
+
+    const refreshLayout = () => ScrollTrigger.refresh();
+    video.addEventListener("loadedmetadata", refreshLayout);
+    video.addEventListener("loadeddata", refreshLayout);
+
+    return () => {
+      ScrollTrigger.removeEventListener("refreshInit", updateFrameGeometry);
+      video.removeEventListener("loadedmetadata", refreshLayout);
+      video.removeEventListener("loadeddata", refreshLayout);
+      ctx.revert();
+    };
+  }, []);
+
   return (
     <section id="about" className="relative bg-ivory py-24 md:py-40 scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -881,13 +1076,26 @@ function About() {
             </Reveal>
           </div>
         </div>
+      </div>
 
-        <Reveal delay={100}>
-          <div className="mt-10 md:mt-16">
-            <MediaFrame aspect="wide" caption="Studio" videoSrc="/about.mp4" />
+      <div ref={aboutVideoSectionRef} className="about-video-section mt-10 md:mt-16">
+        <div ref={aboutVideoPinRef} className="about-video-pin">
+          <div ref={aboutVideoFrameRef} className="about-video-frame">
+            <video
+              ref={aboutVideoRef}
+              src={assetPath("/about.mp4")}
+              muted
+              playsInline
+              loop
+              autoPlay
+              preload="metadata"
+              className="about-video"
+            />
           </div>
-        </Reveal>
+        </div>
+      </div>
 
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
         <div className="step-grid mt-12 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5 md:mt-24">
           {steps.map((s, i) => (
             <Reveal key={s.k} delay={i * 90}>
@@ -1394,7 +1602,6 @@ function Drones() {
                   className="w-full aspect-video object-cover"
                   autoPlay
                   muted
-                  defaultMuted
                   loop
                   playsInline
                   preload="auto"
@@ -1562,7 +1769,6 @@ function Training() {
             <div className="md:sticky md:top-28">
               <MediaFrame
                 aspect="video"
-                caption="Cohort"
                 videoSrc="/training.mp4"
                 className="md:aspect-[16/11]"
               />

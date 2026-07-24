@@ -74,7 +74,7 @@ export function SiteFooter() {
               />
             </div>
             <p className="max-w-xs text-sm text-charcoal">
-              Technology that transformsâ€”engineered with clarity, precision, and purpose.
+              Technology that transforms, engineered with clarity, precision, and purpose.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-4">
@@ -106,7 +106,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 text-xs text-charcoal md:mt-16 md:flex-row md:items-center md:pt-8">
-          <div>© {new Date().getFullYear()} TattvaTech. All rights reserved.</div>
+          <div>Copyright {new Date().getFullYear()} TattvaTech. All rights reserved.</div>
           <div className="flex items-center gap-6">
             <span>Made with intent</span>
             <span className="tabular-nums">v1.0</span>
