@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ButtonLink, SiteFooter } from "@/components/site-chrome";
+import { ButtonLink, SiteFooter, SiteNavbar } from "@/components/site-chrome";
 import { assetPath } from "@/lib/assets";
 import { gsap, ScrollTrigger } from "@/lib/animations";
 import { useSectionReveal } from "@/lib/scroll-animations";
@@ -213,127 +213,6 @@ function Cursor() {
         />
       </div>
     </>
-  );
-}
-
-/* ---------------------------------- nav ----------------------------------- */
-
-function Nav() {
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("top");
-
-  useEffect(() => {
-    const ids = ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
-    if (!els.length) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      },
-      { threshold: 0.25, rootMargin: "-80px 0px 0px 0px" },
-    );
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const links = [
-    ["About", "#about"],
-    ["Ecosystem", "#ecosystem"],
-    ["Services", "#services"],
-    ["Process", "#process"],
-    ["Contact", "#contact"],
-  ] as const;
-
-  return (
-    <header className="navbar relative z-10 w-full">
-      <div className="flex items-center justify-between gap-4 py-4 md:py-5">
-        <a href="#top" data-cursor="hover" className="group flex shrink-0 items-center">
-          <img
-            src={assetPath("/Logo.png")}
-            alt="TattvaTech"
-            width={220}
-            height={220}
-            loading="eager"
-            fetchPriority="high"
-            className="navbar-logo"
-          />
-        </a>
-
-        <nav className="hidden min-w-0 items-center gap-1 md:flex">
-          {links.map(([label, href]) => {
-            const isActive = active === href.slice(1);
-            return (
-              <a
-                key={href}
-                href={href}
-                data-cursor="hover"
-                className={`rounded-full px-4 py-2 text-sm transition-all duration-300 ${
-                  isActive
-                    ? "bg-orange/10 text-orange font-medium"
-                    : "text-charcoal hover:bg-ink/5 hover:text-ink"
-                }`}
-              >
-                {label}
-              </a>
-            );
-          })}
-        </nav>
-
-        <div className="hidden shrink-0 items-center gap-4 md:flex">
-          <ButtonLink href="#contact">Start a conversation</ButtonLink>
-        </div>
-
-        <button
-          aria-label="Toggle menu"
-          onClick={() => setOpen((s) => !s)}
-          className="relative z-50 grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border md:hidden"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
-          </svg>
-        </button>
-      </div>
-
-      {open && (
-        <div
-          className="fixed inset-0 z-40 backdrop-blur-xl bg-ivory/90 md:hidden overscroll-behavior-none"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="flex h-full flex-col justify-center gap-2 px-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {links.map(([l, h]) => (
-              <a
-                key={h}
-                href={h}
-                onClick={() => setOpen(false)}
-                className={`border-b border-border/30 py-5 text-2xl font-medium transition-colors hover:text-orange ${
-                  active === h.slice(1) ? "text-orange" : "text-ink"
-                }`}
-              >
-                {l}
-              </a>
-            ))}
-            <a
-              href="#contact"
-              onClick={() => setOpen(false)}
-              className="mt-6 inline-flex items-center justify-center rounded-full gradient-sunset px-8 py-4 text-base font-medium text-ivory"
-            >
-              Start a conversation
-            </a>
-          </div>
-        </div>
-      )}
-    </header>
   );
 }
 
@@ -585,7 +464,7 @@ function Hero() {
       </svg>
 
       <div className="hero-shell relative mx-auto flex max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
-        <Nav />
+        <SiteNavbar page="home" />
 
         <div className="hero-content flex flex-1 flex-col justify-center py-6 md:py-8">
           <div className="hero-badge" style={{ opacity: 0 }}>
