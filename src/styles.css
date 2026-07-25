@@ -99,11 +99,29 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     letter-spacing: -0.011em;
+    overflow-x: clip;
   }
 
   ::selection {
     background: var(--orange);
     color: var(--ivory);
+  }
+}
+
+@media (pointer: fine) and (hover: hover) {
+  body.custom-cursor-active,
+  body.custom-cursor-active a,
+  body.custom-cursor-active button,
+  body.custom-cursor-active [data-cursor="hover"] {
+    cursor: none;
+  }
+
+  body.custom-cursor-active input,
+  body.custom-cursor-active textarea,
+  body.custom-cursor-active select,
+  body.custom-cursor-active [contenteditable="true"],
+  body.custom-cursor-active [contenteditable=""] {
+    cursor: text;
   }
 }
 

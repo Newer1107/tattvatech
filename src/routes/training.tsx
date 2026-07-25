@@ -2,7 +2,6 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ButtonLink, SiteFooter, SiteNavbar } from "@/components/site-chrome";
 import { gsap } from "@/lib/animations";
-import { assetPath } from "@/lib/assets";
 import { PUBLIC_EMAIL, PUBLIC_EMAIL_MAILTO } from "@/lib/site";
 
 export const Route = createFileRoute("/training")({
@@ -499,66 +498,56 @@ function SectionLabel({ children, inverse = false }: { children: ReactNode; inve
 }
 
 function TrainingHeroVisual() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: 0.3 },
-    );
-
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
+  const programLayers = [
+    ["Context", "Audience, goals, and technical baseline"],
+    ["Curriculum", "Concepts sequenced into practical modules"],
+    ["Labs", "Guided builds, debugging, and working exercises"],
+    ["Outcomes", "Projects, confidence, and reusable skill"],
+  ];
 
   return (
-    <div className="hero-media training-hero-media reveal-up" style={{ animationDelay: "320ms" }}>
-      <div className="hero-media-frame training-hero-frame group relative overflow-hidden rounded-3xl border border-border bg-cream shadow-warm">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          disablePictureInPicture
-        >
-          <source src={assetPath("/training.mp4")} type="video/mp4" />
-        </video>
-        <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-25 text-ivory" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
+    <div className="hero-media services-hero-media training-hero-media reveal-up" style={{ animationDelay: "320ms" }}>
+      <div className="hero-media-frame services-hero-frame training-hero-frame group relative rounded-3xl border border-border bg-cream shadow-warm">
+        <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full glow-orange opacity-50 blur-3xl" />
 
-        <div className="relative flex h-full flex-col justify-between p-6 md:p-8">
+        <div className="services-hero-frame-body relative flex flex-col p-6 md:p-8">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-ivory/20 bg-ivory/10 p-4 backdrop-blur-sm">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-ivory/75">Programs</div>
-              <p className="mt-3 text-sm leading-relaxed text-ivory/88">
-                Cohorts, workshops, faculty development, and internal team learning.
+            <div className="rounded-2xl border border-border bg-ivory/90 p-4 shadow-soft">
+              <div className="text-[11px] uppercase tracking-[0.24em] text-orange">Programs</div>
+              <p className="mt-3 text-sm leading-relaxed text-charcoal">
+                College cohorts, workshops, faculty development, and team learning.
               </p>
             </div>
-            <div className="rounded-2xl border border-ivory/20 bg-ivory/10 p-4 backdrop-blur-sm">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-ivory/75">Method</div>
-              <p className="mt-3 text-sm leading-relaxed text-ivory/88">
-                Explanation, implementation, review, and practical application in one sequence.
+            <div className="rounded-2xl border border-border bg-ivory/90 p-4 shadow-soft">
+              <div className="text-[11px] uppercase tracking-[0.24em] text-orange">Method</div>
+              <p className="mt-3 text-sm leading-relaxed text-charcoal">
+                Explain, build, review, and apply in one practical sequence.
               </p>
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="grid gap-3">
+            {programLayers.map(([label, description], index) => (
+              <div
+                key={label}
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 rounded-2xl border border-border bg-ivory/88 px-4 py-3 shadow-soft"
+                style={{ transitionDelay: `${index * 60}ms` }}
+              >
+                <span className="text-xs tabular-nums text-orange">{String(index + 1).padStart(2, "0")}</span>
+                <div className="min-w-0">
+                  <div className="font-display text-lg leading-none text-ink md:text-xl">{label}</div>
+                  <div className="mt-1 text-sm text-charcoal">{description}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
             {["Software", "AI", "Cloud", "Data", "Workflows"].map((item) => (
               <span
                 key={item}
-                className="rounded-full border border-ivory/20 bg-ivory/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-ivory/82 backdrop-blur-sm"
+                className="rounded-full border border-ink/15 bg-ivory/90 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-charcoal"
               >
                 {item}
               </span>
@@ -566,10 +555,10 @@ function TrainingHeroVisual() {
           </div>
         </div>
 
-        <span className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-ivory/40" />
-        <span className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-ivory/40" />
-        <span className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-ivory/40" />
-        <span className="pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r border-ivory/40" />
+        <span className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-ink/30" />
+        <span className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-ink/30" />
+        <span className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-ink/30" />
+        <span className="pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r border-ink/30" />
       </div>
     </div>
   );
@@ -654,7 +643,7 @@ function TrainingHero() {
   }, []);
 
   return (
-    <section id="top" className="hero-section relative overflow-hidden bg-ivory">
+    <section id="top" className="hero-section services-hero-section relative bg-ivory">
       <div className="absolute inset-0 text-ink">
         <div className="absolute inset-0 bg-grid grid-drift opacity-70" />
       </div>
@@ -826,97 +815,89 @@ function ProgramsSection() {
   return (
     <section id="programs" className="services-section relative bg-ivory scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-4">
-            <Reveal>
-              <SectionLabel>Programs</SectionLabel>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Programs shaped
-                <br />
-                by practical
-                <br />
-                <span className="italic text-gradient-orange">technical work.</span>
-              </h2>
-            </Reveal>
-          </div>
-
-          <div className="md:col-span-8">
-            <ul className="divide-y divide-border border-y border-border">
-              {programs.map((program, index) => (
-                <li
-                  key={program.title}
-                  className="training-program-row group relative overflow-hidden py-8 md:py-10"
-                >
-                  <span className="program-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
-                  <Reveal delay={index * 50}>
-                    <div className="grid gap-8 md:grid-cols-12 md:gap-6">
-                      <div className="md:col-span-5">
-                        <div className="flex items-baseline gap-4">
-                          <span className="program-num text-xs tabular-nums text-orange">
-                            {program.number}
-                          </span>
-                          <h3 className="program-title font-display text-2xl md:text-4xl">
-                            {program.title}
-                          </h3>
-                        </div>
-                        <p className="program-copy mt-4 max-w-xl text-sm leading-relaxed text-charcoal md:text-base">
-                          {program.description}
-                        </p>
-                      </div>
-
-                      <div className="md:col-span-7 md:grid md:grid-cols-3 md:gap-6">
-                        <div className="program-list">
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Suitable for
-                          </div>
-                          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
-                            {program.audiences.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="program-list mt-8 md:mt-0">
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Formats
-                          </div>
-                          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
-                            {program.formats.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="program-list mt-8 md:mt-0">
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Outcomes
-                          </div>
-                          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
-                            {program.outcomes.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </Reveal>
-                  <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100" />
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="mb-12 md:mb-16">
+          <Reveal>
+            <SectionLabel>Programs</SectionLabel>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 className="mt-6 max-w-4xl font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
+              Programs shaped by practical <span className="italic text-gradient-orange">technical work.</span>
+            </h2>
+          </Reveal>
         </div>
+
+        <ul className="divide-y divide-border border-y border-border">
+          {programs.map((program, index) => (
+            <li
+              key={program.title}
+              className="training-program-row group relative overflow-hidden py-8 md:py-10 lg:py-12"
+            >
+              <span className="program-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
+              <Reveal delay={index * 50}>
+                <div className="grid gap-8 md:gap-y-8 lg:grid-cols-[minmax(280px,1.4fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)] lg:gap-x-8">
+                  <div className="min-w-0 md:col-span-2 lg:col-span-1">
+                    <div className="flex items-baseline gap-4">
+                      <span className="program-num text-xs tabular-nums text-orange">
+                        {program.number}
+                      </span>
+                      <h3 className="program-title font-display text-2xl md:text-4xl">
+                        {program.title}
+                      </h3>
+                    </div>
+                    <p className="program-copy mt-4 max-w-xl text-sm leading-relaxed text-charcoal md:text-base">
+                      {program.description}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-8 md:grid-cols-3 md:gap-6 lg:col-span-3 lg:grid-cols-3">
+                    <div className="program-list min-w-0">
+                      <div className="text-xs uppercase tracking-[0.24em] text-orange">
+                        Suitable for
+                      </div>
+                      <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
+                        {program.audiences.map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="program-list min-w-0">
+                      <div className="text-xs uppercase tracking-[0.24em] text-orange">
+                        Formats
+                      </div>
+                      <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
+                        {program.formats.map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="program-list min-w-0">
+                      <div className="text-xs uppercase tracking-[0.24em] text-orange">
+                        Outcomes
+                      </div>
+                      <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
+                        {program.outcomes.map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100" />
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -1005,46 +986,39 @@ function DeliveryFormatsSection() {
 
 function ProgramStructureSection() {
   return (
-    <section
-      id="process"
-      className="services-section services-section--continuous relative overflow-hidden bg-cream scroll-mt-24"
-    >
+    <section id="process" className="relative bg-cream pb-20 pt-0 scroll-mt-24 md:pb-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-4">
+        <div className="mb-10 grid gap-6 md:mb-12 md:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)] md:items-end md:gap-12">
+          <div>
             <Reveal>
               <SectionLabel>Program Structure</SectionLabel>
             </Reveal>
             <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                How a program
-                <br />
-                is <span className="italic text-gradient-orange">built.</span>
+              <h2 className="mt-6 max-w-4xl font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
+                How a program is <span className="italic text-gradient-orange">built.</span>
               </h2>
             </Reveal>
           </div>
 
-          <div className="md:col-span-8">
-            <Reveal delay={160}>
-              <p className="mb-10 max-w-xl text-pretty text-sm leading-relaxed text-charcoal">
-                Training follows a deliberate structure so scope, delivery, and outcomes stay clear
-                for institutions, learner cohorts, and teams.
-              </p>
-            </Reveal>
-
-            <ol className="grid gap-5 md:grid-cols-6">
-              {programStructure.map((step, index) => (
-                <Reveal key={step.title} delay={index * 90}>
-                  <li className="relative">
-                    <h3 className="font-display text-lg">{step.title}</h3>
-                    <span className="mt-2 block h-px w-8 bg-orange/60" />
-                    <p className="mt-3 text-xs leading-relaxed text-charcoal">{step.description}</p>
-                  </li>
-                </Reveal>
-              ))}
-            </ol>
-          </div>
+          <Reveal delay={160}>
+            <p className="max-w-xl text-pretty text-sm leading-relaxed text-charcoal md:justify-self-end">
+              Training follows a deliberate structure so scope, delivery, and outcomes stay clear
+              for institutions, learner cohorts, and teams.
+            </p>
+          </Reveal>
         </div>
+
+        <ol className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+          {programStructure.map((step, index) => (
+            <Reveal key={step.title} delay={index * 90}>
+              <li className="relative">
+                <h3 className="font-display text-lg">{step.title}</h3>
+                <span className="mt-2 block h-px w-8 bg-orange/60" />
+                <p className="mt-3 text-xs leading-relaxed text-charcoal">{step.description}</p>
+              </li>
+            </Reveal>
+          ))}
+        </ol>
       </div>
     </section>
   );

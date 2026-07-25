@@ -72,29 +72,11 @@ function useScrollProgress() {
 function useCursor() {
   const coreRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const [hover, setHover] = useState(false);
-  useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    const core = coreRef.current;
-    const ring = ringRef.current;
-    if (!core || !ring) return;
-    gsap.set([core, ring], { x: -100, y: -100 });
-    const setCoreX = gsap.quickSetter(core, "x", "px") as (v: number) => void;
-    const setCoreY = gsap.quickSetter(core, "y", "px") as (v: number) => void;
-    const setRingX = gsap.quickSetter(ring, "x", "px") as (v: number) => void;
-    const setRingY = gsap.quickSetter(ring, "y", "px") as (v: number) => void;
-    const onMove = (e: MouseEvent) => {
-      setCoreX(e.clientX);
-      setCoreY(e.clientY);
-      setRingX(e.clientX);
-      setRingY(e.clientY);
-      const t = e.target as HTMLElement | null;
-      setHover(!!t?.closest("[data-cursor='hover'], a, button"));
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-  return { coreRef, ringRef, hover };
+  return {
+    coreRef,
+    ringRef,
+    hover: false,
+  };
 }
 
 /* -------------------------------- primitives ------------------------------ */
@@ -1985,7 +1967,6 @@ function Index() {
         className="fixed left-0 top-0 z-[60] h-px gradient-sunset"
         style={{ width: `${p * 100}%`, transition: "width 100ms linear" }}
       />
-      <Cursor />
       <Hero />
       <Marquee />
       <About />
