@@ -765,8 +765,7 @@ function About() {
       return () => observer.disconnect();
     }
 
-    const clamp = (value: number, min: number, max: number) =>
-      Math.min(Math.max(value, min), max);
+    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
     const geometry = {
       startScaleX: 0.5,
       startScaleY: 0.5,
@@ -1136,9 +1135,7 @@ function Ecosystem() {
               >
                 <div className="vertical-card__main-link">
                   <div className="vertical-card__header">
-                    <span className="vertical-card__eyebrow">
-                      Vertical
-                    </span>
+                    <span className="vertical-card__eyebrow">Vertical</span>
                     <span className="vertical-card__rule" />
                   </div>
 
@@ -1646,11 +1643,7 @@ function Training() {
           </div>
           <Reveal delay={180} className="md:col-span-5">
             <div className="md:sticky md:top-28">
-              <MediaFrame
-                aspect="video"
-                videoSrc="/training.mp4"
-                className="md:aspect-[16/11]"
-              />
+              <MediaFrame aspect="video" videoSrc="/training.mp4" className="md:aspect-[16/11]" />
             </div>
           </Reveal>
           <div className="md:col-span-7">

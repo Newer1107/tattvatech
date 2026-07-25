@@ -328,8 +328,7 @@ const technologyCategories: CapabilityCategory[] = [
 const ecosystemBlocks = [
   {
     title: "Products",
-    description:
-      "Recurring client problems reveal opportunities for scalable software products.",
+    description: "Recurring client problems reveal opportunities for scalable software products.",
     tags: ["Recurring insight", "Reusable systems"],
     href: "/products" as const,
   },
@@ -352,18 +351,15 @@ const ecosystemBlocks = [
 const differentiators: DetailItem[] = [
   {
     title: "01 Founder-led execution",
-    description:
-      "Projects remain close to technical leadership and accountable decision-making.",
+    description: "Projects remain close to technical leadership and accountable decision-making.",
   },
   {
     title: "02 Practical engineering",
-    description:
-      "We prioritize usable, maintainable systems over unnecessary complexity.",
+    description: "We prioritize usable, maintainable systems over unnecessary complexity.",
   },
   {
     title: "03 End-to-end ownership",
-    description:
-      "Research, design, engineering, deployment, and improvement stay connected.",
+    description: "Research, design, engineering, deployment, and improvement stay connected.",
   },
   {
     title: "04 Production-first thinking",
@@ -372,8 +368,7 @@ const differentiators: DetailItem[] = [
   },
   {
     title: "05 Long-term partnerships",
-    description:
-      "We aim to understand the organization and improve the system over time.",
+    description: "We aim to understand the organization and improve the system over time.",
   },
   {
     title: "06 Connected expertise",
@@ -497,13 +492,7 @@ function Reveal({
   );
 }
 
-function SectionLabel({
-  children,
-  inverse = false,
-}: {
-  children: ReactNode;
-  inverse?: boolean;
-}) {
+function SectionLabel({ children, inverse = false }: { children: ReactNode; inverse?: boolean }) {
   return (
     <div
       className={`flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] ${
@@ -542,9 +531,7 @@ function HeroArchitecture() {
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-ivory/90 p-4 shadow-soft">
-              <div className="text-[11px] uppercase tracking-[0.24em] text-orange">
-                Delivery
-              </div>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-orange">Delivery</div>
               <p className="mt-3 text-sm leading-relaxed text-charcoal">
                 Research, design, build, deploy, and improve in one production loop.
               </p>
@@ -558,9 +545,13 @@ function HeroArchitecture() {
                 className="architecture-panel grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 rounded-2xl border border-border bg-ivory/88 px-4 py-3 shadow-soft"
                 style={{ transitionDelay: `${index * 60}ms` }}
               >
-                <span className="text-xs tabular-nums text-orange">{String(index + 1).padStart(2, "0")}</span>
+                <span className="text-xs tabular-nums text-orange">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <div className="min-w-0">
-                  <div className="font-display text-lg leading-none text-ink md:text-xl">{label}</div>
+                  <div className="font-display text-lg leading-none text-ink md:text-xl">
+                    {label}
+                  </div>
                   <div className="mt-1 text-sm text-charcoal">{description}</div>
                 </div>
               </div>
@@ -711,8 +702,8 @@ function ServicesHero() {
                 className="services-hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg"
                 style={{ opacity: 0 }}
               >
-                We research, design, build, deploy, and improve digital systems across software,
-                AI, cloud, data, and user experience.
+                We research, design, build, deploy, and improve digital systems across software, AI,
+                cloud, data, and user experience.
               </p>
 
               <div
@@ -846,14 +837,18 @@ function CoreServicesSection() {
           </Reveal>
           <Reveal delay={80}>
             <h2 className="mt-6 max-w-4xl font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-              Engineering as a <span className="italic text-gradient-orange">long-term practice.</span>
+              Engineering as a{" "}
+              <span className="italic text-gradient-orange">long-term practice.</span>
             </h2>
           </Reveal>
         </div>
 
         <ul className="divide-y divide-border border-y border-border">
           {services.map((service, index) => (
-            <li key={service.title} className="service-page-row group relative overflow-hidden py-8 md:py-10 lg:py-12">
+            <li
+              key={service.title}
+              className="service-page-row group relative overflow-hidden py-8 md:py-10 lg:py-12"
+            >
               <span className="service-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
               <Reveal delay={index * 50}>
                 <div className="grid gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-8 xl:grid-cols-[minmax(220px,0.95fr)_minmax(260px,1.1fr)_minmax(220px,0.9fr)_minmax(220px,0.9fr)] xl:gap-x-12">
@@ -943,9 +938,7 @@ function EngagementSection() {
             {engagementModels.map((item, index) => (
               <Reveal key={item.title} delay={index * 70}>
                 <article className="rounded-3xl border border-border bg-ivory p-6 shadow-soft md:p-8">
-                  <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                    Model
-                  </div>
+                  <div className="text-xs uppercase tracking-[0.24em] text-orange">Model</div>
                   <h3 className="mt-5 font-display text-2xl leading-none md:text-3xl">
                     {item.title}
                   </h3>
@@ -1004,7 +997,9 @@ function ProcessSection() {
             <Reveal delay={220}>
               <div className="mt-8 flex items-center gap-4 border-t border-border pt-6 text-sm text-charcoal">
                 <span className="inline-block h-px w-12 bg-orange/60" />
-                <p>Improve feeds the next round of Understand so the system gets sharper over time.</p>
+                <p>
+                  Improve feeds the next round of Understand so the system gets sharper over time.
+                </p>
               </div>
             </Reveal>
           </div>
@@ -1140,7 +1135,10 @@ function ConnectedEcosystemSection() {
         <div className="verticals-grid">
           {ecosystemBlocks.map((block, index) => (
             <Reveal key={block.title} delay={index * 90}>
-              <article className="vertical-card group relative rounded-[28px] shadow-soft" data-cursor="hover">
+              <article
+                className="vertical-card group relative rounded-[28px] shadow-soft"
+                data-cursor="hover"
+              >
                 <div className="vertical-card__main-link">
                   <div className="vertical-card__header">
                     <span className="vertical-card__eyebrow">Services to</span>
@@ -1169,7 +1167,11 @@ function ConnectedEcosystemSection() {
                 </div>
 
                 <div className="vertical-card__footer">
-                  <Link to={block.href} className="vertical-card__cta" aria-label={`View ${block.title}`}>
+                  <Link
+                    to={block.href}
+                    className="vertical-card__cta"
+                    aria-label={`View ${block.title}`}
+                  >
                     <span>View {block.title}</span>
                     <span aria-hidden="true">&#8599;</span>
                   </Link>
@@ -1270,7 +1272,8 @@ function FaqSection() {
             </Reveal>
             <Reveal delay={80}>
               <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Practical questions, <span className="italic text-gradient-orange">clear answers.</span>
+                Practical questions,{" "}
+                <span className="italic text-gradient-orange">clear answers.</span>
               </h2>
             </Reveal>
           </div>
@@ -1285,7 +1288,9 @@ function FaqSection() {
                       aria-expanded={openItem === `faq-${index}`}
                       aria-controls={`faq-panel-${index}`}
                       onClick={() =>
-                        setOpenItem((current) => (current === `faq-${index}` ? null : `faq-${index}`))
+                        setOpenItem((current) =>
+                          current === `faq-${index}` ? null : `faq-${index}`,
+                        )
                       }
                       className="flex w-full items-center justify-between gap-6 py-6 text-left"
                     >
@@ -1294,7 +1299,9 @@ function FaqSection() {
                       </span>
                       <span
                         className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border transition-colors duration-300 ${
-                          openItem === `faq-${index}` ? "bg-orange text-ivory border-orange" : "text-ink"
+                          openItem === `faq-${index}`
+                            ? "bg-orange text-ivory border-orange"
+                            : "text-ink"
                         }`}
                         aria-hidden="true"
                       >

@@ -119,7 +119,7 @@ export function SiteFooter() {
 }
 
 type SiteNavbarProps = {
-  page?: "home" | "services";
+  page?: "home" | "services" | "training";
 };
 
 type SiteNavLink = {
@@ -144,17 +144,30 @@ const servicesNavLinks: SiteNavLink[] = [
   { label: "Contact", href: "#contact", sectionId: "contact" },
 ];
 
+const trainingNavLinks: SiteNavLink[] = [
+  { label: "About", href: "/#about", sectionId: "about" },
+  { label: "Ecosystem", href: "/#ecosystem", sectionId: "ecosystem" },
+  { label: "Services", href: "/services", sectionId: "services" },
+  { label: "Process", href: "#process", sectionId: "process" },
+  { label: "Contact", href: "#contact", sectionId: "contact" },
+];
+
 export function SiteNavbar({ page = "home" }: SiteNavbarProps) {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(page === "services" ? "services" : "top");
+  const [active, setActive] = useState(
+    page === "services" ? "services" : page === "training" ? "ecosystem" : "top",
+  );
 
-  const links = page === "services" ? servicesNavLinks : homeNavLinks;
+  const links =
+    page === "services" ? servicesNavLinks : page === "training" ? trainingNavLinks : homeNavLinks;
 
   useEffect(() => {
     const observableIds =
       page === "services"
         ? ["services", "process", "contact"]
-        : ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
+        : page === "training"
+          ? ["connected-ecosystem", "process", "contact"]
+          : ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
 
     const els = observableIds
       .map((id) => document.getElementById(id))
@@ -166,7 +179,7 @@ export function SiteNavbar({ page = "home" }: SiteNavbarProps) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActive(entry.target.id);
+            setActive(entry.target.id === "connected-ecosystem" ? "ecosystem" : entry.target.id);
           }
         });
       },
@@ -181,7 +194,7 @@ export function SiteNavbar({ page = "home" }: SiteNavbarProps) {
     <header className="navbar relative z-10 w-full">
       <div className="flex items-center justify-between gap-4 py-4 md:py-5">
         <a
-          href={page === "services" ? "/" : "#top"}
+          href={page === "home" ? "#top" : "/"}
           data-cursor="hover"
           className="group flex shrink-0 items-center"
           aria-label="Go to TattvaTech home"
