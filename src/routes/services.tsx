@@ -840,89 +840,84 @@ function CoreServicesSection() {
       className="services-section services-section--continuous relative bg-ivory scroll-mt-24"
     >
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-4">
-            <Reveal>
-              <SectionLabel>Core Services</SectionLabel>
-            </Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Engineering as a{" "}
-                <span className="italic text-gradient-orange">long-term practice.</span>
-              </h2>
-            </Reveal>
-          </div>
-
-          <div className="md:col-span-8">
-            <ul className="divide-y divide-border border-y border-border">
-              {services.map((service, index) => (
-                <li key={service.title} className="service-page-row group relative overflow-hidden py-8 md:py-10">
-                  <span className="service-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
-                  <Reveal delay={index * 50}>
-                    <div className="grid gap-8 md:grid-cols-12 md:gap-6">
-                      <div className="min-w-0 md:col-span-5">
-                        <div className="flex items-baseline gap-4">
-                          <span className="service-num text-xs tabular-nums text-orange">
-                            {service.number}
-                          </span>
-                          <h3 className="service-title font-display text-2xl md:text-4xl">
-                            {service.title}
-                          </h3>
-                        </div>
-
-                        <p className="service-copy mt-4 max-w-xl text-sm leading-relaxed text-charcoal md:text-base">
-                          {service.description}
-                        </p>
-
-                        {service.note ? (
-                          <p className="service-copy mt-4 max-w-xl text-sm leading-relaxed text-charcoal/80">
-                            {service.note}
-                          </p>
-                        ) : null}
-                      </div>
-
-                      <div className="min-w-0 md:col-span-7 md:grid md:grid-cols-2 md:gap-6">
-                        <div className="service-list min-w-0">
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Capabilities
-                          </div>
-                          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
-                            {service.capabilities.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="service-list min-w-0 mt-8 md:mt-0">
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Deliverables
-                          </div>
-                          <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
-                            {service.deliverables.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-
-                          <a href="#contact" data-cursor="hover" className="vertical-card__cta mt-6">
-                            <span>Start this project</span>
-                            <span aria-hidden="true">&#8599;</span>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </Reveal>
-                  <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100" />
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="mb-12 md:mb-16">
+          <Reveal>
+            <SectionLabel>Core Services</SectionLabel>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 className="mt-6 max-w-4xl font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
+              Engineering as a <span className="italic text-gradient-orange">long-term practice.</span>
+            </h2>
+          </Reveal>
         </div>
+
+        <ul className="divide-y divide-border border-y border-border">
+          {services.map((service, index) => (
+            <li key={service.title} className="service-page-row group relative overflow-hidden py-8 md:py-10 lg:py-12">
+              <span className="service-divider pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-border/70" />
+              <Reveal delay={index * 50}>
+                <div className="grid gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-8 xl:grid-cols-[minmax(220px,0.95fr)_minmax(260px,1.1fr)_minmax(220px,0.9fr)_minmax(220px,0.9fr)] xl:gap-x-12">
+                  <div className="min-w-0">
+                    <div className="flex items-baseline gap-4">
+                      <span className="service-num text-xs tabular-nums text-orange">
+                        {service.number}
+                      </span>
+                      <h3 className="service-title font-display text-2xl md:text-4xl">
+                        {service.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="service-copy max-w-xl text-sm leading-relaxed text-charcoal md:text-base">
+                      {service.description}
+                    </p>
+
+                    {service.note ? (
+                      <p className="service-copy mt-4 max-w-xl text-sm leading-relaxed text-charcoal/80">
+                        {service.note}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="service-list min-w-0">
+                    <div className="text-xs uppercase tracking-[0.24em] text-orange">
+                      Capabilities
+                    </div>
+                    <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
+                      {service.capabilities.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="service-list min-w-0">
+                    <div className="text-xs uppercase tracking-[0.24em] text-orange">
+                      Deliverables
+                    </div>
+                    <ul className="mt-4 space-y-2 text-sm leading-relaxed text-charcoal">
+                      {service.deliverables.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <a href="#contact" data-cursor="hover" className="vertical-card__cta mt-6">
+                      <span>Start this project</span>
+                      <span aria-hidden="true">&#8599;</span>
+                    </a>
+                  </div>
+                </div>
+              </Reveal>
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-orange transition-transform duration-700 group-hover:scale-x-100" />
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
