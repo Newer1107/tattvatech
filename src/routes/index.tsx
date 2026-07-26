@@ -271,11 +271,22 @@ function Hero() {
     };
   }, []);
 
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      setHeroVideoReady(true);
+    }
+
+    video.play().catch(() => {});
+  }, []);
+
   /* Hero parallax: heading scale/fade + background grid translateY on scroll */
   useDeferredMotionEffect(({ gsap }) => {
     const heading = document.querySelector<HTMLElement>("#top h1");
     const grid = document.querySelector<HTMLElement>("#top .bg-grid");
-    const tweens = [];
+    const tweens: gsap.core.Tween[] = [];
 
     if (heading) {
       tweens.push(
@@ -556,6 +567,7 @@ function Hero() {
                   loop
                   playsInline
                   preload="metadata"
+                  onCanPlay={() => setHeroVideoReady(true)}
                   onLoadedData={() => setHeroVideoReady(true)}
                   disablePictureInPicture
                 >
@@ -793,7 +805,6 @@ function About() {
   const aboutVideoPinRef = useRef<HTMLDivElement>(null);
   const aboutVideoFrameRef = useRef<HTMLDivElement>(null);
   const aboutVideoRef = useRef<HTMLVideoElement>(null);
-  const [shouldLoadAboutVideo, setShouldLoadAboutVideo] = useState(false);
   const steps = [
     { k: "Observe", d: "Real problems, patterns, and gaps in how technology is actually used." },
     { k: "Build", d: "Engineered solutions with clarity, restraint, and long-term architecture." },
@@ -801,24 +812,6 @@ function About() {
     { k: "Evolve", d: "Continuous refinement guided by outcomes rather than trends." },
     { k: "Responsibly", d: "Practical innovation grounded in ethics, trust, and durability." },
   ];
-
-  useEffect(() => {
-    const section = aboutVideoSectionRef.current;
-    if (!section || shouldLoadAboutVideo) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadAboutVideo(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "400px", threshold: 0.01 },
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [shouldLoadAboutVideo]);
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -884,56 +877,29 @@ function About() {
         },
         { threshold: 0.35 },
       );
-      observer.observe(video);
+      observer.observe(section);
       return () => observer.disconnect();
     }
 
     const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
     const geometry = {
-      startScaleX: 0.5,
-      startScaleY: 0.5,
-      startRadius: 52,
-      arrivalScaleX: 0.8,
-      arrivalScaleY: 0.8,
-      arrivalRadius: 40,
-      finalScaleX: 1,
-      finalScaleY: 1,
-      finalRadius: 32,
+      initialScaleX: 1,
+      initialScaleY: 1,
+      initialRadius: 36,
     };
     let updateFrameGeometry = () => {};
 
     const ctx = gsap.context(() => {
-      const arrivalTween = gsap.to(frame, {
-        scaleX: () => geometry.arrivalScaleX,
-        scaleY: () => geometry.arrivalScaleY,
-        borderRadius: () => geometry.arrivalRadius,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#about",
-          start: () => {
-            if (window.innerWidth < 768) return "top 88%";
-            if (window.innerWidth < 1024) return "top 84%";
-            return "top 82%";
-          },
-          end: () => {
-            if (window.innerWidth < 768) return "top 36%";
-            if (window.innerWidth < 1024) return "top 28%";
-            return "top 22%";
-          },
-          scrub: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-
       const timeline = gsap.timeline({
+        defaults: { ease: "none" },
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: () => {
             const viewportHeight = window.innerHeight;
-            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 0.75)}`;
-            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 0.95)}`;
-            return `+=${Math.round(viewportHeight * 1.05)}`;
+            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 1.25)}`;
+            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 1.45)}`;
+            return `+=${Math.round(viewportHeight * 1.6)}`;
           },
           scrub: 1,
           pin,
@@ -948,90 +914,49 @@ function About() {
       });
 
       timeline
-        .addLabel("initial")
         .to({}, { duration: 0.08 })
-        .addLabel("expand")
-        .to(
-          frame,
-          {
-            scaleX: () => geometry.finalScaleX,
-            scaleY: () => geometry.finalScaleY,
-            borderRadius: () => geometry.finalRadius,
-            ease: "none",
-            duration: 0.66,
-          },
-          "expand",
-        )
-        .addLabel("fullscreen")
-        .to(frame, { yPercent: -1, ease: "none", duration: 0.08 })
-        .addLabel("release");
+        .to(frame, {
+          scaleX: 1,
+          scaleY: 1,
+          borderRadius: 0,
+          duration: 0.66,
+        })
+        .to({}, { duration: 0.14 })
+        .to({}, { duration: 0.12 });
 
       updateFrameGeometry = () => {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const isMobile = viewportWidth < 768;
         const isTablet = viewportWidth < 1024;
-
-        const finalHorizontalMargin = isMobile
-          ? 16
+        const insetX = isMobile
+          ? 12
           : isTablet
-            ? clamp(viewportWidth * 0.03, 22, 32)
-            : clamp(viewportWidth * 0.035, 42, 72);
-        const finalHeight = isMobile
-          ? clamp(viewportHeight * 0.7, viewportHeight * 0.66, viewportHeight * 0.74)
+            ? clamp(viewportWidth * 0.035, 20, 28)
+            : clamp(viewportWidth * 0.03, 30, 54);
+        const insetHeight = isMobile
+          ? clamp(viewportHeight * 0.68, viewportHeight * 0.64, viewportHeight * 0.72)
           : isTablet
             ? clamp(viewportHeight * 0.76, viewportHeight * 0.72, viewportHeight * 0.8)
-            : clamp(viewportHeight * 0.8, viewportHeight * 0.76, 860);
-        const finalWidth = viewportWidth - finalHorizontalMargin * 2;
-        const finalScaleX = finalWidth / viewportWidth;
-        const finalScaleY = finalHeight / viewportHeight;
-        const finalRadius = isMobile ? 24 : isTablet ? 28 : clamp(viewportWidth * 0.022, 28, 40);
+            : clamp(viewportHeight * 0.8, viewportHeight * 0.76, viewportHeight * 0.84);
+        const insetWidth = viewportWidth - insetX * 2;
 
-        const initialWidth = isMobile
-          ? finalWidth * 0.5
+        geometry.initialScaleX = insetWidth / viewportWidth;
+        geometry.initialScaleY = insetHeight / viewportHeight;
+        geometry.initialRadius = isMobile
+          ? 22
           : isTablet
-            ? finalWidth * 0.46
-            : finalWidth * 0.42;
-        const initialHeight = isMobile
-          ? finalHeight * 0.56
-          : isTablet
-            ? finalHeight * 0.52
-            : finalHeight * 0.48;
-        const arrivalWidth = isMobile
-          ? finalWidth * 0.82
-          : isTablet
-            ? finalWidth * 0.84
-            : finalWidth * 0.86;
-        const arrivalHeight = isMobile
-          ? finalHeight * 0.82
-          : isTablet
-            ? finalHeight * 0.84
-            : finalHeight * 0.86;
-        const initialScaleX = initialWidth / viewportWidth;
-        const initialScaleY = initialHeight / viewportHeight;
-        const arrivalScaleX = arrivalWidth / viewportWidth;
-        const arrivalScaleY = arrivalHeight / viewportHeight;
-        const initialRadius = isMobile ? 28 : isTablet ? 36 : clamp(viewportWidth * 0.038, 48, 72);
-        const arrivalRadius = isMobile ? 26 : isTablet ? 30 : clamp(viewportWidth * 0.024, 34, 48);
-
-        geometry.startScaleX = initialScaleX;
-        geometry.startScaleY = initialScaleY;
-        geometry.startRadius = initialRadius;
-        geometry.arrivalScaleX = arrivalScaleX;
-        geometry.arrivalScaleY = arrivalScaleY;
-        geometry.arrivalRadius = arrivalRadius;
-        geometry.finalScaleX = finalScaleX;
-        geometry.finalScaleY = finalScaleY;
-        geometry.finalRadius = finalRadius;
+            ? 28
+            : clamp(viewportWidth * 0.022, 28, 38);
 
         gsap.set(frame, {
-          width: viewportWidth,
-          height: viewportHeight,
+          width: "100vw",
+          height: "100svh",
           x: 0,
           y: 0,
-          scaleX: geometry.startScaleX,
-          scaleY: geometry.startScaleY,
-          borderRadius: geometry.startRadius,
+          scaleX: geometry.initialScaleX,
+          scaleY: geometry.initialScaleY,
+          borderRadius: geometry.initialRadius,
           transformOrigin: "center center",
         });
       };
@@ -1082,20 +1007,16 @@ function About() {
       <div ref={aboutVideoSectionRef} className="about-video-section mt-10 md:mt-16">
         <div ref={aboutVideoPinRef} className="about-video-pin">
           <div ref={aboutVideoFrameRef} className="about-video-frame">
-            {shouldLoadAboutVideo ? (
-              <video
-                ref={aboutVideoRef}
-                src={assetPath("/about.mp4")}
-                muted
-                playsInline
-                loop
-                autoPlay
-                preload="metadata"
-                className="about-video"
-              />
-            ) : (
-              <div className="h-full w-full bg-grid-fine opacity-35 text-ink" aria-hidden="true" />
-            )}
+            <video
+              ref={aboutVideoRef}
+              src={assetPath("/about.mp4")}
+              muted
+              playsInline
+              loop
+              autoPlay
+              preload="metadata"
+              className="about-video"
+            />
           </div>
         </div>
       </div>

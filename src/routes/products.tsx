@@ -457,12 +457,12 @@ function ProductsHeroVisual() {
   ];
 
   return (
-    <div className="hero-media services-hero-media reveal-up" style={{ animationDelay: "320ms" }}>
-      <div className="hero-media-frame services-hero-frame group relative rounded-3xl border border-border bg-cream shadow-warm">
+    <div className="hero-media products-hero-visual reveal-up" style={{ animationDelay: "320ms" }}>
+      <div className="hero-media-frame products-hero-card group relative rounded-3xl border border-border bg-cream shadow-warm">
         <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full glow-orange opacity-60 blur-3xl" />
 
-        <div className="services-hero-frame-body relative flex flex-col p-6 md:p-8">
+        <div className="products-hero-system relative flex flex-col p-6 md:p-8">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-border bg-ivory/90 p-4 shadow-soft">
               <div className="text-[11px] uppercase tracking-[0.24em] text-orange">Origin</div>
@@ -521,7 +521,6 @@ function ProductsHeroVisual() {
 
 function ProductsHero() {
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
-  const progress = useScrollProgress();
 
   useEffect(() => {
     const handleMove = (event: MouseEvent) => {
@@ -598,10 +597,7 @@ function ProductsHero() {
   }, []);
 
   return (
-    <section
-      id="top"
-      className="hero-section services-hero-section relative overflow-hidden bg-ivory"
-    >
+    <section id="top" className="products-hero hero-section relative bg-ivory">
       <div className="absolute inset-0 text-ink">
         <div className="absolute inset-0 bg-grid grid-drift opacity-70" />
       </div>
@@ -614,23 +610,19 @@ function ProductsHero() {
         }}
       />
 
-      <div className="hero-shell services-hero-shell relative mx-auto flex max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
+      <div className="products-hero__inner hero-shell relative mx-auto max-w-[1400px] px-6 pt-4 md:px-10 md:pt-6">
         <SiteNavbar page="products" />
 
-        <div className="hero-content services-hero-content flex flex-1 flex-col justify-center py-6 md:py-8">
-          <div className="products-hero-badge">
-            <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
-              TATTVATECH PRODUCTS
-            </div>
-          </div>
-
-          <div className="services-hero-grid grid gap-10">
-            <div className="hero-copy">
-              <h1
-                className="font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words"
-                style={{ transform: `translateY(${progress * -40}px)` }}
-              >
+        <div className="products-hero__body">
+          <div className="products-hero__grid">
+            <div className="products-hero__copy hero-copy">
+              <div className="products-hero-badge">
+                <div className="mb-6 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-8">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
+                  TATTVATECH PRODUCTS
+                </div>
+              </div>
+              <h1 className="products-hero__title font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words">
                 <span className="block products-hero-heading-line">Products built</span>
                 <span className="block products-hero-heading-line">from recurring</span>
                 <span className="block products-hero-heading-line italic text-gradient-orange">
@@ -651,13 +643,62 @@ function ProductsHero() {
               </div>
             </div>
 
-            <div className="products-hero-frame">
+            <div className="products-hero__visual products-hero-frame">
               <ProductsHeroVisual />
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProductPipelineRow({ product }: { product: Product }) {
+  return (
+    <article className="rounded-3xl border border-border bg-cream p-6 shadow-soft md:p-8">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(220px,0.5fr)_minmax(260px,0.7fr)] lg:gap-10">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs tabular-nums text-orange">{product.number}</span>
+            <span className="rounded-full border border-ink/15 bg-ivory px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-charcoal">
+              {product.status}
+            </span>
+          </div>
+
+          <h3 className="mt-5 font-display text-2xl leading-none md:text-3xl">{product.name}</h3>
+          <p className="mt-3 text-sm uppercase tracking-[0.2em] text-charcoal/65">
+            {product.category}
+          </p>
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-charcoal md:text-base">
+            {product.problem}
+          </p>
+        </div>
+
+        <div>
+          <div className="text-xs uppercase tracking-[0.24em] text-orange">Intended users</div>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
+            {product.audience.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <div className="text-xs uppercase tracking-[0.24em] text-orange">Core capabilities</div>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
+            {product.capabilities.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -779,87 +820,32 @@ function CurrentProductsSection() {
   return (
     <section id="products" className="services-section relative bg-ivory scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-4">
-            <Reveal>
-              <SectionLabel>Current Products</SectionLabel>
+        <div className="max-w-5xl">
+          <Reveal>
+            <SectionLabel>Current Products</SectionLabel>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
+              Product pipeline
+              <br />
+              shaped by repeated <span className="italic text-gradient-orange">work.</span>
+            </h2>
+          </Reveal>
+          <Reveal delay={160}>
+            <p className="mt-6 max-w-3xl text-pretty text-sm leading-relaxed text-charcoal md:text-base">
+              The repository contains clear Products positioning, but not a verified public product
+              catalog. To keep the page honest, this section presents the current pipeline by
+              category and stage rather than inventing named public offerings.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="mt-12 space-y-6">
+          {products.map((product, index) => (
+            <Reveal key={product.number} delay={index * 70}>
+              <ProductPipelineRow product={product} />
             </Reveal>
-            <Reveal delay={80}>
-              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
-                Product pipeline
-                <br />
-                shaped by repeated <span className="italic text-gradient-orange">work.</span>
-              </h2>
-            </Reveal>
-          </div>
-
-          <div className="md:col-span-8">
-            <Reveal delay={160}>
-              <p className="max-w-3xl text-pretty text-sm leading-relaxed text-charcoal md:text-base">
-                The repository contains clear Products positioning, but not a verified public
-                product catalog. To keep the page honest, this section presents the current pipeline
-                by category and stage rather than inventing named public offerings.
-              </p>
-            </Reveal>
-
-            <div className="mt-10 space-y-6">
-              {products.map((product, index) => (
-                <Reveal key={product.number} delay={index * 70}>
-                  <article className="rounded-3xl border border-border bg-cream p-6 shadow-soft md:p-8">
-                    <div className="grid gap-6 md:grid-cols-[minmax(0,0.65fr)_minmax(0,1fr)] md:gap-8">
-                      <div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-xs tabular-nums text-orange">{product.number}</span>
-                          <span className="rounded-full border border-ink/15 bg-ivory px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-charcoal">
-                            {product.status}
-                          </span>
-                        </div>
-                        <h3 className="mt-5 font-display text-2xl leading-none md:text-3xl">
-                          {product.name}
-                        </h3>
-                        <p className="mt-3 text-sm uppercase tracking-[0.2em] text-charcoal/65">
-                          {product.category}
-                        </p>
-                        <p className="mt-5 text-sm leading-relaxed text-charcoal md:text-base">
-                          {product.problem}
-                        </p>
-                      </div>
-
-                      <div className="grid gap-6 sm:grid-cols-2">
-                        <div>
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Intended users
-                          </div>
-                          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
-                            {product.audience.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div>
-                          <div className="text-xs uppercase tracking-[0.24em] text-orange">
-                            Core capabilities
-                          </div>
-                          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
-                            {product.capabilities.map((item) => (
-                              <li key={item} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

@@ -515,12 +515,12 @@ function HeroArchitecture() {
   ];
 
   return (
-    <div className="hero-media services-hero-media reveal-up" style={{ animationDelay: "320ms" }}>
-      <div className="hero-media-frame services-hero-frame group relative rounded-3xl border border-border bg-cream shadow-warm">
+    <div className="hero-media services-hero-visual reveal-up" style={{ animationDelay: "320ms" }}>
+      <div className="hero-media-frame services-hero-card group relative rounded-3xl border border-border bg-cream shadow-warm">
         <div className="pointer-events-none absolute inset-0 bg-grid-fine opacity-40 text-ink" />
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full glow-orange opacity-65 blur-3xl" />
 
-        <div className="services-hero-frame-body relative flex flex-col p-6 md:p-8">
+        <div className="services-hero-system relative flex flex-col p-6 md:p-8">
           <div className="services-hero-visual-top grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-border bg-ivory/90 p-4 shadow-soft">
               <div className="text-[11px] uppercase tracking-[0.24em] text-orange">
@@ -581,7 +581,6 @@ function HeroArchitecture() {
 
 function ServicesHero() {
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
-  const progress = useScrollProgress();
 
   useEffect(() => {
     const handleMove = (event: MouseEvent) => {
@@ -596,42 +595,6 @@ function ServicesHero() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const context = gsap.context(() => {
-      const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      timeline.fromTo(
-        ".services-hero-badge",
-        { y: -8, opacity: 0, filter: "blur(4px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5 },
-      );
-
-      timeline.fromTo(
-        ".services-hero-heading-line",
-        { y: 28, opacity: 0, filter: "blur(6px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, stagger: 0.14 },
-        0.2,
-      );
-
-      timeline.fromTo(
-        ".services-hero-paragraph",
-        { y: 18, opacity: 0, filter: "blur(3px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6 },
-        0.45,
-      );
-
-      timeline.fromTo(
-        ".services-hero-actions",
-        { y: 14, opacity: 0, filter: "blur(2px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5 },
-        0.6,
-      );
-
-      timeline.fromTo(
-        ".architecture-panel, .services-hero-visual-top > div, .services-hero-visual-meta > span",
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.45, stagger: 0.05 },
-        0.35,
-      );
-
       gsap.to("#top h1", {
         scale: 0.96,
         opacity: 0.45,
@@ -658,7 +621,7 @@ function ServicesHero() {
   }, []);
 
   return (
-    <section id="top" className="hero-section services-hero-section relative bg-ivory">
+    <section id="top" className="services-hero hero-section relative bg-ivory">
       <div className="absolute inset-0 text-ink">
         <div className="absolute inset-0 bg-grid grid-drift opacity-70" />
       </div>
@@ -670,46 +633,29 @@ function ServicesHero() {
         }}
       />
 
-      <div className="hero-shell services-hero-shell relative mx-auto flex max-w-[1400px] flex-col px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-6">
+      <div className="services-hero__inner hero-shell relative mx-auto max-w-[1400px] px-6 pt-4 md:px-10 md:pt-6">
         <SiteNavbar page="services" />
 
-        <div className="hero-content services-hero-content flex flex-1 flex-col justify-center py-6 md:py-8">
-          <div className="services-hero-badge mb-8 md:mb-10" style={{ opacity: 0 }}>
-            <SectionLabel>TATTVATECH SERVICES</SectionLabel>
-          </div>
-
-          <div className="hero-grid services-hero-grid grid gap-10">
-            <div className="hero-copy">
-              <h1
-                className="font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words"
-                style={{ transform: `translateY(${progress * -40}px)` }}
-              >
-                <span className="services-hero-heading-line block" style={{ opacity: 0 }}>
-                  Engineering systems
-                </span>
-                <span className="services-hero-heading-line block" style={{ opacity: 0 }}>
-                  that solve real
-                </span>
-                <span
-                  className="services-hero-heading-line block italic text-gradient-orange"
-                  style={{ opacity: 0 }}
-                >
+        <div className="services-hero__body">
+          <div className="services-hero__grid">
+            <div className="services-hero__copy hero-copy">
+              <div className="services-hero-badge mb-6 md:mb-8">
+                <SectionLabel>TATTVATECH SERVICES</SectionLabel>
+              </div>
+              <h1 className="services-hero__title font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words">
+                <span className="services-hero-heading-line block">Engineering systems</span>
+                <span className="services-hero-heading-line block">that solve real</span>
+                <span className="services-hero-heading-line block italic text-gradient-orange">
                   business problems.
                 </span>
               </h1>
 
-              <p
-                className="services-hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg"
-                style={{ opacity: 0 }}
-              >
+              <p className="services-hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
                 We research, design, build, deploy, and improve digital systems across software, AI,
                 cloud, data, and user experience.
               </p>
 
-              <div
-                className="services-hero-actions mt-10 flex flex-wrap items-center gap-4"
-                style={{ opacity: 0 }}
-              >
+              <div className="services-hero-actions mt-10 flex flex-wrap items-center gap-4">
                 <ButtonLink href="#contact">Start a Project</ButtonLink>
                 <ButtonLink href="#services" variant="ghost">
                   Explore Services
@@ -717,7 +663,9 @@ function ServicesHero() {
               </div>
             </div>
 
-            <HeroArchitecture />
+            <div className="services-hero__visual">
+              <HeroArchitecture />
+            </div>
           </div>
         </div>
       </div>

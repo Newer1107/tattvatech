@@ -22,7 +22,7 @@ export function useSectionReveal(sectionId: string) {
       const { gsap } = await import("@/lib/animations");
       if (cancelled) return;
 
-      const triggers = targets.map((el) =>
+      const triggers = Array.from(targets, (el) =>
         gsap.fromTo(
           el,
           { autoAlpha: 0, y: 24 },
@@ -41,9 +41,9 @@ export function useSectionReveal(sectionId: string) {
       );
 
       cleanup = () => {
-        triggers.forEach((trigger) => {
-          trigger.scrollTrigger?.kill();
-          trigger.kill();
+        triggers.forEach((animation) => {
+          animation.scrollTrigger?.kill();
+          animation.kill();
         });
       };
     })();
