@@ -108,19 +108,19 @@
   }
 }
 
-@media (pointer: fine) and (hover: hover) {
-  body.custom-cursor-active,
-  body.custom-cursor-active a,
-  body.custom-cursor-active button,
-  body.custom-cursor-active [data-cursor="hover"] {
+@media (any-pointer: fine) and (any-hover: hover) {
+  html.custom-cursor-ready,
+  html.custom-cursor-ready a,
+  html.custom-cursor-ready button,
+  html.custom-cursor-ready [data-cursor="hover"] {
     cursor: none;
   }
 
-  body.custom-cursor-active input,
-  body.custom-cursor-active textarea,
-  body.custom-cursor-active select,
-  body.custom-cursor-active [contenteditable="true"],
-  body.custom-cursor-active [contenteditable=""] {
+  html.custom-cursor-ready input,
+  html.custom-cursor-ready textarea,
+  html.custom-cursor-ready select,
+  html.custom-cursor-ready [contenteditable="true"],
+  html.custom-cursor-ready [contenteditable=""] {
     cursor: text;
   }
 }
