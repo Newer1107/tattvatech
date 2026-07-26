@@ -119,7 +119,7 @@ export function SiteFooter() {
 }
 
 type SiteNavbarProps = {
-  page?: "home" | "services" | "training";
+  page?: "home" | "services" | "products" | "training";
 };
 
 type SiteNavLink = {
@@ -152,22 +152,44 @@ const trainingNavLinks: SiteNavLink[] = [
   { label: "Contact", href: "#contact", sectionId: "contact" },
 ];
 
+const productsNavLinks: SiteNavLink[] = [
+  { label: "About", href: "/#about", sectionId: "about" },
+  { label: "Ecosystem", href: "/#ecosystem", sectionId: "ecosystem" },
+  { label: "Products", href: "#products", sectionId: "products" },
+  { label: "Process", href: "#process", sectionId: "process" },
+  { label: "Contact", href: "#contact", sectionId: "contact" },
+];
+
 export function SiteNavbar({ page = "home" }: SiteNavbarProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(
-    page === "services" ? "services" : page === "training" ? "ecosystem" : "top",
+    page === "services"
+      ? "services"
+      : page === "products"
+        ? "products"
+        : page === "training"
+          ? "ecosystem"
+          : "top",
   );
 
   const links =
-    page === "services" ? servicesNavLinks : page === "training" ? trainingNavLinks : homeNavLinks;
+    page === "services"
+      ? servicesNavLinks
+      : page === "products"
+        ? productsNavLinks
+        : page === "training"
+          ? trainingNavLinks
+          : homeNavLinks;
 
   useEffect(() => {
     const observableIds =
       page === "services"
         ? ["services", "process", "contact"]
-        : page === "training"
-          ? ["connected-ecosystem", "process", "contact"]
-          : ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
+        : page === "products"
+          ? ["products", "connected-ecosystem", "process", "contact"]
+          : page === "training"
+            ? ["connected-ecosystem", "process", "contact"]
+            : ["about", "ecosystem", "services", "drones", "training", "process", "contact"];
 
     const els = observableIds
       .map((id) => document.getElementById(id))

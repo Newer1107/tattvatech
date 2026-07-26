@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { gsap, ScrollTrigger, scrollConfig } from "@/lib/animations";
 
 /**
  * Animates `[data-reveal]` children inside `#sectionId` with a scroll-triggered
@@ -10,32 +9,48 @@ export function useSectionReveal(sectionId: string) {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    let cancelled = false;
+    let cleanup = () => {};
+
     const section = document.getElementById(sectionId);
     if (!section) return;
 
     const targets = section.querySelectorAll<HTMLElement>("[data-reveal]");
     if (targets.length === 0) return;
 
-    targets.forEach((el) => {
-      gsap.fromTo(
-        el,
-        { autoAlpha: 0, y: 24 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.7,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el,
-            start: scrollConfig.reveal,
-            once: true,
+    void (async () => {
+      const { gsap } = await import("@/lib/animations");
+      if (cancelled) return;
+
+      const triggers = targets.map((el) =>
+        gsap.fromTo(
+          el,
+          { autoAlpha: 0, y: 24 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 82%",
+              once: true,
+            },
           },
-        },
+        ),
       );
-    });
+
+      cleanup = () => {
+        triggers.forEach((trigger) => {
+          trigger.scrollTrigger?.kill();
+          trigger.kill();
+        });
+      };
+    })();
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      cancelled = true;
+      cleanup();
     };
   }, [sectionId]);
 }

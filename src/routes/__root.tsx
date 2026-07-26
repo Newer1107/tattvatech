@@ -7,9 +7,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { assetPath } from "@/lib/assets";
-import { CustomCursor } from "@/components/custom-cursor";
 
 import appCss from "../styles.css?url";
 
@@ -129,10 +128,32 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [CursorComponent, setCursorComponent] = useState<ComponentType | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let frameOne = 0;
+    let frameTwo = 0;
+
+    frameOne = window.requestAnimationFrame(() => {
+      frameTwo = window.requestAnimationFrame(async () => {
+        const module = await import("@/components/custom-cursor");
+        if (!cancelled) {
+          setCursorComponent(() => module.CustomCursor);
+        }
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frameOne);
+      window.cancelAnimationFrame(frameTwo);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CustomCursor />
+      {CursorComponent ? <CursorComponent /> : null}
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>

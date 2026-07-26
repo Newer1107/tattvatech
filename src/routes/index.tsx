@@ -1,5 +1,12 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type DependencyList,
+  type RefObject,
+} from "react";
 import { ButtonLink, SiteFooter, SiteNavbar } from "@/components/site-chrome";
 import { assetPath } from "@/lib/assets";
 import { gsap, ScrollTrigger } from "@/lib/animations";
@@ -27,6 +34,11 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+const loadAnimations = (() => {
+  let promise: Promise<typeof import("@/lib/animations")> | null = null;
+  return () => (promise ??= import("@/lib/animations"));
+})();
 
 /* --------------------------------- hooks ---------------------------------- */
 
@@ -67,6 +79,40 @@ function useScrollProgress() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return p;
+}
+
+function useDeferredMotionEffect(
+  callback: (animations: typeof import("@/lib/animations")) => void | (() => void),
+  deps: DependencyList,
+) {
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let cancelled = false;
+    let cleanup = () => {};
+    let frameOne = 0;
+    let frameTwo = 0;
+
+    frameOne = window.requestAnimationFrame(() => {
+      frameTwo = window.requestAnimationFrame(async () => {
+        const animations = await loadAnimations();
+        if (cancelled) return;
+
+        const maybeCleanup = callback(animations);
+        cleanup = typeof maybeCleanup === "function" ? maybeCleanup : () => {};
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frameOne);
+      window.cancelAnimationFrame(frameTwo);
+      cleanup();
+    };
+  }, deps);
+  /* eslint-enable react-hooks/exhaustive-deps */
 }
 
 function useCursor() {
@@ -202,57 +248,74 @@ function Cursor() {
 
 function Hero() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 });
+  const heroRef = useRef<HTMLElement | null>(null);
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
   const p = useScrollProgress();
   useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    let frame = 0;
     const onMove = (e: MouseEvent) => {
-      setMouse({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        hero.style.setProperty("--hero-mouse-x", `${(e.clientX / window.innerWidth) * 100}%`);
+        hero.style.setProperty("--hero-mouse-y", `${(e.clientY / window.innerHeight) * 100}%`);
+        frame = 0;
+      });
     };
     window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   /* Hero parallax: heading scale/fade + background grid translateY on scroll */
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
+  useDeferredMotionEffect(({ gsap }) => {
     const heading = document.querySelector<HTMLElement>("#top h1");
     const grid = document.querySelector<HTMLElement>("#top .bg-grid");
+    const tweens = [];
 
     if (heading) {
-      gsap.to(heading, {
-        scale: 0.95,
-        opacity: 0.4,
-        scrollTrigger: {
-          trigger: "#top",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      tweens.push(
+        gsap.to(heading, {
+          scale: 0.95,
+          opacity: 0.4,
+          scrollTrigger: {
+            trigger: "#top",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        }),
+      );
     }
 
     if (grid) {
-      gsap.to(grid, {
-        y: "30%",
-        scrollTrigger: {
-          trigger: "#top",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      tweens.push(
+        gsap.to(grid, {
+          y: "30%",
+          scrollTrigger: {
+            trigger: "#top",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        }),
+      );
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      tweens.forEach((tween) => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      });
     };
   }, []);
 
   /* Hero entrance: staggered blur + slide reveal with ambient background settle */
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
+  useDeferredMotionEffect(({ gsap }) => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -263,22 +326,12 @@ function Hero() {
         0,
       );
 
-      const items = [
-        { sel: ".hero-badge", y: -8, blur: 4, dur: 0.5, at: 0.2 },
-        { sel: ".hero-heading-line-1", y: 28, blur: 6, dur: 0.7, at: 0.35 },
-        { sel: ".hero-heading-line-2", y: 28, blur: 6, dur: 0.7, at: 0.5 },
-        { sel: ".hero-paragraph", y: 18, blur: 3, dur: 0.6, at: 0.65 },
-        { sel: ".hero-actions", y: 14, blur: 2, dur: 0.5, at: 0.8 },
-      ];
-
-      items.forEach(({ sel, y, blur, dur, at }) => {
-        tl.fromTo(
-          sel,
-          { y, opacity: 0, filter: `blur(${blur}px)` },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: dur },
-          at,
-        );
-      });
+      tl.fromTo(
+        ".hero-media-frame",
+        { y: 18, opacity: 0.45 },
+        { y: 0, opacity: 1, duration: 0.55 },
+        0.18,
+      );
 
       gsap.utils.toArray<Element>(".hero-particle").forEach((dot) => {
         gsap.set(dot, { opacity: 0.15 });
@@ -314,14 +367,25 @@ function Hero() {
   }, []);
 
   return (
-    <section id="top" className="hero-section relative overflow-hidden bg-ivory">
+    <section
+      ref={heroRef}
+      id="top"
+      className="hero-section relative overflow-hidden bg-ivory"
+      style={
+        {
+          "--hero-mouse-x": "50%",
+          "--hero-mouse-y": "50%",
+        } as CSSProperties
+      }
+    >
       <div className="absolute inset-0 text-ink">
         <div className="absolute inset-0 bg-grid grid-drift opacity-70" />
       </div>
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(700px circle at ${mouse.x * 100}% ${mouse.y * 100}%, color-mix(in oklab, var(--orange-soft) 55%, transparent) 0%, transparent 60%)`,
+          background:
+            "radial-gradient(700px circle at var(--hero-mouse-x) var(--hero-mouse-y), color-mix(in oklab, var(--orange-soft) 55%, transparent) 0%, transparent 60%)",
           transition: "background 300ms ease-out",
         }}
       />
@@ -449,7 +513,7 @@ function Hero() {
         <SiteNavbar page="home" />
 
         <div className="hero-content flex flex-1 flex-col justify-center py-6 md:py-8">
-          <div className="hero-badge" style={{ opacity: 0 }}>
+          <div className="hero-badge">
             <div className="mb-8 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70 md:mb-10">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange shadow-[0_0_14px_var(--orange)]" />
               A founder-led technology company · Est. 2024
@@ -462,30 +526,19 @@ function Hero() {
                 className="font-display text-[clamp(2.75rem,6vw,7rem)] leading-[0.9] text-balance break-words"
                 style={{ transform: `translateY(${p * -40}px)` }}
               >
-                <span className="block hero-heading-line-1" style={{ opacity: 0 }}>
-                  Technology
-                </span>
-                <span
-                  className="block hero-heading-line-2 italic text-gradient-orange"
-                  style={{ opacity: 0 }}
-                >
+                <span className="block hero-heading-line-1">Technology</span>
+                <span className="block hero-heading-line-2 italic text-gradient-orange">
                   that transforms.
                 </span>
               </h1>
 
-              <p
-                className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg"
-                style={{ opacity: 0 }}
-              >
+              <p className="hero-paragraph mt-8 max-w-xl text-pretty text-base leading-relaxed text-charcoal md:text-lg">
                 TattvaTech builds practical technology across software, AI, drones, digital
                 products, and technical education—creating solutions that grow stronger through
                 connected expertise.
               </p>
 
-              <div
-                className="hero-actions mt-10 flex flex-wrap items-center gap-4"
-                style={{ opacity: 0 }}
-              >
+              <div className="hero-actions mt-10 flex flex-wrap items-center gap-4">
                 <ButtonLink href="#services">Explore our work</ButtonLink>
                 <ButtonLink href="#ecosystem" variant="ghost">
                   Discover our ecosystem
@@ -497,12 +550,13 @@ function Hero() {
               <div className="hero-media-frame group relative overflow-hidden rounded-3xl border border-border shadow-warm">
                 <video
                   ref={heroVideoRef}
-                  className="h-full w-full object-cover"
+                  className={`h-full w-full object-cover transition-opacity duration-500 ${heroVideoReady ? "opacity-100" : "opacity-0"}`}
                   autoPlay
                   muted
                   loop
                   playsInline
-                  preload="auto"
+                  preload="metadata"
+                  onLoadedData={() => setHeroVideoReady(true)}
                   disablePictureInPicture
                 >
                   <source src={assetPath("/hero-ui.mp4")} type="video/mp4" />
@@ -528,6 +582,84 @@ function Hero() {
 
       <Ticks />
     </section>
+  );
+}
+
+function LazyVideo({
+  src,
+  className,
+  rootMargin = "300px",
+  preload = "metadata",
+  videoRef,
+}: {
+  src: string;
+  className: string;
+  rootMargin?: string;
+  preload?: "none" | "metadata" | "auto";
+  videoRef?: RefObject<HTMLVideoElement | null>;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element || shouldLoad) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.01 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [rootMargin, shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef?.current ?? localVideoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [shouldLoad, videoRef]);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0">
+      {shouldLoad ? (
+        <video
+          ref={videoRef ?? localVideoRef}
+          className={`${className} transition-opacity duration-500 ${isReady ? "opacity-100" : "opacity-0"}`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload={preload}
+          disablePictureInPicture
+          onLoadedData={() => setIsReady(true)}
+        >
+          <source src={assetPath(src)} type="video/mp4" />
+        </video>
+      ) : (
+        <div className="absolute inset-0 bg-grid-fine opacity-35 text-ink" aria-hidden="true" />
+      )}
+    </div>
   );
 }
 
@@ -564,17 +696,7 @@ function MediaFrame({
       aria-label={caption ?? "Media placeholder"}
     >
       {videoSrc ? (
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          disablePictureInPicture
-        >
-          <source src={assetPath(videoSrc)} type="video/mp4" />
-        </video>
+        <LazyVideo src={videoSrc} className="absolute inset-0 h-full w-full object-cover" />
       ) : (
         <div
           className={`absolute inset-0 ${onDark ? "text-ivory" : "text-ink"} bg-grid-fine opacity-40`}
@@ -671,6 +793,7 @@ function About() {
   const aboutVideoPinRef = useRef<HTMLDivElement>(null);
   const aboutVideoFrameRef = useRef<HTMLDivElement>(null);
   const aboutVideoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoadAboutVideo, setShouldLoadAboutVideo] = useState(false);
   const steps = [
     { k: "Observe", d: "Real problems, patterns, and gaps in how technology is actually used." },
     { k: "Build", d: "Engineered solutions with clarity, restraint, and long-term architecture." },
@@ -678,6 +801,24 @@ function About() {
     { k: "Evolve", d: "Continuous refinement guided by outcomes rather than trends." },
     { k: "Responsibly", d: "Practical innovation grounded in ethics, trust, and durability." },
   ];
+
+  useEffect(() => {
+    const section = aboutVideoSectionRef.current;
+    if (!section || shouldLoadAboutVideo) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadAboutVideo(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "400px", threshold: 0.01 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [shouldLoadAboutVideo]);
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -941,16 +1082,20 @@ function About() {
       <div ref={aboutVideoSectionRef} className="about-video-section mt-10 md:mt-16">
         <div ref={aboutVideoPinRef} className="about-video-pin">
           <div ref={aboutVideoFrameRef} className="about-video-frame">
-            <video
-              ref={aboutVideoRef}
-              src={assetPath("/about.mp4")}
-              muted
-              playsInline
-              loop
-              autoPlay
-              preload="metadata"
-              className="about-video"
-            />
+            {shouldLoadAboutVideo ? (
+              <video
+                ref={aboutVideoRef}
+                src={assetPath("/about.mp4")}
+                muted
+                playsInline
+                loop
+                autoPlay
+                preload="metadata"
+                className="about-video"
+              />
+            ) : (
+              <div className="h-full w-full bg-grid-fine opacity-35 text-ink" aria-hidden="true" />
+            )}
           </div>
         </div>
       </div>
@@ -1415,23 +1560,6 @@ function Drones() {
     return () => ctx.revert();
   }, []);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section
       id="drones"
@@ -1455,18 +1583,15 @@ function Drones() {
             </p>
             <Reveal delay={140}>
               <div className="group relative mt-10 overflow-hidden rounded-3xl border border-border shadow-warm">
-                <video
-                  ref={videoRef}
-                  className="w-full aspect-video object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  disablePictureInPicture
-                >
-                  <source src={assetPath("/drones-aerial.mp4")} type="video/mp4" />
-                </video>
+                <div className="relative aspect-video">
+                  <LazyVideo
+                    src="/drones-aerial.mp4"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    preload="metadata"
+                    rootMargin="350px"
+                    videoRef={videoRef}
+                  />
+                </div>
               </div>
             </Reveal>
           </div>
