@@ -437,7 +437,7 @@
   overflow: visible;
 }
 
-.about-video-pin {
+.about-video-stage {
   position: relative;
   width: 100%;
   height: 100svh;
@@ -448,14 +448,15 @@
 }
 
 .about-video-frame {
-  width: 100dvw;
-  height: 100dvh;
+  width: min(90vw, 1024px);
+  height: min(64svh, 576px);
+  height: min(64dvh, 576px);
   overflow: hidden;
   background: var(--cream);
   box-shadow:
     0 24px 80px -40px color-mix(in oklab, var(--ink) 35%, transparent),
     0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent);
-  will-change: transform, border-radius;
+  will-change: width, height, border-radius;
 }
 
 .about-video {
@@ -466,53 +467,8 @@
   display: block;
 }
 
-.about-principles {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(20px, 7vh, 72px);
-  width: min(calc(100vw - 120px), 1080px);
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-  border-radius: 28px;
-  background: color-mix(in oklab, var(--ivory) 92%, transparent);
-  box-shadow: 0 24px 60px -36px color-mix(in oklab, var(--ink) 28%, transparent);
-  overflow: hidden;
-  transform: translateX(-50%);
-  will-change: transform, opacity;
-}
-
-.about-principles__item {
-  min-width: 0;
-  padding: 20px 18px 22px;
-  backdrop-filter: blur(8px);
-}
-
-.about-principles__item + .about-principles__item {
-  border-left: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-}
-
-.about-principles__num {
-  color: color-mix(in oklab, var(--orange) 88%, white 8%);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-
-.about-principles__title {
-  margin-top: 14px;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 1.7vw, 1.9rem);
-  line-height: 0.96;
-}
-
-.about-principles__description {
-  margin-top: 12px;
-  color: var(--charcoal);
-  font-size: 0.88rem;
-  line-height: 1.5;
+.about-principles-section {
+  margin-top: clamp(24px, 4vw, 48px);
 }
 
 .footer-brand {
@@ -866,28 +822,10 @@
     max-width: 180px;
   }
 
-  .about-principles {
+  .about-video-frame {
     width: calc(100vw - 24px);
-    grid-template-columns: 1fr;
-    bottom: 12px;
-    border-radius: 22px;
-  }
-
-  .about-principles__item {
-    padding: 16px 16px 18px;
-  }
-
-  .about-principles__item + .about-principles__item {
-    border-left: 0;
-    border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-  }
-
-  .about-principles__title {
-    font-size: 1.3rem;
-  }
-
-  .about-principles__description {
-    font-size: 0.82rem;
+    height: min(58svh, 420px);
+    height: min(58dvh, 420px);
   }
 
   .footer-logo {
@@ -921,26 +859,10 @@
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .about-principles {
-    width: min(calc(100vw - 48px), 860px);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .about-principles__item:nth-child(odd):not(:last-child) {
-    border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-  }
-
-  .about-principles__item + .about-principles__item {
-    border-left: 0;
-    border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-  }
-
-  .about-principles__item:nth-child(2) {
-    border-top: 0;
-  }
-
-  .about-principles__item:nth-child(5) {
-    grid-column: 1 / -1;
+  .about-video-frame {
+    width: min(90vw, 980px);
+    height: min(60svh, 540px);
+    height: min(60dvh, 540px);
   }
 }
 
@@ -1034,27 +956,16 @@
     padding-inline: 12px;
   }
 
-  .about-video-pin {
+  .about-video-stage {
     height: auto;
     overflow: visible;
   }
 
   .about-video-frame {
     width: 100%;
-    height: min(72svh, 760px);
-    height: min(72dvh, 760px);
+    height: min(58svh, 520px);
+    height: min(58dvh, 520px);
     border-radius: 28px !important;
-    transform: none !important;
     will-change: auto;
-  }
-
-  .about-principles {
-    position: absolute;
-    left: 50%;
-    bottom: 12px;
-    width: min(calc(100% - 24px), 1080px);
-    transform: translateX(-50%) !important;
-    opacity: 1 !important;
-    visibility: visible !important;
   }
 }

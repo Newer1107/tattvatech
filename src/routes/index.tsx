@@ -802,9 +802,9 @@ function Marquee() {
 
 function About() {
   const aboutVideoSectionRef = useRef<HTMLDivElement>(null);
-  const aboutVideoPinRef = useRef<HTMLDivElement>(null);
+  const aboutVideoStageRef = useRef<HTMLDivElement>(null);
   const aboutVideoFrameRef = useRef<HTMLDivElement>(null);
-  const aboutPrinciplesRef = useRef<HTMLDivElement>(null);
+  const aboutPrinciplesSectionRef = useRef<HTMLDivElement>(null);
   const aboutVideoRef = useRef<HTMLVideoElement>(null);
   const steps = [
     { k: "Observe", d: "Real problems, patterns, and gaps in how technology is actually used." },
@@ -817,11 +817,11 @@ function About() {
     if (typeof window === "undefined") return;
 
     const section = aboutVideoSectionRef.current;
-    const pin = aboutVideoPinRef.current;
+    const stage = aboutVideoStageRef.current;
     const frame = aboutVideoFrameRef.current;
-    const principles = aboutPrinciplesRef.current;
+    const principles = aboutPrinciplesSectionRef.current;
     const video = aboutVideoRef.current;
-    if (!section || !pin || !frame || !principles || !video) return;
+    if (!section || !stage || !frame || !principles || !video) return;
 
     const playVideo = () => video.play().catch(() => {});
     const pauseVideo = () => video.pause();
@@ -844,32 +844,28 @@ function About() {
 
     const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
     const geometry = {
-      initialScaleX: 1,
-      initialScaleY: 1,
+      startWidth: 0,
+      startHeight: 0,
+      finalWidth: 0,
+      finalHeight: 0,
       initialRadius: 36,
+      finalRadius: 24,
     };
     let updateFrameGeometry = () => {};
 
     const ctx = gsap.context(() => {
-      gsap.set(principles, {
-        autoAlpha: 0,
-        y: 72,
-        scale: 0.985,
-        transformOrigin: "center center",
-      });
-
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: () => {
             const viewportHeight = window.innerHeight;
-            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 1.1)}`;
-            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 1.2)}`;
-            return `+=${Math.round(viewportHeight * 1.3)}`;
+            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 0.8)}`;
+            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 0.9)}`;
+            return `+=${Math.round(viewportHeight * 0.95)}`;
           },
           scrub: 1,
-          pin,
+          pin: stage,
           pinSpacing: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -885,62 +881,87 @@ function About() {
         .to(
           frame,
           {
-            scaleX: 1,
-            scaleY: 1,
-            borderRadius: 0,
+            width: () => geometry.finalWidth,
+            height: () => geometry.finalHeight,
+            borderRadius: () => geometry.finalRadius,
             ease: "none",
-            duration: 0.4,
+            duration: 0.6,
           },
           0.15,
         )
-        .to(
-          principles,
-          {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            ease: "power2.out",
-            duration: 0.25,
-          },
-          0.33,
-        )
         .to({}, { duration: 0.2 })
-        .to({}, { duration: 0.12 });
+        .to({}, { duration: 0.05 });
+
+      gsap.from(principles.querySelectorAll(".step-card"), {
+        y: 40,
+        autoAlpha: 0,
+        stagger: 0.08,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: principles,
+          start: "top 78%",
+          once: true,
+        },
+      });
+
+      gsap.from(principles.querySelectorAll(".step-num"), {
+        autoAlpha: 0,
+        stagger: 0.08,
+        duration: 0.5,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: principles,
+          start: "top 78%",
+          once: true,
+        },
+      });
 
       updateFrameGeometry = () => {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const isMobile = viewportWidth < 768;
         const isTablet = viewportWidth < 1024;
-        const insetX = isMobile
-          ? 12
+        const aspectRatio = (video.videoWidth || 1280) / (video.videoHeight || 720);
+        const startHeightLimit = isMobile
+          ? viewportHeight * 0.54
           : isTablet
-            ? clamp(viewportWidth * 0.03, 16, 24)
-            : clamp(viewportWidth * 0.022, 20, 32);
-        const insetHeight = isMobile
-          ? clamp(viewportHeight * 0.7, viewportHeight * 0.66, viewportHeight * 0.74)
+            ? viewportHeight * 0.6
+            : viewportHeight * 0.64;
+        const startWidthLimit = isMobile
+          ? viewportWidth - 24
           : isTablet
-            ? clamp(viewportHeight * 0.8, viewportHeight * 0.76, viewportHeight * 0.84)
-            : clamp(viewportHeight * 0.86, viewportHeight * 0.82, viewportHeight * 0.88);
-        const insetWidth = viewportWidth - insetX * 2;
+            ? viewportWidth * 0.9
+            : viewportWidth * 0.9;
+        const finalHeightLimit = isMobile
+          ? viewportHeight * 0.68
+          : isTablet
+            ? viewportHeight * 0.72
+            : viewportHeight * 0.75;
+        const finalWidthLimit = isMobile ? viewportWidth * 0.92 : viewportWidth * 0.75;
 
-        geometry.initialScaleX = insetWidth / viewportWidth;
-        geometry.initialScaleY = insetHeight / viewportHeight;
+        const startWidth = Math.min(startWidthLimit, startHeightLimit * aspectRatio);
+        const startHeight = startWidth / aspectRatio;
+        const finalWidth = Math.min(finalWidthLimit, finalHeightLimit * aspectRatio);
+        const finalHeight = finalWidth / aspectRatio;
+
+        geometry.startWidth = startWidth;
+        geometry.startHeight = startHeight;
+        geometry.finalWidth = finalWidth;
+        geometry.finalHeight = finalHeight;
         geometry.initialRadius = isMobile
           ? 22
           : isTablet
             ? 28
             : clamp(viewportWidth * 0.022, 28, 38);
+        geometry.finalRadius = isMobile ? 20 : isTablet ? 22 : 24;
 
         gsap.set(frame, {
-          width: "100vw",
-          height: "100svh",
+          width: geometry.startWidth,
+          height: geometry.startHeight,
           x: 0,
           y: 0,
-          scaleX: geometry.initialScaleX,
-          scaleY: geometry.initialScaleY,
           borderRadius: geometry.initialRadius,
-          transformOrigin: "center center",
         });
       };
 
@@ -988,7 +1009,7 @@ function About() {
       </div>
 
       <div ref={aboutVideoSectionRef} className="about-video-section mt-10 md:mt-16">
-        <div ref={aboutVideoPinRef} className="about-video-pin">
+        <div ref={aboutVideoStageRef} className="about-video-stage">
           <div ref={aboutVideoFrameRef} className="about-video-frame">
             <video
               ref={aboutVideoRef}
@@ -1000,19 +1021,32 @@ function About() {
               preload="metadata"
               className="about-video"
             />
-            <div
-              ref={aboutPrinciplesRef}
-              className="about-principles"
-              aria-label="TattvaTech principles"
-            >
-              {steps.map((s, i) => (
-                <div key={s.k} className="about-principles__item">
-                  <div className="about-principles__num">{String(i + 1).padStart(2, "0")}</div>
-                  <h3 className="about-principles__title">{s.k}.</h3>
-                  <p className="about-principles__description">{s.d}</p>
+          </div>
+        </div>
+
+        <div
+          ref={aboutPrinciplesSectionRef}
+          className="about-principles-section mx-auto max-w-[1400px] px-6 md:px-10"
+          aria-label="TattvaTech principles"
+        >
+          <div className="step-grid mt-12 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5 md:mt-16">
+            {steps.map((s, i) => (
+              <div
+                key={s.k}
+                className="step-card group relative h-full bg-ivory p-8 transition-colors duration-500 hover:bg-cream"
+                data-cursor="hover"
+                data-card
+              >
+                <div className="flex items-baseline justify-between">
+                  <span className="step-num text-xs tabular-nums text-orange/60">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="h-px w-10 origin-right scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
                 </div>
-              ))}
-            </div>
+                <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{s.k}.</h3>
+                <p className="mt-4 text-sm leading-relaxed text-charcoal">{s.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
