@@ -440,17 +440,19 @@
 .about-video-stage {
   position: relative;
   width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
   height: 100svh;
   height: 100dvh;
   display: grid;
   place-items: center;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .about-video-frame {
-  width: min(90vw, 1024px);
-  height: min(64svh, 576px);
-  height: min(64dvh, 576px);
+  width: min(50vw, calc(50svh * 16 / 9));
+  width: min(50vw, calc(50dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--cream);
   box-shadow:
@@ -468,7 +470,7 @@
 }
 
 .about-principles-section {
-  margin-top: clamp(24px, 4vw, 48px);
+  margin-top: clamp(32px, 5vw, 64px);
 }
 
 .footer-brand {
@@ -823,9 +825,8 @@
   }
 
   .about-video-frame {
-    width: calc(100vw - 24px);
-    height: min(58svh, 420px);
-    height: min(58dvh, 420px);
+    width: min(50vw, calc(50svh * 16 / 9));
+    width: min(50vw, calc(50dvh * 16 / 9));
   }
 
   .footer-logo {
@@ -860,9 +861,8 @@
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .about-video-frame {
-    width: min(90vw, 980px);
-    height: min(60svh, 540px);
-    height: min(60dvh, 540px);
+    width: min(50vw, calc(50svh * 16 / 9));
+    width: min(50vw, calc(50dvh * 16 / 9));
   }
 }
 
@@ -962,9 +962,8 @@
   }
 
   .about-video-frame {
-    width: 100%;
-    height: min(58svh, 520px);
-    height: min(58dvh, 520px);
+    width: min(75vw, calc(75svh * 16 / 9));
+    width: min(75vw, calc(75dvh * 16 / 9));
     border-radius: 28px !important;
     will-change: auto;
   }

@@ -860,8 +860,8 @@ function About() {
           start: "top top",
           end: () => {
             const viewportHeight = window.innerHeight;
-            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 0.8)}`;
-            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 0.9)}`;
+            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 0.72)}`;
+            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 0.85)}`;
             return `+=${Math.round(viewportHeight * 0.95)}`;
           },
           scrub: 1,
@@ -876,21 +876,17 @@ function About() {
         },
       });
 
-      timeline
-        .to({}, { duration: 0.15 })
-        .to(
-          frame,
-          {
-            width: () => geometry.finalWidth,
-            height: () => geometry.finalHeight,
-            borderRadius: () => geometry.finalRadius,
-            ease: "none",
-            duration: 0.6,
-          },
-          0.15,
-        )
-        .to({}, { duration: 0.2 })
-        .to({}, { duration: 0.05 });
+      timeline.to({}, { duration: 0.1 }).to(
+        frame,
+        {
+          width: () => geometry.finalWidth,
+          height: () => geometry.finalHeight,
+          borderRadius: () => geometry.finalRadius,
+          ease: "none",
+          duration: 0.9,
+        },
+        0.1,
+      );
 
       gsap.from(principles.querySelectorAll(".step-card"), {
         y: 40,
@@ -923,22 +919,10 @@ function About() {
         const isMobile = viewportWidth < 768;
         const isTablet = viewportWidth < 1024;
         const aspectRatio = (video.videoWidth || 1280) / (video.videoHeight || 720);
-        const startHeightLimit = isMobile
-          ? viewportHeight * 0.54
-          : isTablet
-            ? viewportHeight * 0.6
-            : viewportHeight * 0.64;
-        const startWidthLimit = isMobile
-          ? viewportWidth - 24
-          : isTablet
-            ? viewportWidth * 0.9
-            : viewportWidth * 0.9;
-        const finalHeightLimit = isMobile
-          ? viewportHeight * 0.68
-          : isTablet
-            ? viewportHeight * 0.72
-            : viewportHeight * 0.75;
-        const finalWidthLimit = isMobile ? viewportWidth * 0.92 : viewportWidth * 0.75;
+        const startHeightLimit = viewportHeight * 0.5;
+        const startWidthLimit = viewportWidth * 0.5;
+        const finalHeightLimit = viewportHeight * 0.75;
+        const finalWidthLimit = viewportWidth * 0.75;
 
         const startWidth = Math.min(startWidthLimit, startHeightLimit * aspectRatio);
         const startHeight = startWidth / aspectRatio;
