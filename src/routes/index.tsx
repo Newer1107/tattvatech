@@ -804,6 +804,7 @@ function About() {
   const aboutVideoSectionRef = useRef<HTMLDivElement>(null);
   const aboutVideoPinRef = useRef<HTMLDivElement>(null);
   const aboutVideoFrameRef = useRef<HTMLDivElement>(null);
+  const aboutPrinciplesRef = useRef<HTMLDivElement>(null);
   const aboutVideoRef = useRef<HTMLVideoElement>(null);
   const steps = [
     { k: "Observe", d: "Real problems, patterns, and gaps in how technology is actually used." },
@@ -814,53 +815,13 @@ function About() {
   ];
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        "#about .step-card",
-        { y: 60, rotation: (i: number) => (i % 2 === 0 ? -2 : 2), autoAlpha: 0 },
-        {
-          y: 0,
-          rotation: 0,
-          autoAlpha: 1,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: "#about .step-grid",
-            start: "top 80%",
-            end: "top 45%",
-            scrub: 0.5,
-          },
-        },
-      );
-
-      gsap.fromTo(
-        "#about .step-num",
-        { autoAlpha: 0 },
-        {
-          autoAlpha: 1,
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: "#about .step-grid",
-            start: "top 82%",
-            end: "top 50%",
-            scrub: 0.5,
-          },
-        },
-      );
-    });
-
-    return () => ctx.revert();
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
 
     const section = aboutVideoSectionRef.current;
     const pin = aboutVideoPinRef.current;
     const frame = aboutVideoFrameRef.current;
+    const principles = aboutPrinciplesRef.current;
     const video = aboutVideoRef.current;
-    if (!section || !pin || !frame || !video) return;
+    if (!section || !pin || !frame || !principles || !video) return;
 
     const playVideo = () => video.play().catch(() => {});
     const pauseVideo = () => video.pause();
@@ -890,16 +851,22 @@ function About() {
     let updateFrameGeometry = () => {};
 
     const ctx = gsap.context(() => {
+      gsap.set(principles, {
+        autoAlpha: 0,
+        y: 72,
+        scale: 0.985,
+        transformOrigin: "center center",
+      });
+
       const timeline = gsap.timeline({
-        defaults: { ease: "none" },
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: () => {
             const viewportHeight = window.innerHeight;
-            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 1.25)}`;
-            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 1.45)}`;
-            return `+=${Math.round(viewportHeight * 1.6)}`;
+            if (window.innerWidth < 768) return `+=${Math.round(viewportHeight * 1.1)}`;
+            if (window.innerWidth < 1024) return `+=${Math.round(viewportHeight * 1.2)}`;
+            return `+=${Math.round(viewportHeight * 1.3)}`;
           },
           scrub: 1,
           pin,
@@ -914,14 +881,30 @@ function About() {
       });
 
       timeline
-        .to({}, { duration: 0.08 })
-        .to(frame, {
-          scaleX: 1,
-          scaleY: 1,
-          borderRadius: 0,
-          duration: 0.66,
-        })
-        .to({}, { duration: 0.14 })
+        .to({}, { duration: 0.15 })
+        .to(
+          frame,
+          {
+            scaleX: 1,
+            scaleY: 1,
+            borderRadius: 0,
+            ease: "none",
+            duration: 0.4,
+          },
+          0.15,
+        )
+        .to(
+          principles,
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            ease: "power2.out",
+            duration: 0.25,
+          },
+          0.33,
+        )
+        .to({}, { duration: 0.2 })
         .to({}, { duration: 0.12 });
 
       updateFrameGeometry = () => {
@@ -932,13 +915,13 @@ function About() {
         const insetX = isMobile
           ? 12
           : isTablet
-            ? clamp(viewportWidth * 0.035, 20, 28)
-            : clamp(viewportWidth * 0.03, 30, 54);
+            ? clamp(viewportWidth * 0.03, 16, 24)
+            : clamp(viewportWidth * 0.022, 20, 32);
         const insetHeight = isMobile
-          ? clamp(viewportHeight * 0.68, viewportHeight * 0.64, viewportHeight * 0.72)
+          ? clamp(viewportHeight * 0.7, viewportHeight * 0.66, viewportHeight * 0.74)
           : isTablet
-            ? clamp(viewportHeight * 0.76, viewportHeight * 0.72, viewportHeight * 0.8)
-            : clamp(viewportHeight * 0.8, viewportHeight * 0.76, viewportHeight * 0.84);
+            ? clamp(viewportHeight * 0.8, viewportHeight * 0.76, viewportHeight * 0.84)
+            : clamp(viewportHeight * 0.86, viewportHeight * 0.82, viewportHeight * 0.88);
         const insetWidth = viewportWidth - insetX * 2;
 
         geometry.initialScaleX = insetWidth / viewportWidth;
@@ -1017,28 +1000,20 @@ function About() {
               preload="metadata"
               className="about-video"
             />
-          </div>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <div className="step-grid mt-12 grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5 md:mt-24">
-          {steps.map((s, i) => (
-            <Reveal key={s.k} delay={i * 90}>
-              <div
-                className="step-card group relative h-full bg-ivory p-8 transition-colors duration-500 hover:bg-cream"
-                data-cursor="hover"
-                data-card
-              >
-                <div className="flex items-baseline justify-between">
-                  <span className="step-num text-xs tabular-nums text-orange/60">0{i + 1}</span>
-                  <span className="h-px w-10 origin-right scale-x-0 bg-orange transition-transform duration-500 group-hover:scale-x-100" />
+            <div
+              ref={aboutPrinciplesRef}
+              className="about-principles"
+              aria-label="TattvaTech principles"
+            >
+              {steps.map((s, i) => (
+                <div key={s.k} className="about-principles__item">
+                  <div className="about-principles__num">{String(i + 1).padStart(2, "0")}</div>
+                  <h3 className="about-principles__title">{s.k}.</h3>
+                  <p className="about-principles__description">{s.d}</p>
                 </div>
-                <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{s.k}.</h3>
-                <p className="mt-4 text-sm leading-relaxed text-charcoal">{s.d}</p>
-              </div>
-            </Reveal>
-          ))}
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
