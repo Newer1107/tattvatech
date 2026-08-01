@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DronesRouteImport } from './routes/drones'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TrainingRouteImport } from './routes/training'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const DronesRoute = DronesRouteImport.update({
   id: '/drones',
   path: '/drones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -44,6 +50,7 @@ const TrainingRoute = TrainingRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/drones': typeof DronesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
   '/training': typeof TrainingRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/drones': typeof DronesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
   '/training': typeof TrainingRoute
@@ -59,21 +67,42 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/drones': typeof DronesRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/products': typeof ProductsRoute
   '/services': typeof ServicesRoute
   '/training': typeof TrainingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/drones' | '/products' | '/services' | '/training'
+  fullPaths:
+    | '/'
+    | '/drones'
+    | '/privacy-policy'
+    | '/products'
+    | '/services'
+    | '/training'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/drones' | '/products' | '/services' | '/training'
-  id: '__root__' | '/' | '/drones' | '/products' | '/services' | '/training'
+  to:
+    | '/'
+    | '/drones'
+    | '/privacy-policy'
+    | '/products'
+    | '/services'
+    | '/training'
+  id:
+    | '__root__'
+    | '/'
+    | '/drones'
+    | '/privacy-policy'
+    | '/products'
+    | '/services'
+    | '/training'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DronesRoute: typeof DronesRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ProductsRoute: typeof ProductsRoute
   ServicesRoute: typeof ServicesRoute
   TrainingRoute: typeof TrainingRoute
@@ -93,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/drones'
       fullPath: '/drones'
       preLoaderRoute: typeof DronesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -122,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DronesRoute: DronesRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   ProductsRoute: ProductsRoute,
   ServicesRoute: ServicesRoute,
   TrainingRoute: TrainingRoute,

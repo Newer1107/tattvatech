@@ -1928,7 +1928,7 @@ function CTA() {
 
 function LegacyFooter() {
   const cols: [string, string[]][] = [
-    ["Company", ["About", "Ecosystem", "Principles", "Contact"]],
+    ["Company", ["About", "Ecosystem", "Principles", "Contact", "Privacy Policy"]],
     ["Services", ["Web", "Software", "Mobile", "AI & Automation", "Cloud & DevOps"]],
     ["Verticals", ["Products", "Drones", "Training"]],
     ["Contact", [PUBLIC_EMAIL, "LinkedIn", "X / Twitter", "GitHub"]],
@@ -1962,7 +1962,7 @@ function LegacyFooter() {
                   {links.map((l) => (
                     <li key={l}>
                       <a
-                        href="#"
+                        href={l === "Privacy Policy" ? "/privacy-policy" : "#"}
                         data-cursor="hover"
                         className="block py-2 text-sm text-charcoal underline-offset-4 hover:text-ink hover:underline md:py-0"
                       >
