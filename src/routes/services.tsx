@@ -495,11 +495,11 @@ function Reveal({
 function SectionLabel({ children, inverse = false }: { children: ReactNode; inverse?: boolean }) {
   return (
     <div
-      className={`flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] ${
-        inverse ? "text-ivory/80" : "text-charcoal/70"
+      className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] ${
+        inverse ? "text-ivory" : "text-charcoal/90"
       }`}
     >
-      <span className={`h-px w-8 ${inverse ? "bg-ivory/40" : "bg-orange/50"}`} />
+      <span className={`h-px w-8 ${inverse ? "bg-ivory/70" : "bg-orange"}`} />
       <span>{children}</span>
     </div>
   );
@@ -1018,12 +1018,20 @@ function TechnologySection() {
           <div className="md:col-span-8">
             <div className="grid gap-6 md:grid-cols-2">
               {technologyCategories.map((category, index) => (
-                <Reveal key={category.title} delay={index * 60}>
-                  <article className="rounded-3xl border border-border bg-ivory p-6 shadow-soft md:p-8">
+                <Reveal 
+                  key={category.title} 
+                  delay={index * 60}
+                  className={index === technologyCategories.length - 1 ? "md:col-span-2" : ""}
+                >
+                  <article className="h-full rounded-3xl border border-border bg-ivory p-6 shadow-soft md:p-8">
                     <div className="text-xs uppercase tracking-[0.24em] text-orange">
                       {category.title}
                     </div>
-                    <ul className="mt-5 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
+                    <ul className={`mt-5 text-sm leading-relaxed text-charcoal md:text-base ${
+                      index === technologyCategories.length - 1 
+                        ? "grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3" 
+                        : "space-y-3"
+                    }`}>
                       {category.items.map((item) => (
                         <li key={item} className="flex items-start gap-3">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
@@ -1285,6 +1293,80 @@ function FaqSection() {
   );
 }
 
+const whatsappServices = [
+  {
+    title: "Customer Support Bots",
+    description: "Automate FAQs, ticketing, and tier-1 support directly in WhatsApp to resolve common issues instantly.",
+    features: ["FAQ automation", "Ticket routing", "Agent handoff"]
+  },
+  {
+    title: "Lead Generation Flows",
+    description: "Qualify inbound leads conversationally and push structured data directly to your CRM.",
+    features: ["Interactive qualification", "CRM integration", "Auto-scheduling"]
+  },
+  {
+    title: "Order & Logistics Tracking",
+    description: "Provide proactive updates and allow customers to query order status in real-time.",
+    features: ["Shipping updates", "Status queries", "Return initiation"]
+  },
+  {
+    title: "Broadcast Messaging",
+    description: "Send targeted campaigns, alerts, and notifications to segmented customer lists safely.",
+    features: ["Template messages", "Opt-in management", "Analytics"]
+  }
+];
+
+function WhatsappAutomationSection() {
+  return (
+    <section id="whatsapp-automation" className="services-section relative bg-ivory">
+      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+        <div className="grid gap-10 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-4">
+            <Reveal>
+              <SectionLabel>Automation</SectionLabel>
+            </Reveal>
+            <Reveal delay={80}>
+              <h2 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1] text-balance break-words">
+                WhatsApp Bot <span className="italic text-gradient-orange">Automation.</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={160}>
+              <p className="mt-6 text-sm leading-relaxed text-charcoal md:text-base">
+                Meet your customers where they already are. We build automated conversational systems to improve support, streamline operations, and drive business growth.
+              </p>
+            </Reveal>
+          </div>
+
+          <div className="md:col-span-8">
+            <div className="grid gap-6 md:grid-cols-2">
+              {whatsappServices.map((service, index) => (
+                <Reveal key={service.title} delay={index * 60}>
+                  <article className="h-full rounded-3xl border border-border bg-cream p-6 shadow-soft md:p-8">
+                    <h3 className="font-display text-xl leading-none md:text-2xl text-ink">
+                      {service.title}
+                    </h3>
+                    <p className="mt-4 text-sm leading-relaxed text-charcoal md:text-base">
+                      {service.description}
+                    </p>
+                    <ul className="mt-5 space-y-3 text-sm leading-relaxed text-charcoal md:text-base">
+                      {service.features.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange/70" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ContactSection() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1394,6 +1476,7 @@ function ServicesPage() {
 
       <ServicesHero />
       <PositioningSection />
+      <WhatsappAutomationSection />
       <CoreServicesSection />
       <EngagementSection />
       <ProcessSection />

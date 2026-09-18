@@ -78,6 +78,9 @@ const categories: Category[] = [
       "Team tools",
       "Reporting systems",
       "Management portals",
+      "Customer portals",
+      "Data analytics dashboards",
+      "Compliance and audit tracking"
     ],
   },
   {
@@ -438,11 +441,11 @@ function Reveal({
 function SectionLabel({ children, inverse = false }: { children: ReactNode; inverse?: boolean }) {
   return (
     <div
-      className={`flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] ${
-        inverse ? "text-ivory/80" : "text-charcoal/70"
+      className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] ${
+        inverse ? "text-ivory" : "text-charcoal/90"
       }`}
     >
-      <span className={`h-px w-8 ${inverse ? "bg-ivory/40" : "bg-orange/50"}`} />
+      <span className={`h-px w-8 ${inverse ? "bg-ivory/70" : "bg-orange"}`} />
       <span>{children}</span>
     </div>
   );
@@ -478,7 +481,7 @@ function ProductsHeroVisual() {
             </div>
           </div>
 
-          <div className="grid gap-3">
+          <div className="mt-6 grid gap-3">
             {layers.map(([label, description], index) => (
               <div
                 key={label}
@@ -498,7 +501,7 @@ function ProductsHeroVisual() {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap gap-2">
             {["SaaS", "Tools", "Platforms", "Workflows", "Infrastructure"].map((item) => (
               <span
                 key={item}
@@ -914,8 +917,12 @@ function PrinciplesSection() {
 
           <div className="grid gap-6 md:col-span-8 md:grid-cols-2">
             {principles.map((item, index) => (
-              <Reveal key={item.title} delay={index * 70}>
-                <article className="rounded-3xl border border-border bg-cream p-6 shadow-soft md:p-8">
+              <Reveal 
+                key={item.title} 
+                delay={index * 70}
+                className={index === principles.length - 1 ? "md:col-span-2" : ""}
+              >
+                <article className="h-full rounded-3xl border border-border bg-cream p-6 shadow-soft md:p-8">
                   <div className="text-xs uppercase tracking-[0.24em] text-orange">Principle</div>
                   <h3 className="mt-5 font-display text-2xl leading-none md:text-3xl">
                     {item.title}

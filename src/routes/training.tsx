@@ -487,11 +487,11 @@ function Reveal({
 function SectionLabel({ children, inverse = false }: { children: ReactNode; inverse?: boolean }) {
   return (
     <div
-      className={`flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] ${
-        inverse ? "text-ivory/80" : "text-charcoal/70"
+      className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] ${
+        inverse ? "text-ivory" : "text-charcoal/90"
       }`}
     >
-      <span className={`h-px w-8 ${inverse ? "bg-ivory/40" : "bg-orange/50"}`} />
+      <span className={`h-px w-8 ${inverse ? "bg-ivory/70" : "bg-orange"}`} />
       <span>{children}</span>
     </div>
   );
@@ -1001,14 +1001,14 @@ function ProgramStructureSection() {
           </div>
 
           <Reveal delay={160}>
-            <p className="max-w-xl text-pretty text-sm leading-relaxed text-charcoal md:justify-self-end">
+            <p className="max-w-xl text-pretty text-sm leading-relaxed text-charcoal">
               Training follows a deliberate structure so scope, delivery, and outcomes stay clear
               for institutions, learner cohorts, and teams.
             </p>
           </Reveal>
         </div>
 
-        <ol className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+        <ol className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {programStructure.map((step, index) => (
             <Reveal key={step.title} delay={index * 90}>
               <li className="relative">

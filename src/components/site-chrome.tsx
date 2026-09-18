@@ -108,10 +108,6 @@ export function SiteFooter() {
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 text-xs text-charcoal md:mt-16 md:flex-row md:items-center md:pt-8">
           <div>Copyright {new Date().getFullYear()} TattvaTech. All rights reserved.</div>
-          <div className="flex items-center gap-6">
-            <span>Made with intent</span>
-            <span className="tabular-nums">v1.0</span>
-          </div>
         </div>
       </div>
     </footer>

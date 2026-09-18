@@ -158,8 +158,8 @@ function Reveal({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.28em] text-charcoal/70">
-      <span className="h-px w-8 bg-orange/50" />
+    <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-charcoal/90">
+      <span className="h-px w-8 bg-orange" />
       <span>{children}</span>
     </div>
   );
@@ -1176,7 +1176,6 @@ function Ecosystem() {
               >
                 <div className="vertical-card__main-link">
                   <div className="vertical-card__header">
-                    <span className="vertical-card__eyebrow">Vertical</span>
                     <span className="vertical-card__rule" />
                   </div>
 
@@ -1391,10 +1390,7 @@ function Products() {
                 className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-border bg-ivory p-8 transition-colors duration-300 hover:shadow-warm"
               >
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-[0.24em] text-orange">
-                      Products
-                    </span>
+                  <div className="flex justify-end">
                     <svg
                       viewBox="0 0 24 24"
                       className="h-5 w-5 text-charcoal/60 transition-colors group-hover:text-orange"
@@ -1514,10 +1510,7 @@ function Drones() {
               {rows.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 60}>
                   <div className="capability-item group relative p-6 md:p-8" data-cursor="hover">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs uppercase tracking-[0.24em] text-orange">
-                        Capability
-                      </span>
+                    <div className="flex justify-end">
                       <span className="h-1.5 w-1.5 rounded-full bg-orange opacity-70 transition-opacity group-hover:opacity-100" />
                     </div>
                     <h3 className="mt-6 font-display text-2xl md:mt-10 md:text-3xl">{k}</h3>
@@ -1669,20 +1662,17 @@ function Training() {
           </Reveal>
           <div className="md:col-span-7">
             <ol className="timeline-list relative">
-              <span className="timeline-line pointer-events-none absolute top-0 h-full w-px origin-top bg-orange/70" />
+              <span className="timeline-line pointer-events-none absolute left-0 top-0 h-full w-px origin-top bg-orange/40" />
               {items.map(([k, d], i) => (
                 <Reveal key={k} delay={i * 80}>
-                  <li className="timeline-item group relative pb-8 pl-8 last:pb-0 md:pb-12 md:pl-10">
-                    <span className="timeline-dot absolute grid h-6 w-6 place-items-center rounded-full border border-border bg-ivory transition-colors duration-300 group-hover:border-orange group-hover:bg-orange">
+                  <li className="timeline-item group relative pb-10 pl-8 last:pb-0 md:pb-14 md:pl-12">
+                    <span className="timeline-dot absolute -left-[11px] top-1 grid h-6 w-6 place-items-center rounded-full border border-border bg-ivory transition-colors duration-300 group-hover:border-orange group-hover:bg-orange">
                       <span className="h-1.5 w-1.5 rounded-full bg-orange transition-colors group-hover:bg-ivory" />
                     </span>
-                    <div className="flex flex-wrap items-baseline gap-4">
-                      <span className="text-xs uppercase tracking-[0.24em] text-orange">
-                        Program
-                      </span>
-                      <h3 className="font-display text-xl md:text-3xl">{k}</h3>
+                    <div className="flex flex-col gap-1">
+                      <h3 className="font-display text-2xl md:text-3xl text-ink mt-0.5">{k}</h3>
                     </div>
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-charcoal">{d}</p>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-charcoal md:text-base">{d}</p>
                   </li>
                 </Reveal>
               ))}
@@ -1931,7 +1921,7 @@ function LegacyFooter() {
     ["Company", ["About", "Ecosystem", "Principles", "Contact", "Privacy Policy"]],
     ["Services", ["Web", "Software", "Mobile", "AI & Automation", "Cloud & DevOps"]],
     ["Verticals", ["Products", "Drones", "Training"]],
-    ["Contact", [PUBLIC_EMAIL, "LinkedIn", "X / Twitter", "GitHub"]],
+    ["Contact", [PUBLIC_EMAIL, "LinkedIn"]],
   ];
   return (
     <footer className="bg-ivory">
@@ -1977,10 +1967,6 @@ function LegacyFooter() {
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border pt-6 text-xs text-charcoal md:mt-16 md:flex-row md:items-center md:pt-8">
           <div>© {new Date().getFullYear()} TattvaTech. All rights reserved.</div>
-          <div className="flex items-center gap-6">
-            <span>Made with intent</span>
-            <span className="tabular-nums">v1.0</span>
-          </div>
         </div>
       </div>
     </footer>
