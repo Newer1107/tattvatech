@@ -87,8 +87,6 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: PUBLIC_EMAIL, href: PUBLIC_EMAIL_MAILTO, className: "contact-email" },
       { label: "LinkedIn", href: LINKEDIN_URL, external: true },
-      { label: "X / Twitter", href: "#" },
-      { label: "GitHub", href: "#" },
     ],
   },
 ] as const;
