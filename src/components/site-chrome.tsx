@@ -68,8 +68,8 @@ export function SiteFooter() {
               <img
                 src={assetPath("/Logo.png")}
                 alt="TattvaTech"
-                width={220}
-                height={220}
+                width={1230}
+                height={312}
                 loading="lazy"
                 className="footer-logo"
               />
@@ -220,8 +220,8 @@ export function SiteNavbar({ page = "home" }: SiteNavbarProps) {
           <img
             src={assetPath("/Logo.png")}
             alt="TattvaTech"
-            width={220}
-            height={220}
+            width={1230}
+            height={312}
             loading="eager"
             fetchPriority="high"
             className="navbar-logo"
@@ -312,8 +312,8 @@ export function SecondaryPageHeader() {
           <img
             src={assetPath("/Logo.png")}
             alt="TattvaTech"
-            width={220}
-            height={220}
+            width={1230}
+            height={312}
             className="navbar-logo"
           />
         </Link>

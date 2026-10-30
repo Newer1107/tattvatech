@@ -1932,8 +1932,8 @@ function LegacyFooter() {
               <img
                 src={assetPath("/Logo.png")}
                 alt="TattvaTech"
-                width={220}
-                height={220}
+                width={1230}
+                height={312}
                 loading="lazy"
                 className="footer-logo"
               />
